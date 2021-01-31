@@ -5,7 +5,7 @@ import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle}
 import java.awt.{Color => AWTColor}
 
 object Direction extends Enumeration {
-  val Up, Down, Left, Right = Value
+  val Up, Down, Left, Right, Nop = Value
 }
 
 abstract class GameEntity(init_pos: (Int, Int), b: GameBoard) {
@@ -20,16 +20,17 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
     extends GameEntity(init_pos, b) {
 
   def move(dir: Direction.Value): Unit = {
-    var nextPos = (0, 0)
+    var nextPos = pos
     dir match {
       case Direction.Left  => nextPos = (pos._1 - 1, pos._2)
       case Direction.Right => nextPos = (pos._1 + 1, pos._2)
       case Direction.Up    => nextPos = (pos._1, pos._2 - 1)
       case Direction.Down  => nextPos = (pos._1, pos._2 + 1)
     }
-    board.isFree(nextPos)
-    pos = nextPos
-    board.entityMoved(this)
+    if (board.isFree(nextPos)) {
+      pos = nextPos
+      board.entityMoved(this)
+    }
   }
 }
 
@@ -54,6 +55,7 @@ case class WallTile() extends GameTile {
 class GameBoard(n: Int, m: Int) {
   val size_x = n
   val size_y = m
+  val playerEntity = new Player((0, 0), this)
   var grid = Array.ofDim[GameTile](size_x, size_y)
   for {
     x <- 0 to size_x - 1
@@ -61,31 +63,58 @@ class GameBoard(n: Int, m: Int) {
     val pos = (x, y)
   } grid(x)(y) = new FloorTile()
 
+  def inGrid(pos: (Int, Int)): Boolean = {
+    pos._1 >= 0 && pos._1 < size_x && pos._2 >= 0 && pos._2 < size_y
+  }
+
   def isFree(pos: (Int, Int)): Boolean = {
-    grid(pos._1)(pos._2) match {
-      case FloorTile() => true
-      case WallTile()  => false
-    }
+    if (inGrid(pos))
+      !(grid(pos._1)(pos._2).blocking)
+    else
+      false
   }
 
   def entityMoved(e: GameEntity): Unit = {
     println("Nothing happen for now")
   }
+
+  def getEntities(): List[GameEntity] = {
+    List(playerEntity)
+  }
+
+  def update(playerDir: Direction.Value) {
+    playerEntity.move(playerDir)
+  }
 }
 
 class AbstractUI {
   var lastKey: String = ""
-  def left() {
-    lastKey = "left"
-  }
-  def right() {
-    lastKey = "right"
-  }
-  def up() {
-    lastKey = "up"
-  }
-  def down() {
-    lastKey = "down"
+  var lastIsMove: Boolean = false
+  var lastDir: Direction.Value = Direction.Nop
+  def newKeyPressed(keyCode: Value) = {
+    keyCode match {
+      case Up => {
+        lastDir = Direction.Up
+        lastIsMove = true
+        lastKey = "Up"
+      }
+      case Down => {
+        lastDir = Direction.Down
+        lastIsMove = true
+        lastKey = "Down"
+      }
+      case Left => {
+        lastDir = Direction.Left
+        lastIsMove = true
+        lastKey = "Left"
+      }
+      case Right => {
+        lastDir = Direction.Right
+        lastIsMove = true
+        lastKey = "Right"
+      }
+    }
+    lastKey = keyCode.toString
   }
   def last: String = lastKey
 }
@@ -103,11 +132,10 @@ object Main extends SimpleSwingApplication {
   val gridOrigin = (10, 10)
   val board = new GameBoard(30, 30)
 
-  def onKeyPress(keyCode: Value) = keyCode match {
-    case Up    => ui.up()
-    case Down  => ui.down()
-    case Left  => ui.left()
-    case Right => ui.right()
+  def update() {
+    if (ui.lastIsMove) {
+      board.update(ui.lastDir)
+    }
   }
   def onPaint(g: Graphics2D) {
     g setColor writeColor
@@ -120,24 +148,33 @@ object Main extends SimpleSwingApplication {
         tileSize,
         tileSize
       )
-
-    def drawGrid() =
+    def drawGrid() = {
       for {
         x <- 0 to board.size_x - 1
         y <- 0 to board.size_y - 1
         val pos = (x, y)
       } {
         board.grid(x)(y) match {
-          case WallTile() => g setColor wallColor
+          case WallTile() => g.setColor(wallColor)
           case FloorTile() =>
-            g setColor floorColor
+            g.setColor(floorColor)
           case _ =>
             println("No match")
-            g setColor errorColor
+            g.setColor(errorColor)
         }
-        g fill buildRect(pos)
+        g.fill(buildRect(pos))
       }
+    }
+    def drawEntity(e: GameEntity) = {
+      g.setColor(e.color)
+      g.fill(buildRect(e.pos))
+    }
+    def drawEntities() = {
+      val entities = board.getEntities()
+      entities.foreach(e => drawEntity(e))
+    }
     drawGrid()
+    drawEntities()
   }
 
   def top = new MainFrame {
@@ -149,7 +186,8 @@ object Main extends SimpleSwingApplication {
     focusable = true
     listenTo(keys)
     reactions += { case KeyPressed(_, key, _, _) =>
-      onKeyPress(key)
+      ui.newKeyPressed(key)
+      update
       repaint
     }
     override def paint(g: Graphics2D) {
