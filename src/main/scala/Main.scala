@@ -4,6 +4,43 @@ import event.Key._
 import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle}
 import java.awt.{Color => AWTColor}
 
+object Direction extends Enumeration {
+  val Up, Down, Left, Right = Value
+}
+
+abstract class GameEntity(init_pos: (Int, Int), b: GameBoard) {
+  var name: String
+  var description: String
+  var pos: (Int, Int) = init_pos
+  var color: AWTColor
+  var board: GameBoard = b
+}
+
+abstract class Character(init_pos: (Int, Int), b: GameBoard)
+    extends GameEntity(init_pos, b) {
+
+  def move(dir: Direction.Value): Unit = {
+    var nextPos = (0, 0)
+    dir match {
+      case Direction.Left  => nextPos = (pos._1 - 1, pos._2)
+      case Direction.Right => nextPos = (pos._1 + 1, pos._2)
+      case Direction.Up    => nextPos = (pos._1, pos._2 - 1)
+      case Direction.Down  => nextPos = (pos._1, pos._2 + 1)
+    }
+    board.isFree(nextPos)
+    pos = nextPos
+    board.entityMoved(this)
+  }
+}
+
+class Player(init_pos: (Int, Int), b: GameBoard)
+    extends Character(init_pos, b) {
+  var name = "Player"
+  var description = "It's you !"
+  var color = new AWTColor(100, 255, 100)
+
+}
+
 abstract class GameTile() {
   def blocking: Boolean
 }
@@ -23,6 +60,17 @@ class GameBoard(n: Int, m: Int) {
     y <- 0 to size_y - 1
     val pos = (x, y)
   } grid(x)(y) = new FloorTile()
+
+  def isFree(pos: (Int, Int)): Boolean = {
+    grid(pos._1)(pos._2) match {
+      case FloorTile() => true
+      case WallTile()  => false
+    }
+  }
+
+  def entityMoved(e: GameEntity): Unit = {
+    println("Nothing happen for now")
+  }
 }
 
 class AbstractUI {
