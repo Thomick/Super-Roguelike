@@ -3,27 +3,7 @@ import event._
 import event.Key._
 import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle}
 import java.awt.{Color => AWTColor}
-
-abstract class GameTile() {
-  def blocking: Boolean
-}
-case class FloorTile() extends GameTile {
-  def blocking = false
-}
-case class WallTile() extends GameTile {
-  def blocking = true
-}
-
-class GameBoard(n: Int, m: Int) {
-  val size_x = n
-  val size_y = m
-  var grid = Array.ofDim[GameTile](size_x, size_y)
-  for {
-    x <- 0 to size_x - 1
-    y <- 0 to size_y - 1
-    val pos = (x, y)
-  } grid(x)(y) = new FloorTile()
-}
+import map_objects._
 
 class AbstractUI {
   var lastKey: String = ""
@@ -54,6 +34,7 @@ object Main extends SimpleSwingApplication {
   val tileOffset = 1
   val gridOrigin = (10, 10)
   val board = new GameBoard(30, 30)
+  board.make_map(7,4,6,30,30)
 
   def onKeyPress(keyCode: Value) = keyCode match {
     case Up    => ui.up()
