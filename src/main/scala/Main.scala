@@ -3,112 +3,9 @@ import event._
 import event.Key._
 import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle}
 import java.awt.{Color => AWTColor}
-import java.util.HashMap
-import scala.collection._
 
-object Direction extends Enumeration {
-  val Up, Down, Left, Right, Nop = Value
-}
-
-abstract class GameEntity(init_pos: (Int, Int), b: GameBoard) {
-  val name: String
-  val description: String
-  var pos: (Int, Int) = init_pos
-  val color: AWTColor
-  val board: GameBoard = b
-}
-
-abstract class Character(init_pos: (Int, Int), b: GameBoard)
-    extends GameEntity(init_pos, b) {
-
-  def move(dir: Direction.Value): Unit = {
-    var nextPos = pos
-    dir match {
-      case Direction.Left  => nextPos = (pos._1 - 1, pos._2)
-      case Direction.Right => nextPos = (pos._1 + 1, pos._2)
-      case Direction.Up    => nextPos = (pos._1, pos._2 - 1)
-      case Direction.Down  => nextPos = (pos._1, pos._2 + 1)
-    }
-    if (board.isFree(nextPos)) {
-      board.entityMoved(this, nextPos)
-      pos = nextPos
-    }
-  }
-}
-
-class Player(init_pos: (Int, Int), b: GameBoard)
-    extends Character(init_pos, b) {
-  val name = "Player"
-  val description = "It's you !"
-  val color = new AWTColor(100, 255, 100)
-
-}
-
-class Rock(init_pos: (Int, Int), b: GameBoard) extends GameEntity(init_pos, b) {
-  val name = "A Rock"
-  val description = "A Big Rock"
-  val color = new AWTColor(200, 200, 200)
-}
-
-abstract class GameTile() {
-  def blocking: Boolean
-}
-case class FloorTile() extends GameTile {
-  def blocking = false
-}
-case class WallTile() extends GameTile {
-  def blocking = true
-}
-
-class GameBoard(n: Int, m: Int) {
-  val size_x = n
-  val size_y = m
-  val playerEntity = new Player((0, 0), this)
-  val otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
-  var grid = Array.ofDim[GameTile](size_x, size_y)
-  // For testing purpose
-  for {
-    x <- 0 to size_x - 1
-    y <- 0 to size_y - 1
-    val pos = (x, y)
-  } grid(x)(y) = new FloorTile()
-  otherEntities += ((10, 10) -> new Rock((10, 10), this))
-  // End of test map
-
-  def inGrid(pos: (Int, Int)): Boolean = {
-    pos._1 >= 0 && pos._1 < size_x && pos._2 >= 0 && pos._2 < size_y
-  }
-
-  def isFree(pos: (Int, Int)): Boolean = {
-    if (inGrid(pos))
-      !(grid(pos._1)(pos._2).blocking || otherEntities.contains(pos))
-    else
-      false
-  }
-
-  def entityMoved(e: Character, newPos: (Int, Int)): Unit = {
-    e match {
-      case `playerEntity` => println("Player moved")
-      case entity => {
-        otherEntities -= entity.pos
-        otherEntities += (newPos -> entity)
-      }
-    }
-  }
-
-  def getEntities(): List[GameEntity] = {
-    (otherEntities.foldLeft(mutable.MutableList.empty[GameEntity])(
-      (
-          buf: mutable.MutableList[GameEntity],
-          keyAndValue: ((Int, Int), GameEntity)
-      ) => buf += keyAndValue._2
-    ) += playerEntity).toList
-  }
-
-  def update(playerDir: Direction.Value) {
-    playerEntity.move(playerDir)
-  }
-}
+import map_objects._
+import GameEntities._
 
 class AbstractUI {
   var lastKey: String = ""
@@ -154,6 +51,7 @@ object Main extends SimpleSwingApplication {
   val tileOffset = 1
   val gridOrigin = (10, 10)
   val board = new GameBoard(30, 30)
+  board.make_map(7, 4, 6, 30, 30)
 
   def update() {
     if (ui.lastIsMove) {
