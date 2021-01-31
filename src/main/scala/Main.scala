@@ -3,17 +3,19 @@ import event._
 import event.Key._
 import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle}
 import java.awt.{Color => AWTColor}
+import java.util.HashMap
+import scala.collection._
 
 object Direction extends Enumeration {
   val Up, Down, Left, Right, Nop = Value
 }
 
 abstract class GameEntity(init_pos: (Int, Int), b: GameBoard) {
-  var name: String
-  var description: String
+  val name: String
+  val description: String
   var pos: (Int, Int) = init_pos
-  var color: AWTColor
-  var board: GameBoard = b
+  val color: AWTColor
+  val board: GameBoard = b
 }
 
 abstract class Character(init_pos: (Int, Int), b: GameBoard)
@@ -28,18 +30,24 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
       case Direction.Down  => nextPos = (pos._1, pos._2 + 1)
     }
     if (board.isFree(nextPos)) {
+      board.entityMoved(this, nextPos)
       pos = nextPos
-      board.entityMoved(this)
     }
   }
 }
 
 class Player(init_pos: (Int, Int), b: GameBoard)
     extends Character(init_pos, b) {
-  var name = "Player"
-  var description = "It's you !"
-  var color = new AWTColor(100, 255, 100)
+  val name = "Player"
+  val description = "It's you !"
+  val color = new AWTColor(100, 255, 100)
 
+}
+
+class Rock(init_pos: (Int, Int), b: GameBoard) extends GameEntity(init_pos, b) {
+  val name = "A Rock"
+  val description = "A Big Rock"
+  val color = new AWTColor(200, 200, 200)
 }
 
 abstract class GameTile() {
@@ -56,12 +64,16 @@ class GameBoard(n: Int, m: Int) {
   val size_x = n
   val size_y = m
   val playerEntity = new Player((0, 0), this)
+  val otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
   var grid = Array.ofDim[GameTile](size_x, size_y)
+  // For testing purpose
   for {
     x <- 0 to size_x - 1
     y <- 0 to size_y - 1
     val pos = (x, y)
   } grid(x)(y) = new FloorTile()
+  otherEntities += ((10, 10) -> new Rock((10, 10), this))
+  // End of test map
 
   def inGrid(pos: (Int, Int)): Boolean = {
     pos._1 >= 0 && pos._1 < size_x && pos._2 >= 0 && pos._2 < size_y
@@ -69,17 +81,28 @@ class GameBoard(n: Int, m: Int) {
 
   def isFree(pos: (Int, Int)): Boolean = {
     if (inGrid(pos))
-      !(grid(pos._1)(pos._2).blocking)
+      !(grid(pos._1)(pos._2).blocking || otherEntities.contains(pos))
     else
       false
   }
 
-  def entityMoved(e: GameEntity): Unit = {
-    println("Nothing happen for now")
+  def entityMoved(e: Character, newPos: (Int, Int)): Unit = {
+    e match {
+      case `playerEntity` => println("Player moved")
+      case entity => {
+        otherEntities -= entity.pos
+        otherEntities += (newPos -> entity)
+      }
+    }
   }
 
   def getEntities(): List[GameEntity] = {
-    List(playerEntity)
+    (otherEntities.foldLeft(mutable.MutableList.empty[GameEntity])(
+      (
+          buf: mutable.MutableList[GameEntity],
+          keyAndValue: ((Int, Int), GameEntity)
+      ) => buf += keyAndValue._2
+    ) += playerEntity).toList
   }
 
   def update(playerDir: Direction.Value) {
