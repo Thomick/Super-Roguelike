@@ -7,6 +7,7 @@ abstract class AbstractItem() {
   val name: String
   val description: String
   val weight: Int
+  val availableActions: List[String]
 }
 
 trait Consumable {
