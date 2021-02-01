@@ -15,7 +15,7 @@ object Render {
   val wallColor = new AWTColor(255, 255, 255)
   val errorColor = new AWTColor(255, 0, 0)
   val tileSize = 20
-  val tileOffset = 1
+  val tileOffset = 0
   val gridOrigin = (10, 10)
   def onPaint(g: Graphics2D,board : GameBoard,lastkey : String, screen_width : Int, screen_height : Int) {
     g setColor bgColor

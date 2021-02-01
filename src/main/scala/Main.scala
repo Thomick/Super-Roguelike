@@ -45,7 +45,7 @@ object Main extends SimpleSwingApplication {
 
   val ui = new AbstractUI
   val board = new GameBoard(30, 30)
-  board.newMap(20, 5, 8, board.size_x, board.size_y)
+  board.newMap(20, 5, 7, board.size_x, board.size_y)
 
   def update() {
     if (ui.lastIsMove) {
