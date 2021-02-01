@@ -42,6 +42,20 @@ class GameBoard(n: Int, m: Int) {
     y <- 0 to size_y - 1
     val pos = (x, y)
   } grid(x)(y) = WallTile()
+  // For testing purpose
+  def findEmpty(): (Int, Int) = {
+    for {
+      x <- 0 to size_x - 1
+      y <- 0 to size_y - 1
+    } {
+      if (isFree(x, y)) {
+        println("free")
+        return (x, y)
+      }
+    }
+    return (0, 0)
+  }
+  // End of testing
 
   def create_room(room: Rect) {
     for {
@@ -94,6 +108,8 @@ class GameBoard(n: Int, m: Int) {
         num_room += 1
       }
     }
+    // Temporary : find a valid position for the player
+    playerEntity.pos = findEmpty()
   }
 
   def inGrid(pos: (Int, Int)): Boolean = {
