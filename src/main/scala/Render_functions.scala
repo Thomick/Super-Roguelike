@@ -3,7 +3,7 @@ package render_functions
 import swing._
 import event._
 import event.Key._
-import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle}
+import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle, Toolkit}
 import java.awt.{Color => AWTColor}
 import map_objects._
 import GameEntities._
@@ -48,8 +48,9 @@ object Render {
       }
     }
     def drawEntity(e: GameEntity) = {
-      g.setColor(e.color)
-      g.fill(buildRect(e.pos))
+      val img = Toolkit.getDefaultToolkit().getImage("src/main/resources/hero.png")
+      g.drawImage(img,e.pos._1*(tileOffset + tileSize)+gridOrigin._1,e.pos._2*(tileOffset + tileSize)+gridOrigin._2,tileSize,tileSize,null)
+      g.finalize()
     }
     def drawEntities() = {
       val entities = board.getEntities()
