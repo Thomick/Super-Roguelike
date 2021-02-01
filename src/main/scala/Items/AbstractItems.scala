@@ -14,6 +14,7 @@ trait Consumable {
   this: AbstractItem =>
   def consume(character: Character): Boolean = {
     character.destroyItem(this)
+    true
   }
 }
 
