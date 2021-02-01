@@ -11,13 +11,25 @@ abstract class AbstractItem() {
 }
 
 trait Consumable {
-  def consume: Boolean
+  this: AbstractItem =>
+  def consume(character: Character): Boolean = {
+    character.destroyItem(this)
+  }
 }
 
 trait Throwable {
+  this: AbstractItem =>
   def throwItem(
       board: GameBoard,
       startingPos: (Int, Int),
       dir: Direction.Value
-  ): Boolean
+  ): Boolean = {
+    val throwPos = Direction.nextPos(startingPos, dir)
+    if (board.isFree(throwPos)) {
+      board.entityMoved(new ItemEntity(throwPos, board, this), throwPos)
+      return true
+    } else {
+      return false
+    }
+  }
 }

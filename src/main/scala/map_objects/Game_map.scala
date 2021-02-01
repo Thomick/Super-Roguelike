@@ -66,7 +66,7 @@ class GameBoard(n: Int, m: Int) {
       false
   }
 
-  def entityMoved(e: Character, newPos: (Int, Int)): Unit = {
+  def entityMoved(e: GameEntity, newPos: (Int, Int)): Unit = {
     e match {
       case `playerEntity` => println("Player moved")
       case entity => {

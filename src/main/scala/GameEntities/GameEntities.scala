@@ -5,6 +5,15 @@ import java.awt.{Color => AWTColor}
 
 object Direction extends Enumeration {
   val Up, Down, Left, Right, Nop = Value
+  def nextPos(pos: (Int, Int), dir: Direction.Value): (Int, Int) = {
+    dir match {
+      case Direction.Left  => (pos._1 - 1, pos._2)
+      case Direction.Right => (pos._1 + 1, pos._2)
+      case Direction.Up    => (pos._1, pos._2 - 1)
+      case Direction.Down  => (pos._1, pos._2 + 1)
+      case Direction.Nop   => pos
+    }
+  }
 }
 
 abstract class GameEntity(init_pos: (Int, Int), b: GameBoard) {
@@ -19,13 +28,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
     extends GameEntity(init_pos, b) {
 
   def move(dir: Direction.Value): Unit = {
-    var nextPos = pos
-    dir match {
-      case Direction.Left  => nextPos = (pos._1 - 1, pos._2)
-      case Direction.Right => nextPos = (pos._1 + 1, pos._2)
-      case Direction.Up    => nextPos = (pos._1, pos._2 - 1)
-      case Direction.Down  => nextPos = (pos._1, pos._2 + 1)
-    }
+    var nextPos = Direction.nextPos(pos, dir)
     if (board.isFree(nextPos)) {
       board.entityMoved(this, nextPos)
       pos = nextPos
