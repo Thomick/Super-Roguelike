@@ -94,7 +94,10 @@ class GameBoard(n: Int, m: Int) {
       }
       if (no_intersection) {
         create_room(new_room)
-        if (num_room > 0) {
+        if(num_room == 0){
+          playerEntity.pos=new_center
+          //place the player at the center of the first room
+        } else {
           val prev_center = rooms(rooms.size - 1).center
           if (rnd.nextInt(2) == 1) {
             create_h_tunnel(prev_center._1, new_center._1, prev_center._2)
@@ -108,8 +111,6 @@ class GameBoard(n: Int, m: Int) {
         num_room += 1
       }
     }
-    // Temporary : find a valid position for the player
-    playerEntity.pos = findEmpty()
   }
 
   def inGrid(pos: (Int, Int)): Boolean = {
