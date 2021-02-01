@@ -6,7 +6,6 @@ import java.awt.{Color => AWTColor}
 
 import map_objects._
 import GameEntities._
-import render_functions._
 
 class AbstractUI {
   var lastKey: String = ""
@@ -53,7 +52,7 @@ object Main extends SimpleSwingApplication {
   val tileOffset = 1
   val gridOrigin = (10, 10)
   val board = new GameBoard(30, 30)
-  board.make_map(7, 4, 6, 30, 30)
+  board.newMap(7, 4, 6, 30, 30)
 
   def update() {
     if (ui.lastIsMove) {
