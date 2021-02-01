@@ -6,6 +6,7 @@ import java.awt.{Color => AWTColor}
 
 import map_objects._
 import GameEntities._
+import render_functions._
 
 class AbstractUI {
   var lastKey: String = ""
@@ -33,6 +34,7 @@ class AbstractUI {
         lastIsMove = true
         lastKey = "Right"
       }
+      case _ => {}
     }
     lastKey = keyCode.toString
   }
