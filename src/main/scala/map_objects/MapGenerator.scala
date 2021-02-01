@@ -14,7 +14,7 @@ class Rect(x: Int, y: Int, w: Int, h: Int) {
     (center_x, center_y)
   }
   def intersect(rect2: Rect) = {
-    (x1 <= rect2.x2 && x2 >= rect2.x1 && y1 <= rect2.y2 && y2 >= rect2.y2)
+    (x1 <= rect2.x2 && x2 >= rect2.x1 && y1 <= rect2.y2 && y2 >= rect2.y1)
   }
 }
 
