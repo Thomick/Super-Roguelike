@@ -67,7 +67,7 @@ object Main extends SimpleSwingApplication {
       repaint
     }
     override def paint(g: Graphics2D) {
-      Render.onPaint(g,board,ui.last,size.width,size.height)
+      Render.onPaint(g, board, ui.last, size.width, size.height)
     }
   }
 }
