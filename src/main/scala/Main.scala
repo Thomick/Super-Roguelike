@@ -3,21 +3,38 @@ import event._
 import event.Key._
 import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle}
 import java.awt.{Color => AWTColor}
+
 import map_objects._
+import GameEntities._
 
 class AbstractUI {
   var lastKey: String = ""
-  def left() {
-    lastKey = "left"
-  }
-  def right() {
-    lastKey = "right"
-  }
-  def up() {
-    lastKey = "up"
-  }
-  def down() {
-    lastKey = "down"
+  var lastIsMove: Boolean = false
+  var lastDir: Direction.Value = Direction.Nop
+  def newKeyPressed(keyCode: Value) = {
+    keyCode match {
+      case Up => {
+        lastDir = Direction.Up
+        lastIsMove = true
+        lastKey = "Up"
+      }
+      case Down => {
+        lastDir = Direction.Down
+        lastIsMove = true
+        lastKey = "Down"
+      }
+      case Left => {
+        lastDir = Direction.Left
+        lastIsMove = true
+        lastKey = "Left"
+      }
+      case Right => {
+        lastDir = Direction.Right
+        lastIsMove = true
+        lastKey = "Right"
+      }
+    }
+    lastKey = keyCode.toString
   }
   def last: String = lastKey
 }
@@ -34,13 +51,12 @@ object Main extends SimpleSwingApplication {
   val tileOffset = 1
   val gridOrigin = (10, 10)
   val board = new GameBoard(30, 30)
-  board.make_map(7,4,6,30,30)
+  board.make_map(7, 4, 6, 30, 30)
 
-  def onKeyPress(keyCode: Value) = keyCode match {
-    case Up    => ui.up()
-    case Down  => ui.down()
-    case Left  => ui.left()
-    case Right => ui.right()
+  def update() {
+    if (ui.lastIsMove) {
+      board.update(ui.lastDir)
+    }
   }
   def onPaint(g: Graphics2D) {
     g setColor writeColor
@@ -53,24 +69,33 @@ object Main extends SimpleSwingApplication {
         tileSize,
         tileSize
       )
-
-    def drawGrid() =
+    def drawGrid() = {
       for {
         x <- 0 to board.size_x - 1
         y <- 0 to board.size_y - 1
         val pos = (x, y)
       } {
         board.grid(x)(y) match {
-          case WallTile() => g setColor wallColor
+          case WallTile() => g.setColor(wallColor)
           case FloorTile() =>
-            g setColor floorColor
+            g.setColor(floorColor)
           case _ =>
             println("No match")
-            g setColor errorColor
+            g.setColor(errorColor)
         }
-        g fill buildRect(pos)
+        g.fill(buildRect(pos))
       }
+    }
+    def drawEntity(e: GameEntity) = {
+      g.setColor(e.color)
+      g.fill(buildRect(e.pos))
+    }
+    def drawEntities() = {
+      val entities = board.getEntities()
+      entities.foreach(e => drawEntity(e))
+    }
     drawGrid()
+    drawEntities()
   }
 
   def top = new MainFrame {
@@ -82,7 +107,8 @@ object Main extends SimpleSwingApplication {
     focusable = true
     listenTo(keys)
     reactions += { case KeyPressed(_, key, _, _) =>
-      onKeyPress(key)
+      ui.newKeyPressed(key)
+      update
       repaint
     }
     override def paint(g: Graphics2D) {
