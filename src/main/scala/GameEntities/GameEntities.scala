@@ -1,7 +1,10 @@
 package GameEntities
 
 import map_objects._
+import Items._
+
 import java.awt.{Color => AWTColor}
+import scala.collection._
 
 object Direction extends Enumeration {
   val Up, Down, Left, Right, Nop = Value
@@ -27,12 +30,19 @@ abstract class GameEntity(init_pos: (Int, Int), b: GameBoard) {
 abstract class Character(init_pos: (Int, Int), b: GameBoard)
     extends GameEntity(init_pos, b) {
 
+  val inventory = mutable.HashSet[AbstractItem]()
   def move(dir: Direction.Value): Unit = {
     var nextPos = Direction.nextPos(pos, dir)
     if (board.isFree(nextPos)) {
       board.entityMoved(this, nextPos)
       pos = nextPos
     }
+  }
+  def obtainItem(item: AbstractItem) = {
+    inventory += item
+  }
+  def destroyItem(item: AbstractItem) = {
+    inventory -= item
   }
 }
 
