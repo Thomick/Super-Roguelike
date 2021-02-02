@@ -1,6 +1,9 @@
 package map_objects
 
 import GameEntities._
+import Main._
+import InputHandling._
+import Items._
 
 import scala.collection._
 
@@ -53,6 +56,9 @@ class GameBoard(n: Int, m: Int) {
     size_x = map_width
     size_y = map_height
     playerEntity.pos = map._2
+    // Test
+    otherEntities += ((map._2) -> new ItemEntity(map._2, this, new Apple))
+    // End of test
   }
 
   def inGrid(pos: (Int, Int)): Boolean = {
@@ -85,7 +91,29 @@ class GameBoard(n: Int, m: Int) {
     ) += playerEntity).toList
   }
 
-  def update(playerDir: Direction.Value) {
-    playerEntity.move(playerDir)
+  def update(ui: AbstractUI) {
+    if (ui.lastIsMove) {
+      playerEntity.move(ui.lastDir)
+    } else {
+      ui.lastKey match {
+        case "E" => playerEntity.pickUp(ui.lastDir)
+        case "D" => playerEntity.throwItem(0, ui.lastDir)
+        case "C" => playerEntity.consumeItem(0)
+        case _   => {}
+      }
+    }
+  }
+
+  def pickItem(pos: (Int, Int)): Option[AbstractItem] = {
+    if (otherEntities.contains(pos)) {
+      otherEntities(pos) match {
+        case itemEntity: ItemEntity => {
+          otherEntities -= pos
+          return Some(itemEntity.attachedItem)
+        }
+        case entity => return None
+      }
+    }
+    return None
   }
 }
