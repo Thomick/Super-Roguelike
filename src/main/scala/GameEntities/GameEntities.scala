@@ -69,19 +69,33 @@ class Player(init_pos: (Int, Int), b: GameBoard)
   def throwItem(itemSlot: Int, dir: Direction.Value): Boolean = {
     if (itemSlot < inventory.length) {
       val item = inventory(itemSlot)
-      if (inventory.contains(item) && item.isInstanceOf[Throwable]) {
-        item.asInstanceOf[Throwable].throwItem(board, pos, dir)
+      if (item.isInstanceOf[Throwable]) {
+        item.asInstanceOf[Throwable].throwItem(this, board, pos, dir)
         inventory -= item
         return true
       } else {
-        println("Can't throw here")
+        println("This item can't be thrown")
         return false
       }
     } else {
       println("There is no item in this slot")
       return false
     }
+  }
 
+  def consumeItem(itemSlot: Int): Boolean = {
+    if (itemSlot < inventory.length) {
+      val item = inventory(itemSlot)
+      if (item.isInstanceOf[Consumable]) {
+        item.asInstanceOf[Consumable].consume(this)
+      } else {
+        println("This item can't be consumed")
+        return false
+      }
+    } else {
+      println("There is no item in this slot")
+      return false
+    }
   }
 }
 
