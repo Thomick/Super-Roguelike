@@ -18,6 +18,11 @@ abstract class AbstractItem() {
       return false
     }
   }
+
+  def use(character: Character, board: GameBoard, pos: (Int, Int)): Boolean = {
+    println("It does nothing")
+    true
+  }
 }
 
 trait Consumable {
