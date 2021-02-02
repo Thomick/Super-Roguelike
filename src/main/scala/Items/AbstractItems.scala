@@ -11,7 +11,6 @@ abstract class AbstractItem() {
 
   def drop(character: Character, board: GameBoard, pos: (Int, Int)): Boolean = {
     if (board.addItem(new ItemEntity(pos, board, this), pos)) {
-      character.destroyItem(this)
       println("Item dropped")
       return true
     } else {
@@ -24,7 +23,6 @@ abstract class AbstractItem() {
 trait Consumable {
   this: AbstractItem =>
   def consume(character: Character): Boolean = {
-    character.destroyItem(this)
     println("Item consumed")
     true
   }
@@ -41,7 +39,6 @@ trait Throwable {
     val throwPos = Direction.nextPos(startingPos, dir)
     if (board.isFree(throwPos)) {
       board.entityMoved(new ItemEntity(throwPos, board, this), throwPos)
-      character.destroyItem(this)
       println("Item thrown")
       return true
     } else {

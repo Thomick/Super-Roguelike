@@ -69,6 +69,8 @@ class Player(init_pos: (Int, Int), b: GameBoard)
     if (itemSlot < inventory.length) {
       val item = inventory(itemSlot)
       item.drop(this, board, pos)
+      inventory.remove(itemSlot)
+      true
     } else {
       println("There is no item in this slot")
       return false
@@ -80,6 +82,7 @@ class Player(init_pos: (Int, Int), b: GameBoard)
       val item = inventory(itemSlot)
       if (item.isInstanceOf[Throwable]) {
         item.asInstanceOf[Throwable].throwItem(this, board, pos, dir)
+        inventory.remove(itemSlot)
         return true
       } else {
         println("This item can't be thrown")
@@ -96,6 +99,8 @@ class Player(init_pos: (Int, Int), b: GameBoard)
       val item = inventory(itemSlot)
       if (item.isInstanceOf[Consumable]) {
         item.asInstanceOf[Consumable].consume(this)
+        inventory.remove(itemSlot)
+        true
       } else {
         println("This item can't be consumed")
         return false
