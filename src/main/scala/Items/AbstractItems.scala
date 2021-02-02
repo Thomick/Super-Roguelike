@@ -37,13 +37,6 @@ trait Throwable {
       dir: Direction.Value
   ): Boolean = {
     val throwPos = Direction.nextPos(startingPos, dir)
-    if (board.isFree(throwPos)) {
-      board.entityMoved(new ItemEntity(throwPos, board, this), throwPos)
-      println("Item thrown")
-      return true
-    } else {
-      println("This item can't be thrown here")
-      return false
-    }
+    this.drop(character, board, throwPos)
   }
 }

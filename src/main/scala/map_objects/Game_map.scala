@@ -115,6 +115,7 @@ class GameBoard(n: Int, m: Int) {
         case "E" => playerEntity.pickUpItem()
         case "D" => playerEntity.dropItem(0)
         case "C" => playerEntity.consumeItem(0)
+        case "T" => playerEntity.throwItem(0, ui.lastDir)
         case _   => {}
       }
     }
