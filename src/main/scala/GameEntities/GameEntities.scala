@@ -58,7 +58,10 @@ class Player(init_pos: (Int, Int), b: GameBoard)
   def pickUp(dir: Direction.Value): Boolean = {
     val itemPos = Direction.nextPos(pos, dir)
     board.pickItem(itemPos) match {
-      case None => false
+      case None => {
+        println("No item to pickup")
+        false
+      }
       case Some(item) => {
         obtainItem(item)
         true
@@ -71,7 +74,6 @@ class Player(init_pos: (Int, Int), b: GameBoard)
       val item = inventory(itemSlot)
       if (item.isInstanceOf[Throwable]) {
         item.asInstanceOf[Throwable].throwItem(this, board, pos, dir)
-        inventory -= item
         return true
       } else {
         println("This item can't be thrown")
