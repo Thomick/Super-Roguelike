@@ -1,7 +1,6 @@
 package map_objects
 
 import GameEntities._
-import Main._
 import InputHandling._
 import Items._
 
