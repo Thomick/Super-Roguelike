@@ -17,6 +17,19 @@ object Render {
   val tileSize = 20
   val tileOffset = 0
   val gridOrigin = (10, 10)
+
+  def drawString(g: Graphics2D, text: String, originX: Int, originY: Int) {
+    val size = g.getFont().getSize()
+    var y = originY
+    text
+      .split("\n")
+      .foreach(line => {
+        g.drawString(line, originX, y)
+        y += size
+      })
+
+  }
+
   def onPaint(
       g: Graphics2D,
       board: GameBoard,
@@ -27,7 +40,16 @@ object Render {
     g setColor bgColor
     g fillRect (0, 0, screen_width, screen_height)
     g setColor writeColor
-    g drawString (lastkey, gridOrigin._1 + board.size_x * (tileOffset + tileSize) + 20, 20)
+    val infos =
+      "Last key pressed : " + lastkey + "\nImplemented command : \n" +
+        " - Move with Arrows keys \n" + " - E to pick items up (You must face it) \n" +
+        " - D to drop or throw an item \n" + " - C to consume an item"
+    drawString(
+      g,
+      infos,
+      gridOrigin._1 + board.size_x * (tileOffset + tileSize) + 20,
+      20
+    )
 
     def buildRect(pos: (Int, Int)): Rectangle =
       new Rectangle(
