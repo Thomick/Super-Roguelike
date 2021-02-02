@@ -25,6 +25,7 @@ abstract class GameEntity(init_pos: (Int, Int), b: GameBoard) {
   var pos: (Int, Int) = init_pos
   val color: AWTColor
   val board: GameBoard = b
+  val image: String = "src/main/resources/placeholder.png"
 }
 
 abstract class Character(init_pos: (Int, Int), b: GameBoard)
@@ -52,6 +53,7 @@ class Player(init_pos: (Int, Int), b: GameBoard)
   val name = "Player"
   val description = "It's you !"
   val color = new AWTColor(100, 255, 100)
+  override val image = "src/main/resources/hero.png"
 
   def pickUp(dir: Direction.Value): Boolean = {
     val itemPos = Direction.nextPos(pos, dir)

@@ -17,7 +17,13 @@ object Render {
   val tileSize = 20
   val tileOffset = 0
   val gridOrigin = (10, 10)
-  def onPaint(g: Graphics2D,board : GameBoard,lastkey : String, screen_width : Int, screen_height : Int) {
+  def onPaint(
+      g: Graphics2D,
+      board: GameBoard,
+      lastkey: String,
+      screen_width: Int,
+      screen_height: Int
+  ) {
     g setColor bgColor
     g fillRect (0, 0, screen_width, screen_height)
     g setColor writeColor
@@ -48,8 +54,15 @@ object Render {
       }
     }
     def drawEntity(e: GameEntity) = {
-      val img = Toolkit.getDefaultToolkit().getImage("src/main/resources/hero.png")
-      g.drawImage(img,e.pos._1*(tileOffset + tileSize)+gridOrigin._1,e.pos._2*(tileOffset + tileSize)+gridOrigin._2,tileSize,tileSize,null)
+      val img = Toolkit.getDefaultToolkit().getImage(e.image)
+      g.drawImage(
+        img,
+        e.pos._1 * (tileOffset + tileSize) + gridOrigin._1,
+        e.pos._2 * (tileOffset + tileSize) + gridOrigin._2,
+        tileSize,
+        tileSize,
+        null
+      )
       g.finalize()
     }
     def drawEntities() = {
@@ -60,4 +73,3 @@ object Render {
     drawEntities()
   }
 }
-
