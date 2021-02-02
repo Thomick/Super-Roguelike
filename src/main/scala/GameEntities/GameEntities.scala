@@ -40,6 +40,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
   }
   def obtainItem(item: AbstractItem) = {
     inventory += item
+    println("Got Item")
   }
   def destroyItem(item: AbstractItem) = {
     inventory -= item
@@ -52,6 +53,16 @@ class Player(init_pos: (Int, Int), b: GameBoard)
   val description = "It's you !"
   val color = new AWTColor(100, 255, 100)
 
+  def pickUp(dir: Direction.Value): Boolean = {
+    val itemPos = Direction.nextPos(pos, dir)
+    board.pickItem(itemPos) match {
+      case None => false
+      case Some(item) => {
+        obtainItem(item)
+        true
+      }
+    }
+  }
 }
 
 class Rock(init_pos: (Int, Int), b: GameBoard) extends GameEntity(init_pos, b) {
