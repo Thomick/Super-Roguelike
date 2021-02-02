@@ -97,6 +97,7 @@ class GameBoard(n: Int, m: Int) {
     } else {
       ui.lastKey match {
         case "E" => playerEntity.pickUp(ui.lastDir)
+        case "D" => playerEntity.throwItem(0, ui.lastDir)
         case _   => {}
       }
     }

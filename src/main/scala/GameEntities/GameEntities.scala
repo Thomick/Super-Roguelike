@@ -31,7 +31,7 @@ abstract class GameEntity(init_pos: (Int, Int), b: GameBoard) {
 abstract class Character(init_pos: (Int, Int), b: GameBoard)
     extends GameEntity(init_pos, b) {
 
-  val inventory = mutable.HashSet[AbstractItem]()
+  val inventory = mutable.ArrayBuffer[AbstractItem]()
   def move(dir: Direction.Value): Unit = {
     var nextPos = Direction.nextPos(pos, dir)
     if (board.isFree(nextPos)) {
@@ -64,6 +64,24 @@ class Player(init_pos: (Int, Int), b: GameBoard)
         true
       }
     }
+  }
+
+  def throwItem(itemSlot: Int, dir: Direction.Value): Boolean = {
+    if (itemSlot < inventory.length) {
+      val item = inventory(itemSlot)
+      if (inventory.contains(item) && item.isInstanceOf[Throwable]) {
+        item.asInstanceOf[Throwable].throwItem(board, pos, dir)
+        inventory -= item
+        return true
+      } else {
+        println("Can't throw here")
+        return false
+      }
+    } else {
+      println("There is no item in this slot")
+      return false
+    }
+
   }
 }
 
