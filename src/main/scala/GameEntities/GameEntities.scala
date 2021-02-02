@@ -55,17 +55,23 @@ class Player(init_pos: (Int, Int), b: GameBoard)
   val color = new AWTColor(100, 255, 100)
   override val image = "src/main/resources/hero.png"
 
-  def pickUp(dir: Direction.Value): Boolean = {
-    val itemPos = Direction.nextPos(pos, dir)
-    board.pickItem(itemPos) match {
-      case None => {
-        println("No item to pickup")
-        false
-      }
+  def pickUpItem(): Boolean = {
+    board.pickUpItem(pos, 0) match {
       case Some(item) => {
         obtainItem(item)
         true
       }
+      case None => false
+    }
+  }
+
+  def dropItem(itemSlot: Int): Boolean = {
+    if (itemSlot < inventory.length) {
+      val item = inventory(itemSlot)
+      item.drop(this, board, pos)
+    } else {
+      println("There is no item in this slot")
+      return false
     }
   }
 

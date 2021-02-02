@@ -8,6 +8,17 @@ abstract class AbstractItem() {
   val description: String
   val weight: Int
   val availableActions: List[String]
+
+  def drop(character: Character, board: GameBoard, pos: (Int, Int)): Boolean = {
+    if (board.addItem(new ItemEntity(pos, board, this), pos)) {
+      character.destroyItem(this)
+      println("Item dropped")
+      return true
+    } else {
+      println("This item can't be dropped here")
+      return false
+    }
+  }
 }
 
 trait Consumable {

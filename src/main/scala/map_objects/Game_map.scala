@@ -21,7 +21,9 @@ class GameBoard(n: Int, m: Int) {
   var size_x = n
   var size_y = m
   val playerEntity = new Player((0, 0), this)
-  val otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
+  var itemEntities =
+    new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
+  var otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
   var grid = MapGenerator.make_empty(size_x, size_y)
   // For testing purpose
   def findEmpty(): (Int, Int) = {
@@ -56,8 +58,11 @@ class GameBoard(n: Int, m: Int) {
     size_x = map_width
     size_y = map_height
     playerEntity.pos = map._2
+    otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
+    itemEntities =
+      new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
     // Test
-    otherEntities += ((map._2) -> new ItemEntity(map._2, this, new Apple))
+    addItem(new ItemEntity(map._2, this, new Apple), map._2)
     // End of test
   }
 
@@ -72,6 +77,7 @@ class GameBoard(n: Int, m: Int) {
       false
   }
 
+  // TODO pass the previous position as parameter
   def entityMoved(e: GameEntity, newPos: (Int, Int)): Unit = {
     e match {
       case `playerEntity` => println("Player moved")
@@ -82,13 +88,23 @@ class GameBoard(n: Int, m: Int) {
     }
   }
 
+  def addItem(entity: ItemEntity, pos: (Int, Int)): Boolean = {
+    if (inGrid(pos)) {
+      if (!itemEntities.contains(pos))
+        itemEntities(pos) = new mutable.ArrayBuffer[ItemEntity]
+      itemEntities(pos) += entity
+      true
+    } else
+      false
+  }
+
   def getEntities(): List[GameEntity] = {
-    (otherEntities.foldLeft(mutable.MutableList.empty[GameEntity])(
+    (itemEntities.foldLeft(mutable.MutableList.empty[GameEntity])(
       (
           buf: mutable.MutableList[GameEntity],
-          keyAndValue: ((Int, Int), GameEntity)
-      ) => buf += keyAndValue._2
-    ) += playerEntity).toList
+          keyAndValue: ((Int, Int), mutable.ArrayBuffer[ItemEntity])
+      ) => buf ++= keyAndValue._2
+    ) ++= otherEntities.values += playerEntity).toList
   }
 
   def update(ui: AbstractUI) {
@@ -96,24 +112,29 @@ class GameBoard(n: Int, m: Int) {
       playerEntity.move(ui.lastDir)
     } else {
       ui.lastKey match {
-        case "E" => playerEntity.pickUp(ui.lastDir)
-        case "D" => playerEntity.throwItem(0, ui.lastDir)
+        case "E" => playerEntity.pickUpItem()
+        case "D" => playerEntity.dropItem(0)
         case "C" => playerEntity.consumeItem(0)
         case _   => {}
       }
     }
   }
 
-  def pickItem(pos: (Int, Int)): Option[AbstractItem] = {
-    if (otherEntities.contains(pos)) {
-      otherEntities(pos) match {
-        case itemEntity: ItemEntity => {
-          otherEntities -= pos
-          return Some(itemEntity.attachedItem)
-        }
-        case entity => return None
+  def pickUpItem(pos: (Int, Int), itemIndex: Int): Option[AbstractItem] = {
+    if (itemEntities.contains(pos)) {
+      if (itemEntities(pos).length > itemIndex) {
+        val item = itemEntities(pos)(itemIndex).attachedItem
+        itemEntities(pos).remove(itemIndex)
+        if (itemEntities(pos).length == 0)
+          itemEntities -= pos
+        return Some(item)
+      } else {
+        println("Invalid item index")
+        return None
       }
+    } else {
+      println("No item here")
+      return None
     }
-    return None
   }
 }
