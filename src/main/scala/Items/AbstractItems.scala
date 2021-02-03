@@ -8,12 +8,26 @@ abstract class AbstractItem() {
   val description: String
   val weight: Int
   val availableActions: List[String]
+
+  def drop(character: Character, board: GameBoard, pos: (Int, Int)): Boolean = {
+    if (board.addItem(new ItemEntity(pos, board, this), pos)) {
+      println("Item dropped")
+      return true
+    } else {
+      println("This item can't be dropped here")
+      return false
+    }
+  }
+
+  def use(character: Character, board: GameBoard, pos: (Int, Int)): Boolean = {
+    println("It does nothing")
+    true
+  }
 }
 
 trait Consumable {
   this: AbstractItem =>
   def consume(character: Character): Boolean = {
-    character.destroyItem(this)
     println("Item consumed")
     true
   }
@@ -28,14 +42,6 @@ trait Throwable {
       dir: Direction.Value
   ): Boolean = {
     val throwPos = Direction.nextPos(startingPos, dir)
-    if (board.isFree(throwPos)) {
-      board.entityMoved(new ItemEntity(throwPos, board, this), throwPos)
-      character.destroyItem(this)
-      println("Item thrown")
-      return true
-    } else {
-      println("This item can't be thrown here")
-      return false
-    }
+    this.drop(character, board, throwPos)
   }
 }

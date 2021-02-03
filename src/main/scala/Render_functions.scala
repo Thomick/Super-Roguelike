@@ -43,7 +43,7 @@ object Render {
     val infos =
       "Last key pressed : " + lastkey + "\nImplemented command : \n" +
         " - Move with Arrows keys \n" + " - E to pick items up (You must face it) \n" +
-        " - D to drop or throw an item \n" + " - C to consume an item"
+        " - D to drop an item \n" + " - C to consume an item\n" + " - T to throw an item \n"
     drawString(
       g,
       infos,
