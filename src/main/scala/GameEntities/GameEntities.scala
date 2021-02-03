@@ -32,6 +32,10 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
     extends GameEntity(init_pos, b) {
 
   val inventory = mutable.ArrayBuffer[AbstractItem]()
+  val equipedItems = mutable.ArrayBuffer[AbstractItem]()
+  val healthPoints: Int = 10
+  val baseArmor: Int = 0
+  val baseAttack: Int = 1
   def move(dir: Direction.Value): Unit = {
     var nextPos = Direction.nextPos(pos, dir)
     if (board.isFree(nextPos)) {
