@@ -8,12 +8,16 @@ import scala.collection._
 
 abstract class GameTile() {
   def blocking: Boolean
+  def blocking_sight : Boolean
+  var explored = false
 }
 case class FloorTile() extends GameTile {
   def blocking = false
+  def blocking_sight = false
 }
 case class WallTile() extends GameTile {
   def blocking = true
+  def blocking_sight = true
 }
 
 class GameBoard(n: Int, m: Int) {
