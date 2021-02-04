@@ -15,7 +15,7 @@ object Render {
   val lightfloorColor = new AWTColor(200,180,50)
   val lightwallColor = new AWTColor(130,110,50)
   val darkfloorColor = new AWTColor(50,50,150)
-  val darkwallColor = new AWTColor(200,180,50)
+  val darkwallColor = new AWTColor(0,0,50)
   val errorColor = new AWTColor(255, 0, 0)
   val tileSize = 20
   val tileOffset = 0
