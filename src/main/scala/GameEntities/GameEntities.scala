@@ -98,7 +98,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
   def isBodyPartFree(part: BodyPart.Value): Boolean
 }
 
-trait Human {
+trait Humanoid {
   this: Character =>
   def isBodyPartFree(part: BodyPart.Value): Boolean = {
     val samePartCount = equipedItems.foldLeft[Int](0)((c, item) =>
@@ -119,7 +119,7 @@ trait Human {
 
 class Player(init_pos: (Int, Int), b: GameBoard)
     extends Character(init_pos, b)
-    with Human {
+    with Humanoid {
   val name = "Player"
   val description = "It's you !"
   val color = new AWTColor(100, 255, 100)
