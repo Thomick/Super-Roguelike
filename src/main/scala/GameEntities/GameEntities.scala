@@ -33,7 +33,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
 
   val inventory = mutable.ArrayBuffer[AbstractItem]()
   val equipedItems = mutable.ArrayBuffer[AbstractItem]()
-  val maxHP: Int = 10
+  val baseMaxHP: Int = 10
   val baseDef: Int = 0
   val baseAtt: Int = 0
   var currentMaxHP: Int = 10
@@ -70,6 +70,15 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
         s
     )
   }
+  def getMaxHP(): Int = {
+    baseMaxHP + equipedItems.foldLeft[Int](0)((s, item) =>
+      if (item.isInstanceOf[Passive])
+        s + item.asInstanceOf[Passive].bonusHP
+      else
+        s
+    )
+  }
+
 }
 
 class Player(init_pos: (Int, Int), b: GameBoard)
