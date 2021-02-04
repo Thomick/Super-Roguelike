@@ -32,8 +32,8 @@ class FovMap(board : Array[Array[GameTile]]) {
         while(deltaX <= 0){
           val currentX = startx + deltaX * xx + deltaY * xy
           val currentY = starty + deltaX * yx + deltaY * yy
-          val leftSlope = (deltaX +0.0) / (deltaY + 0.5)
-          val rightSlope = (deltaX + 0.5) / (deltaY +0.0)
+          val leftSlope = (deltaX - 0.5) / (deltaY + 0.5)
+          val rightSlope = (deltaX + 0.5) / (deltaY -0.5)
           if( !(currentX >= 0 && currentY >= 0 && currentX < width && currentY < height) || startvar < rightSlope) {
           } else if (end > leftSlope) {
             deltaX=1
