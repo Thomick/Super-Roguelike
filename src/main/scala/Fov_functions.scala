@@ -14,6 +14,7 @@ class FovMap(board : Array[Array[GameTile]]) {
   def is_light(x : Int, y : Int) = light_map(x)(y)
   def compute_fov(startx : Int, starty : Int) = {
     light_map = resistance_map.map(_.map(x=>false))
+    light_map(startx)(starty) = true
     for( x  <- 0 to 1; y <- 0 to 1){
       castLight(1,1.0,0.0,0,(2*x)-1,(2*y)-1,0,startx,starty)
       castLight(1,1.0,0.0,(2*x)-1,0,0,(2*y)-1,startx,starty)
