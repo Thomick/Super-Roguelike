@@ -33,9 +33,13 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
 
   val inventory = mutable.ArrayBuffer[AbstractItem]()
   val equipedItems = mutable.ArrayBuffer[AbstractItem]()
-  val healthPoints: Int = 10
-  val baseArmor: Int = 0
-  val baseAttack: Int = 1
+  val maxHP: Int = 10
+  val baseDef: Int = 0
+  val baseAtt: Int = 0
+  var currentMaxHP: Int = 10
+  var currentDef: Int = 0
+  var currentAtt: Int = 0
+  var currentHP: Int = 10
   def move(dir: Direction.Value): Unit = {
     var nextPos = Direction.nextPos(pos, dir)
     if (board.isFree(nextPos)) {
@@ -49,6 +53,22 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
   }
   def destroyItem(item: AbstractItem) = {
     inventory -= item
+  }
+  def getDef(): Int = {
+    baseDef + equipedItems.foldLeft[Int](0)((s, item) =>
+      if (item.isInstanceOf[Passive])
+        s + item.asInstanceOf[Passive].bonusDef
+      else
+        s
+    )
+  }
+  def getAtt(): Int = {
+    baseAtt + equipedItems.foldLeft[Int](0)((s, item) =>
+      if (item.isInstanceOf[Passive])
+        s + item.asInstanceOf[Passive].bonusAtt
+      else
+        s
+    )
   }
 }
 
