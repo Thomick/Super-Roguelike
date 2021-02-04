@@ -47,7 +47,7 @@ trait Throwable {
 }
 
 object BodyPart extends Enumeration {
-  val Head, Arm, Leg, Torso, Foot, Hand, Other = Value
+  val Head, Arm, Legs, Torso, Feet, Hand, Other = Value
 }
 
 trait Equipable {

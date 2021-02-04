@@ -32,7 +32,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
     extends GameEntity(init_pos, b) {
 
   val inventory = mutable.ArrayBuffer[AbstractItem]()
-  val equipedItems = mutable.ArrayBuffer[AbstractItem]()
+  val equipedItems = mutable.ArrayBuffer[Equipable]()
   val baseMaxHP: Int = 10
   val baseDef: Int = 0
   val baseAtt: Int = 0
@@ -80,9 +80,9 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
   }
   def equipItem(itemSlot: Int): Boolean = {
     if (itemSlot < inventory.length) {
-      val item = inventory(itemSlot)
-      if (item.isInstanceOf[Equipable]) {
-        if (isFree(item.asInstanceOf[Equipable].part)) {
+      if (inventory(itemSlot).isInstanceOf[Equipable]) {
+        val item = inventory(itemSlot).asInstanceOf[Equipable]
+        if (isBodyPartFree(item.part)) {
           equipedItems += item
           inventory.remove(itemSlot)
           return true
@@ -95,11 +95,31 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
     }
   }
 
-  def isFree(part: BodyPart.Value): Boolean
+  def isBodyPartFree(part: BodyPart.Value): Boolean
+}
+
+trait Human {
+  this: Character =>
+  def isBodyPartFree(part: BodyPart.Value): Boolean = {
+    val samePartCount = equipedItems.foldLeft[Int](0)((c, item) =>
+      if (item.part == part) c + 1 else c
+    )
+    part match {
+      case BodyPart.Torso => samePartCount < 1
+      case BodyPart.Arm   => samePartCount < 2
+      case BodyPart.Head  => samePartCount < 1
+      case BodyPart.Hand  => samePartCount < 2
+      case BodyPart.Legs  => samePartCount < 1
+      case BodyPart.Feet  => samePartCount < 1
+      case BodyPart.Other => true
+      case _              => false
+    }
+  }
 }
 
 class Player(init_pos: (Int, Int), b: GameBoard)
-    extends Character(init_pos, b) {
+    extends Character(init_pos, b)
+    with Human {
   val name = "Player"
   val description = "It's you !"
   val color = new AWTColor(100, 255, 100)
