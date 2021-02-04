@@ -10,12 +10,12 @@ import GameEntities._
 import fov_functions._
 
 object Render {
-  val bgColor = new AWTColor(48, 99, 99)
+  val bgColor = new AWTColor(0, 0, 0)
   val writeColor = new AWTColor(200, 200, 200)
-  val lightfloorColor = new AWTColor(99, 150, 150)
-  val lightwallColor = new AWTColor(255, 255, 255)
-  val darkfloorColor = new AWTColor(99, 150, 150)
-  val darkwallColor = new AWTColor(255, 255, 255)
+  val lightfloorColor = new AWTColor(200,180,50)
+  val lightwallColor = new AWTColor(130,110,50)
+  val darkfloorColor = new AWTColor(50,50,150)
+  val darkwallColor = new AWTColor(200,180,50)
   val errorColor = new AWTColor(255, 0, 0)
   val tileSize = 20
   val tileOffset = 0
