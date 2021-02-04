@@ -56,7 +56,9 @@ class FovMap(board : Array[Array[GameTile]]) {
               }
             }
           }
+          deltaX+=1
         }
+        distance+=1
       }
     }
   }

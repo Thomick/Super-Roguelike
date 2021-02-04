@@ -4,6 +4,7 @@ import event.Key._
 import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle}
 import java.awt.{Color => AWTColor}
 
+import fov_functions._
 import map_objects._
 import GameEntities._
 import render_functions._
@@ -14,6 +15,7 @@ object Main extends SimpleSwingApplication {
   val ui = new AbstractUI
   val board = new GameBoard(30, 30)
   board.newMap(20, 5, 7, board.size_x, board.size_y)
+  var fovmap = new FovMap(board.grid)
 
   def update() {
     board.update(ui)
@@ -33,7 +35,7 @@ object Main extends SimpleSwingApplication {
       repaint
     }
     override def paint(g: Graphics2D) {
-      Render.onPaint(g, board, ui.last, size.width, size.height)
+      Render.onPaint(g, board, ui.last, size.width, size.height,fovmap)
     }
   }
 }
