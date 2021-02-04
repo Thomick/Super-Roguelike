@@ -97,16 +97,18 @@ object Render {
       }
     }
     def drawEntity(e: GameEntity) = {
-      val img = Toolkit.getDefaultToolkit().getImage(e.image)
-      g.drawImage(
-        img,
-        e.pos._1 * (tileOffset + tileSize) + gridOrigin._1,
-        e.pos._2 * (tileOffset + tileSize) + gridOrigin._2,
-        tileSize,
-        tileSize,
-        null
-      )
-      g.finalize()
+      if(fovmap.is_light(e.pos._1,e.pos._2)){
+        val img = Toolkit.getDefaultToolkit().getImage(e.image)
+        g.drawImage(
+          img,
+          e.pos._1 * (tileOffset + tileSize) + gridOrigin._1,
+          e.pos._2 * (tileOffset + tileSize) + gridOrigin._2,
+          tileSize,
+          tileSize,
+          null
+        )
+        g.finalize()
+      }
     }
     def drawEntities() = {
       val entities = board.getEntities()
