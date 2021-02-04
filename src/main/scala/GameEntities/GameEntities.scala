@@ -78,7 +78,24 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
         s
     )
   }
+  def equipItem(itemSlot: Int): Boolean = {
+    if (itemSlot < inventory.length) {
+      val item = inventory(itemSlot)
+      if (item.isInstanceOf[Equipable]) {
+        if (isFree(item.asInstanceOf[Equipable].part)) {
+          equipedItems += item
+          inventory.remove(itemSlot)
+          return true
+        }
+      }
+      return false
+    } else {
+      println("There is no item in this slot")
+      return false
+    }
+  }
 
+  def isFree(part: BodyPart.Value): Boolean
 }
 
 class Player(init_pos: (Int, Int), b: GameBoard)
