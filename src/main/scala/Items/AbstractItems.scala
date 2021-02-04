@@ -45,3 +45,17 @@ trait Throwable {
     this.drop(character, board, throwPos)
   }
 }
+
+object BodyPart extends Enumeration {
+  val Head, Arm, Leg, Torso, Foot, Hand, Other = Value
+}
+
+trait Equipable {
+  val part: BodyPart.Value
+}
+
+trait Passive {
+  val bonusAtt: Int
+  val bonusDef: Int
+  val bonusHP: Int
+}
