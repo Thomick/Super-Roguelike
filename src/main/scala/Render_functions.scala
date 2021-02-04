@@ -10,12 +10,12 @@ import GameEntities._
 import fov_functions._
 
 object Render {
-  val bgColor = new AWTColor(0, 0, 0)
+  val bgColor = new AWTColor(48, 99, 99)
   val writeColor = new AWTColor(200, 200, 200)
-  val lightfloorColor = new AWTColor(200,180,50)
-  val lightwallColor = new AWTColor(130,110,50)
-  val darkfloorColor = new AWTColor(50,50,150)
-  val darkwallColor = new AWTColor(0,0,50)
+  val lightfloorColor = new AWTColor(99, 150, 150)
+  val lightwallColor = new AWTColor(168, 255, 255)
+  val darkfloorColor = new AWTColor(79, 119, 119)
+  val darkwallColor = new AWTColor(134, 204, 204)
   val errorColor = new AWTColor(255, 0, 0)
   val tileSize = 20
   val tileOffset = 0
@@ -39,9 +39,9 @@ object Render {
       lastkey: String,
       screen_width: Int,
       screen_height: Int,
-      fovmap : FovMap
+      fovmap: FovMap
   ) {
-    fovmap.compute_fov(board.playerEntity.pos._1,board.playerEntity.pos._2)
+    fovmap.compute_fov(board.playerEntity.pos._1, board.playerEntity.pos._2)
     g setColor bgColor
     g fillRect (0, 0, screen_width, screen_height)
     g setColor writeColor
@@ -69,7 +69,7 @@ object Render {
         y <- 0 to board.size_y - 1
         val pos = (x, y)
       } {
-        if(fovmap.is_light(x,y)){
+        if (fovmap.is_light(x, y)) {
           board.grid(x)(y).explored = true
           board.grid(x)(y) match {
             case WallTile() => g.setColor(lightwallColor)
@@ -80,7 +80,7 @@ object Render {
               g.setColor(errorColor)
           }
         } else {
-          if(board.grid(x)(y).explored){
+          if (board.grid(x)(y).explored) {
             board.grid(x)(y) match {
               case WallTile() => g.setColor(darkwallColor)
               case FloorTile() =>
