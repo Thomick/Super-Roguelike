@@ -104,6 +104,19 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
     }
   }
 
+  def unequip(itemSlot: Int): Boolean = {
+    if (itemSlot < equipedItems.length) {
+      val item = equipedItems(itemSlot)
+      inventory += item
+      equipedItems.remove(itemSlot)
+      updateMaxStat()
+      return true
+    } else {
+      println("There is no equipment in this slot")
+      return false
+    }
+  }
+
   def isBodyPartFree(part: BodyPart.Value): Boolean
 }
 

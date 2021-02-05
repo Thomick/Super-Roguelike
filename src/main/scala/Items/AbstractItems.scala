@@ -25,16 +25,14 @@ abstract class AbstractItem() {
   }
 }
 
-trait Consumable {
-  this: AbstractItem =>
+trait Consumable extends AbstractItem {
   def consume(character: Character): Boolean = {
     println("Item consumed")
     true
   }
 }
 
-trait Throwable {
-  this: AbstractItem =>
+trait Throwable extends AbstractItem {
   def throwItem(
       character: Character,
       board: GameBoard,
@@ -50,11 +48,11 @@ object BodyPart extends Enumeration {
   val Head, Arm, Legs, Torso, Feet, Hand, Other = Value
 }
 
-trait Equipable {
+trait Equipable extends AbstractItem {
   val part: BodyPart.Value
 }
 
-trait Passive {
+trait Passive extends AbstractItem {
   val bonusAtt: Int
   val bonusDef: Int
   val bonusHP: Int
