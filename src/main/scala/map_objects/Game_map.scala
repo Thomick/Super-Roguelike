@@ -8,7 +8,7 @@ import scala.collection._
 
 abstract class GameTile() {
   def blocking: Boolean
-  def blocking_sight : Boolean
+  def blocking_sight: Boolean
   var explored = false
 }
 case class FloorTile() extends GameTile {
@@ -66,6 +66,7 @@ class GameBoard(n: Int, m: Int) {
       new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
     // Test
     addItem(new ItemEntity(map._2, this, new Apple), map._2)
+    addItem(new ItemEntity(map._2, this, new IronHelmet), map._2)
     // End of test
   }
 
@@ -119,6 +120,8 @@ class GameBoard(n: Int, m: Int) {
         case "D" => playerEntity.dropItem(0)
         case "C" => playerEntity.consumeItem(0)
         case "T" => playerEntity.throwItem(0, ui.lastDir)
+        case "R" => playerEntity.equipItem(0)
+        case "F" => playerEntity.unequipItem(0)
         case _   => {}
       }
     }
