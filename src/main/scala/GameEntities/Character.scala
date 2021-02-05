@@ -36,6 +36,21 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
 
 }
 
+trait AIControlled extends Character {
+  var active = false
+  def activate(): Unit = {
+    active = true
+  }
+  def desactivate(): Unit = {
+    active = false
+  }
+}
+
+trait Ennemy extends Character with AIControlled {
+
+
+}
+
 trait HasInventory extends Character {
   val inventory = mutable.ArrayBuffer[AbstractItem]()
 
