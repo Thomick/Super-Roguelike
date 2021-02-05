@@ -1,7 +1,7 @@
 import swing._
 import event._
 import event.Key._
-import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle}
+import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle, Toolkit}
 import java.awt.{Color => AWTColor}
 
 import fov_functions._
@@ -14,6 +14,7 @@ object Main extends SimpleSwingApplication {
 
   val ui = new AbstractUI
   val board = new GameBoard(30, 30)
+  val screenSize = Toolkit.getDefaultToolkit().getScreenSize()
   board.newMap(20, 5, 7, board.size_x, board.size_y)
   var fovmap = new FovMap(board.grid)
 
@@ -26,7 +27,7 @@ object Main extends SimpleSwingApplication {
     contents = mainPanel
   }
   def mainPanel = new Panel {
-    preferredSize = new Dimension(1000, 700)
+    preferredSize = screenSize
     focusable = true
     listenTo(keys)
     reactions += { case KeyPressed(_, key, _, _) =>
