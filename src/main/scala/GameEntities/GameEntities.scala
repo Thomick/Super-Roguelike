@@ -2,8 +2,6 @@ package GameEntities
 
 import map_objects._
 
-import java.awt.{Color => AWTColor}
-
 object Direction extends Enumeration {
   val Up, Down, Left, Right, Nop = Value
   def nextPos(pos: (Int, Int), dir: Direction.Value): (Int, Int) = {
@@ -21,7 +19,6 @@ abstract class GameEntity(init_pos: (Int, Int), b: GameBoard) {
   val name: String
   val description: String
   var pos: (Int, Int) = init_pos
-  val color: AWTColor
   val board: GameBoard = b
   val image: String = "src/main/resources/placeholder.png"
 }
@@ -29,5 +26,4 @@ abstract class GameEntity(init_pos: (Int, Int), b: GameBoard) {
 class Rock(init_pos: (Int, Int), b: GameBoard) extends GameEntity(init_pos, b) {
   val name = "A Rock"
   val description = "A Big Rock"
-  val color = new AWTColor(200, 200, 200)
 }
