@@ -59,7 +59,6 @@ class BoardRenderer(boardSize: Int, nbTiles: Int) {
             }
           }
           g.fill(buildRect(pos))
-          println("draw")
         }
       }
     }
