@@ -4,6 +4,7 @@ import swing._
 import event._
 import event.Key._
 import GameEntities._
+import map_objects.GameBoard
 
 class AbstractUI {
   var lastKey: String = ""
@@ -34,4 +35,21 @@ class AbstractUI {
     lastKey = keyCode.toString
   }
   def last: String = lastKey
+
+  def applyCommand(board: GameBoard) {
+    if (lastIsMove) {
+      board.playerEntity.move(lastDir)
+    } else {
+      lastKey match {
+        case "E" => board.playerEntity.pickUpItem()
+        case "D" => board.playerEntity.dropItem(0)
+        case "C" => board.playerEntity.consumeItem(0)
+        case "T" => board.playerEntity.throwItem(0, lastDir)
+        case "R" => board.playerEntity.equipItem(0)
+        case "F" => board.playerEntity.unequipItem(0)
+        case _   => {}
+      }
+    }
+    board.update()
+  }
 }

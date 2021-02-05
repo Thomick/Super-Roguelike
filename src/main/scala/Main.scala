@@ -18,10 +18,6 @@ object Main extends SimpleSwingApplication {
   board.newMap(20, 5, 7, board.size_x, board.size_y)
   var fovmap = new FovMap(board.grid)
 
-  def update() {
-    board.update(ui)
-  }
-
   def top = new MainFrame {
     title = "Super Roguelike"
     contents = mainPanel
@@ -32,11 +28,11 @@ object Main extends SimpleSwingApplication {
     listenTo(keys)
     reactions += { case KeyPressed(_, key, _, _) =>
       ui.newKeyPressed(key)
-      update
+      ui.applyCommand(board)
       repaint
     }
     override def paint(g: Graphics2D) {
-      Render.onPaint(g, board, ui.last, size.width, size.height,fovmap)
+      Render.onPaint(g, board, ui.last, size.width, size.height, fovmap)
     }
   }
 }
