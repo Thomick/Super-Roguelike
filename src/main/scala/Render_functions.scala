@@ -48,7 +48,8 @@ object Render {
     val infos =
       "Last key pressed : " + lastkey + "\nImplemented command : \n" +
         " - Move with Arrows keys \n" + " - E to pick items up (You must face it) \n" +
-        " - D to drop an item \n" + " - C to consume an item\n" + " - T to throw an item \n"
+        " - D to drop an item\n" + " - C to consume an item\n" + " - T to throw an item \n" +
+        " - R to equip an item\n" + "F to unequip and item"
     drawString(
       g,
       infos,
@@ -97,7 +98,7 @@ object Render {
       }
     }
     def drawEntity(e: GameEntity) = {
-      if(fovmap.is_light(e.pos._1,e.pos._2)){
+      if (fovmap.is_light(e.pos._1, e.pos._2)) {
         val img = Toolkit.getDefaultToolkit().getImage(e.image)
         g.drawImage(
           img,

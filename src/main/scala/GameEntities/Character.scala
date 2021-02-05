@@ -41,7 +41,7 @@ trait HasInventory extends Character {
 
   def obtainItem(item: AbstractItem) = {
     inventory += item
-    println("Got Item")
+    println("You obtain : " + item.name)
   }
   def destroyItem(item: AbstractItem) = {
     inventory -= item
@@ -139,6 +139,7 @@ trait CanEquip extends Character with HasInventory {
           equipedItems += item
           inventory.remove(itemSlot)
           updateMaxStat()
+          println(item.name + " equiped")
           return true
         } else {
           println("You must free this part before equiping another item")
@@ -160,6 +161,7 @@ trait CanEquip extends Character with HasInventory {
       inventory += item
       equipedItems.remove(itemSlot)
       updateMaxStat()
+      println(item.name + " unequiped")
       return true
     } else {
       println("There is no equipment in this slot")

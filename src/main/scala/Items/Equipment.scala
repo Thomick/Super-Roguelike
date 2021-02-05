@@ -13,7 +13,7 @@ abstract class BasicWeapon() extends AbstractItem with Equipable with Passive {
 
 class IronHelmet() extends Armor {
   val part: BodyPart.Value = BodyPart.Head
-  val name: String = "An iron helmet"
+  val name: String = "Iron helmet"
   val description: String = "It is a slightly rusty iron helmet"
   val bonusDef: Int = 5
   val weight = 500
