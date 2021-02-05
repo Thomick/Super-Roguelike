@@ -140,9 +140,14 @@ trait CanEquip extends Character with HasInventory {
           inventory.remove(itemSlot)
           updateMaxStat()
           return true
+        } else {
+          println("You must free this part before equiping another item")
+          return false
         }
+      } else {
+        println("You can not equip " + inventory(itemSlot).name)
+        return false
       }
-      return false
     } else {
       println("There is no item in this slot")
       return false
