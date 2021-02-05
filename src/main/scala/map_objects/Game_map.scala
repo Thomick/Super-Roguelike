@@ -111,22 +111,6 @@ class GameBoard(n: Int, m: Int) {
     ) ++= otherEntities.values += playerEntity).toList
   }
 
-  def update(ui: AbstractUI) {
-    if (ui.lastIsMove) {
-      playerEntity.move(ui.lastDir)
-    } else {
-      ui.lastKey match {
-        case "E" => playerEntity.pickUpItem()
-        case "D" => playerEntity.dropItem(0)
-        case "C" => playerEntity.consumeItem(0)
-        case "T" => playerEntity.throwItem(0, ui.lastDir)
-        case "R" => playerEntity.equipItem(0)
-        case "F" => playerEntity.unequipItem(0)
-        case _   => {}
-      }
-    }
-  }
-
   def pickUpItem(pos: (Int, Int), itemIndex: Int): Option[AbstractItem] = {
     if (itemEntities.contains(pos)) {
       if (itemEntities(pos).length > itemIndex) {
@@ -143,5 +127,9 @@ class GameBoard(n: Int, m: Int) {
       println("No item here")
       return None
     }
+  }
+
+  def update() {
+    println("Update all entities")
   }
 }
