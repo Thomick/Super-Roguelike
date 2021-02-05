@@ -32,8 +32,6 @@ abstract class GameEntity(init_pos: (Int, Int), b: GameBoard) {
 abstract class Character(init_pos: (Int, Int), b: GameBoard)
     extends GameEntity(init_pos, b) {
 
-  val inventory = mutable.ArrayBuffer[AbstractItem]()
-  val equipedItems = mutable.ArrayBuffer[Equipable]()
   val baseMaxHP: Int = 10
   val baseDef: Int = 0
   val baseAtt: Int = 0
@@ -48,37 +46,11 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
       pos = nextPos
     }
   }
-  def obtainItem(item: AbstractItem) = {
-    inventory += item
-    println("Got Item")
-  }
-  def destroyItem(item: AbstractItem) = {
-    inventory -= item
-  }
-  def getDef(): Int = {
-    baseDef + equipedItems.foldLeft[Int](0)((s, item) =>
-      if (item.isInstanceOf[Passive])
-        s + item.asInstanceOf[Passive].bonusDef
-      else
-        s
-    )
-  }
-  def getAtt(): Int = {
-    baseAtt + equipedItems.foldLeft[Int](0)((s, item) =>
-      if (item.isInstanceOf[Passive])
-        s + item.asInstanceOf[Passive].bonusAtt
-      else
-        s
-    )
-  }
-  def getMaxHP(): Int = {
-    baseMaxHP + equipedItems.foldLeft[Int](0)((s, item) =>
-      if (item.isInstanceOf[Passive])
-        s + item.asInstanceOf[Passive].bonusHP
-      else
-        s
-    )
-  }
+
+  def getDef(): Int = baseDef
+  def getAtt(): Int = baseAtt
+  def getMaxHP(): Int = baseMaxHP
+
   def updateMaxStat(): Unit = {
     currentAtt = getAtt()
     currentDef = getDef()
@@ -86,66 +58,18 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
     currentHP = min(currentHP, currentMaxHP)
   }
 
-  def equipItem(itemSlot: Int): Boolean = {
-    if (itemSlot < inventory.length) {
-      if (inventory(itemSlot).isInstanceOf[Equipable]) {
-        val item = inventory(itemSlot).asInstanceOf[Equipable]
-        if (isBodyPartFree(item.part)) {
-          equipedItems += item
-          inventory.remove(itemSlot)
-          updateMaxStat()
-          return true
-        }
-      }
-      return false
-    } else {
-      println("There is no item in this slot")
-      return false
-    }
-  }
-
-  def unequip(itemSlot: Int): Boolean = {
-    if (itemSlot < equipedItems.length) {
-      val item = equipedItems(itemSlot)
-      inventory += item
-      equipedItems.remove(itemSlot)
-      updateMaxStat()
-      return true
-    } else {
-      println("There is no equipment in this slot")
-      return false
-    }
-  }
-
-  def isBodyPartFree(part: BodyPart.Value): Boolean
 }
 
-trait Humanoid {
-  this: Character =>
-  def isBodyPartFree(part: BodyPart.Value): Boolean = {
-    val samePartCount = equipedItems.foldLeft[Int](0)((c, item) =>
-      if (item.part == part) c + 1 else c
-    )
-    part match {
-      case BodyPart.Torso => samePartCount < 1
-      case BodyPart.Arm   => samePartCount < 2
-      case BodyPart.Head  => samePartCount < 1
-      case BodyPart.Hand  => samePartCount < 2
-      case BodyPart.Legs  => samePartCount < 1
-      case BodyPart.Feet  => samePartCount < 1
-      case BodyPart.Other => true
-      case _              => false
-    }
-  }
-}
+trait HasInventory extends Character {
+  val inventory = mutable.ArrayBuffer[AbstractItem]()
 
-class Player(init_pos: (Int, Int), b: GameBoard)
-    extends Character(init_pos, b)
-    with Humanoid {
-  val name = "Player"
-  val description = "It's you !"
-  val color = new AWTColor(100, 255, 100)
-  override val image = "src/main/resources/hero.png"
+  def obtainItem(item: AbstractItem) = {
+    inventory += item
+    println("Got Item")
+  }
+  def destroyItem(item: AbstractItem) = {
+    inventory -= item
+  }
 
   def pickUpItem(): Boolean = {
     board.pickUpItem(pos, 0) match {
@@ -202,6 +126,94 @@ class Player(init_pos: (Int, Int), b: GameBoard)
       return false
     }
   }
+}
+
+trait CanEquip extends Character with HasInventory {
+
+  val equipedItems = mutable.ArrayBuffer[Equipable]()
+  override def getDef(): Int = {
+    baseDef + equipedItems.foldLeft[Int](0)((s, item) =>
+      if (item.isInstanceOf[Passive])
+        s + item.asInstanceOf[Passive].bonusDef
+      else
+        s
+    )
+  }
+  override def getAtt(): Int = {
+    baseAtt + equipedItems.foldLeft[Int](0)((s, item) =>
+      if (item.isInstanceOf[Passive])
+        s + item.asInstanceOf[Passive].bonusAtt
+      else
+        s
+    )
+  }
+  override def getMaxHP(): Int = {
+    baseMaxHP + equipedItems.foldLeft[Int](0)((s, item) =>
+      if (item.isInstanceOf[Passive])
+        s + item.asInstanceOf[Passive].bonusHP
+      else
+        s
+    )
+  }
+  def equipItem(itemSlot: Int): Boolean = {
+    if (itemSlot < inventory.length) {
+      if (inventory(itemSlot).isInstanceOf[Equipable]) {
+        val item = inventory(itemSlot).asInstanceOf[Equipable]
+        if (isBodyPartFree(item.part)) {
+          equipedItems += item
+          inventory.remove(itemSlot)
+          updateMaxStat()
+          return true
+        }
+      }
+      return false
+    } else {
+      println("There is no item in this slot")
+      return false
+    }
+  }
+
+  def unequipItem(itemSlot: Int): Boolean = {
+    if (itemSlot < equipedItems.length) {
+      val item = equipedItems(itemSlot)
+      inventory += item
+      equipedItems.remove(itemSlot)
+      updateMaxStat()
+      return true
+    } else {
+      println("There is no equipment in this slot")
+      return false
+    }
+  }
+
+  def isBodyPartFree(part: BodyPart.Value): Boolean
+}
+
+trait Humanoid extends CanEquip {
+  def isBodyPartFree(part: BodyPart.Value): Boolean = {
+    val samePartCount = equipedItems.foldLeft[Int](0)((c, item) =>
+      if (item.part == part) c + 1 else c
+    )
+    part match {
+      case BodyPart.Torso => samePartCount < 1
+      case BodyPart.Arm   => samePartCount < 2
+      case BodyPart.Head  => samePartCount < 1
+      case BodyPart.Hand  => samePartCount < 2
+      case BodyPart.Legs  => samePartCount < 1
+      case BodyPart.Feet  => samePartCount < 1
+      case BodyPart.Other => true
+      case _              => false
+    }
+  }
+}
+
+class Player(init_pos: (Int, Int), b: GameBoard)
+    extends Character(init_pos, b)
+    with Humanoid {
+  val name = "Player"
+  val description = "It's you !"
+  val color = new AWTColor(100, 255, 100)
+  override val image = "src/main/resources/hero.png"
 }
 
 class Rock(init_pos: (Int, Int), b: GameBoard) extends GameEntity(init_pos, b) {
