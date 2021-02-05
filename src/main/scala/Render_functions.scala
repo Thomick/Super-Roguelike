@@ -4,19 +4,19 @@ import swing._
 import event._
 import event.Key._
 import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle, Toolkit}
-import java.awt.{Color => AWTColor}
+import java.awt.Color
 import map_objects._
 import GameEntities._
 import fov_functions._
 
 object Render {
-  val bgColor = new AWTColor(48, 99, 99)
-  val writeColor = new AWTColor(200, 200, 200)
-  val lightfloorColor = new AWTColor(99, 150, 150)
-  val lightwallColor = new AWTColor(168, 255, 255)
-  val darkfloorColor = new AWTColor(79, 119, 119)
-  val darkwallColor = new AWTColor(134, 204, 204)
-  val errorColor = new AWTColor(255, 0, 0)
+  val bgColor = new Color(48, 99, 99)
+  val writeColor = new Color(200, 200, 200)
+  val lightfloorColor = new Color(99, 150, 150)
+  val lightwallColor = new Color(168, 255, 255)
+  val darkfloorColor = new Color(79, 119, 119)
+  val darkwallColor = new Color(134, 204, 204)
+  val errorColor = new Color(255, 0, 0)
   val tileSize = 20
   val tileOffset = 0
   val gridOrigin = (10, 10)

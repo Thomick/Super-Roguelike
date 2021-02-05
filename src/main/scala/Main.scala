@@ -2,7 +2,6 @@ import swing._
 import event._
 import event.Key._
 import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle, Toolkit}
-import java.awt.{Color => AWTColor}
 
 import fov_functions._
 import map_objects._
