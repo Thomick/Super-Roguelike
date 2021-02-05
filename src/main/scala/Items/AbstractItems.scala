@@ -2,12 +2,14 @@ package Items
 
 import map_objects._
 import GameEntities._
+import scala.collection.mutable.ArrayBuffer
 
 abstract class AbstractItem() {
   val name: String
   val description: String
   val weight: Int
-  val availableActions: List[String]
+  val availableActions: ArrayBuffer[String] = new ArrayBuffer[String]
+  availableActions += "Drop" += "Use"
 
   def drop(character: Character, board: GameBoard, pos: (Int, Int)): Boolean = {
     if (board.addItem(new ItemEntity(pos, board, this), pos)) {
@@ -26,6 +28,7 @@ abstract class AbstractItem() {
 }
 
 trait Consumable extends AbstractItem {
+  availableActions += "Consume"
   def consume(character: Character): Boolean = {
     println("Item consumed")
     true
@@ -33,6 +36,7 @@ trait Consumable extends AbstractItem {
 }
 
 trait Throwable extends AbstractItem {
+  availableActions += "Throw"
   def throwItem(
       character: Character,
       board: GameBoard,
@@ -49,6 +53,7 @@ object BodyPart extends Enumeration {
 }
 
 trait Equipable extends AbstractItem {
+  availableActions += "Equip"
   val part: BodyPart.Value
 }
 
