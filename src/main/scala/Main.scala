@@ -8,9 +8,10 @@ import map_objects._
 import GameEntities._
 import render_functions._
 import InputHandling._
+import Rendering._
 
 object Main extends SimpleSwingApplication {
-
+  val Renderer = new Renderer
   val ui = new AbstractUI
   val board = new GameBoard(30, 30)
   val screenSize = Toolkit.getDefaultToolkit().getScreenSize()
@@ -31,7 +32,7 @@ object Main extends SimpleSwingApplication {
       repaint
     }
     override def paint(g: Graphics2D) {
-      Render.onPaint(g, board, ui.last, size.width, size.height, fovmap)
+      Renderer.onPaint(g, board, ui.last, size.width, size.height, fovmap)
     }
   }
 }
