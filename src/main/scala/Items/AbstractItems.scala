@@ -8,6 +8,7 @@ abstract class AbstractItem() {
   val name: String
   val description: String
   val weight: Int
+  val image: String = "src/main/resources/placeholder.png"
   val availableActions: ArrayBuffer[String] = new ArrayBuffer[String]
   availableActions += "Drop" += "Use"
 

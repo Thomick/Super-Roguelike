@@ -10,4 +10,5 @@ class ItemEntity(init_pos: (Int, Int), b: GameBoard, item: AbstractItem)
   val name = item.name
   val description = item.description
   val color = new Color(200, 120, 200)
+  override val image = item.image
 }

@@ -15,6 +15,7 @@ class IronHelmet() extends Armor {
   val part: BodyPart.Value = BodyPart.Head
   val name: String = "Iron helmet"
   val description: String = "It is a slightly rusty iron helmet"
+  override val image = "src/main/resources/ironhelmet.png"
   val bonusDef: Int = 5
   val weight = 500
 }
