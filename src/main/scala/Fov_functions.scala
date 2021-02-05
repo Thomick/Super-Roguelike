@@ -35,12 +35,15 @@ class FovMap(board : Array[Array[GameTile]]) {
           val currentY = starty + deltaX * yx + deltaY * yy
           val leftSlope = (deltaX - 0.5) / (deltaY + 0.5)
           val rightSlope = (deltaX + 0.5) / (deltaY -0.5)
+          val centerSlope = (deltaX + 0.0) / (deltaY + 0.0)
           if( !(currentX >= 0 && currentY >= 0 && currentX < width && currentY < height) || startvar < rightSlope) {
           } else if (end > leftSlope) {
             deltaX=1
           } else {
             if(norm(deltaX,deltaY) <= radius){
-              light_map(currentX)(currentY) = true
+              if(resistance_map(currentX)(currentY) || ((centerSlope <= startvar) && (centerSlope >= end))){
+                light_map(currentX)(currentY) = true
+              }
             }
             if (blocked) {
               if(resistance_map(currentX)(currentY)){
