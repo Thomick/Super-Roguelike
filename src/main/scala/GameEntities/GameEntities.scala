@@ -5,6 +5,7 @@ import Items._
 
 import java.awt.{Color => AWTColor}
 import scala.collection._
+import scala.math.min
 
 object Direction extends Enumeration {
   val Up, Down, Left, Right, Nop = Value
@@ -78,6 +79,13 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
         s
     )
   }
+  def updateMaxStat(): Unit = {
+    currentAtt = getAtt()
+    currentDef = getDef()
+    currentMaxHP = getMaxHP()
+    currentHP = min(currentHP, currentMaxHP)
+  }
+
   def equipItem(itemSlot: Int): Boolean = {
     if (itemSlot < inventory.length) {
       if (inventory(itemSlot).isInstanceOf[Equipable]) {
@@ -85,6 +93,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
         if (isBodyPartFree(item.part)) {
           equipedItems += item
           inventory.remove(itemSlot)
+          updateMaxStat()
           return true
         }
       }
