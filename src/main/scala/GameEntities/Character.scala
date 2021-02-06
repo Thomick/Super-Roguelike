@@ -15,6 +15,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
   var currentDef: Int = 0
   var currentAtt: Int = 0
   var currentHP: Int = 10
+
   def move(dir: Direction.Value): Unit = {
     var nextPos = Direction.nextPos(pos, dir)
     if (board.isFree(nextPos)) {
@@ -122,6 +123,7 @@ trait HasInventory extends Character {
 trait CanEquip extends Character with HasInventory {
 
   val equipedItems = mutable.ArrayBuffer[Equipable]()
+
   override def getDef(): Int = {
     baseDef + equipedItems.foldLeft[Int](0)((s, item) =>
       if (item.isInstanceOf[Passive])
@@ -130,6 +132,7 @@ trait CanEquip extends Character with HasInventory {
         s
     )
   }
+
   override def getAtt(): Int = {
     baseAtt + equipedItems.foldLeft[Int](0)((s, item) =>
       if (item.isInstanceOf[Passive])
@@ -138,6 +141,7 @@ trait CanEquip extends Character with HasInventory {
         s
     )
   }
+
   override def getMaxHP(): Int = {
     baseMaxHP + equipedItems.foldLeft[Int](0)((s, item) =>
       if (item.isInstanceOf[Passive])
@@ -146,6 +150,7 @@ trait CanEquip extends Character with HasInventory {
         s
     )
   }
+
   def equipItem(itemSlot: Int): Boolean = {
     if (itemSlot < inventory.length) {
       if (inventory(itemSlot).isInstanceOf[Equipable]) {
@@ -190,7 +195,10 @@ trait CanEquip extends Character with HasInventory {
 trait Humanoid extends CanEquip {
   def isBodyPartFree(part: BodyPart.Value): Boolean = {
     val samePartCount = equipedItems.foldLeft[Int](0)((c, item) =>
-      if (item.part == part) c + 1 else c
+      if (item.part == part)
+        c + 1
+      else
+        c
     )
     part match {
       case BodyPart.Torso => samePartCount < 1
