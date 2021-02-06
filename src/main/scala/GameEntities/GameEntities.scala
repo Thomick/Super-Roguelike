@@ -4,6 +4,7 @@ import map_objects._
 
 object Direction extends Enumeration {
   val Up, Down, Left, Right, Nop = Value
+
   def nextPos(pos: (Int, Int), dir: Direction.Value): (Int, Int) = {
     dir match {
       case Direction.Left  => (pos._1 - 1, pos._2)

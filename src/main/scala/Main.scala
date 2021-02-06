@@ -25,21 +25,13 @@ object Main extends SimpleSwingApplication {
     preferredSize = new Dimension(1000, 750)
     focusable = true
     listenTo(keys)
-    reactions += {
-      case KeyPressed(_, key, _, _) => {
-        ui.newKeyPressed(key)
-        ui.applyCommand(board)
-        repaint
-      }
+    reactions += { case KeyPressed(_, key, _, _) =>
+      ui.newKeyPressed(key)
+      ui.applyCommand(board)
+      repaint
     }
     override def paint(g: Graphics2D) {
-      Renderer.onPaint(
-        g,
-        board,
-        ui.last,
-        size,
-        fovmap
-      )
+      Renderer.onPaint(g, board, ui.last, size, fovmap)
     }
   }
 }

@@ -23,8 +23,8 @@ class Renderer {
       fovmap: FovMap
   ) {
     fovmap.compute_fov(board.playerEntity.pos._1, board.playerEntity.pos._2)
-    g setColor bgColor
-    g fillRect (0, 0, screenSize.width, screenSize.height)
+    g.setColor(bgColor)
+    g.fillRect(0, 0, screenSize.width, screenSize.height)
     val drawingAreaWidth = screenSize.width - 2 * padding
     val drawingAreaHeight = screenSize.height - 2 * padding
     val boardSize = max(
@@ -34,6 +34,7 @@ class Renderer {
         drawingAreaHeight - bottomPanelHeight - padding
       )
     )
+
     BoardRenderer.drawBoard(
       g,
       (padding, padding),
@@ -43,15 +44,16 @@ class Renderer {
       boardSize,
       30
     )
-    val infos =
-      "Last key pressed : " + lastkey + "\nImplemented command : \n" +
-        " - Move with Arrows keys \n" + " - E to pick items up (You must face it) \n" +
-        " - D to drop an item\n" + " - C to consume an item\n" + " - T to throw an item \n" +
-        " - R to equip an item\n" + "F to unequip and item"
-    StringRenderer.drawString(
-      g,
-      infos,
-      (boardSize + 2 * padding, padding)
-    )
+
+    val infos = """|Implemented command :
+                   |- Move with Arrows keys
+                   |- E to pick items up
+                   |- D to drop an item
+                   |- C to consume an item
+                   |- T to throw an item
+                   |- R to equip an item
+                   |- F to unequip and item
+                   |""".stripMargin
+    StringRenderer.drawString(g, infos, (boardSize + 2 * padding, padding))
   }
 }

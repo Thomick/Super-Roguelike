@@ -11,10 +11,12 @@ abstract class GameTile() {
   def blocking_sight: Boolean
   var explored = false
 }
+
 case class FloorTile() extends GameTile {
   def blocking = false
   def blocking_sight = false
 }
+
 case class WallTile() extends GameTile {
   def blocking = true
   def blocking_sight = true
@@ -28,20 +30,6 @@ class GameBoard(n: Int, m: Int) {
     new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
   var otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
   var grid = MapGenerator.make_empty(size_x, size_y)
-  // For testing purpose
-  def findEmpty(): (Int, Int) = {
-    for {
-      x <- 0 to size_x - 1
-      y <- 0 to size_y - 1
-    } {
-      if (isFree(x, y)) {
-        println("free")
-        return (x, y)
-      }
-    }
-    return (0, 0)
-  }
-  // End of testing
 
   def newMap(
       max_rooms: Int,

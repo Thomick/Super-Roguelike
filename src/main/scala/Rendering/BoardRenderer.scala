@@ -25,13 +25,15 @@ object BoardRenderer {
   ): Unit = {
     val tileSize = boardSize / (nbTiles + tilePadding)
 
-    def buildRect(pos: (Int, Int)): Rectangle =
+    def buildRect(pos: (Int, Int)): Rectangle = {
       new Rectangle(
         gridOrigin._1 + pos._1 * (tileSize + tilePadding),
         gridOrigin._2 + pos._2 * (tileSize + tilePadding),
         tileSize,
         tileSize
       )
+    }
+
     def drawGrid() = {
       for {
         x <- baseTile._1 to min(baseTile._1 + nbTiles, board.size_x - 1)
@@ -64,6 +66,7 @@ object BoardRenderer {
         }
       }
     }
+
     def drawEntity(e: GameEntity) = {
       if (fovmap.is_light(e.pos._1, e.pos._2)) {
         val img = Toolkit.getDefaultToolkit().getImage(e.image)
@@ -78,10 +81,12 @@ object BoardRenderer {
         g.finalize()
       }
     }
+
     def drawEntities() = {
       val entities = board.getEntities()
       entities.foreach(e => drawEntity(e))
     }
+
     drawGrid()
     drawEntities()
   }
