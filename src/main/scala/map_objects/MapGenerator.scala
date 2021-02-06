@@ -8,11 +8,13 @@ class Rect(x: Int, y: Int, w: Int, h: Int) {
   val y1 = y
   val x2 = x + w
   val y2 = y + h
+
   def center() = {
     val center_x = (x1 + x2) / 2
     val center_y = (y1 + y2) / 2
     (center_x, center_y)
   }
+
   def intersect(rect2: Rect) = {
     (x1 <= rect2.x2 && x2 >= rect2.x1 && y1 <= rect2.y2 && y2 >= rect2.y1)
   }
@@ -45,15 +47,18 @@ object MapGenerator {
   ): (Array[Array[GameTile]], (Int, Int)) = {
     val grid = make_empty(map_width, map_height, WallTile())
     var startingPos = (0, 0)
+
     def create_room(room: Rect) {
       for {
         x <- room.x1 + 1 to room.x2 - 1
         y <- room.y1 + 1 to room.y2 - 1
       } grid(x)(y) = FloorTile()
     }
+
     def create_h_tunnel(x1: Int, x2: Int, y: Int) {
       for (x <- min(x1, x2) to max(x1, x2)) grid(x)(y) = FloorTile()
     }
+
     def create_v_tunnel(x: Int, y1: Int, y2: Int) {
       for (y <- min(y1, y2) to max(y1, y2)) grid(x)(y) = FloorTile()
     }

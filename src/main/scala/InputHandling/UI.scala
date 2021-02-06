@@ -34,6 +34,7 @@ class AbstractUI {
     }
     lastKey = keyCode.toString
   }
+
   def last: String = lastKey
 
   def applyCommand(board: GameBoard) {

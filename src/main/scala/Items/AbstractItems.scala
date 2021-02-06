@@ -38,6 +38,7 @@ trait Consumable extends AbstractItem {
 
 trait Throwable extends AbstractItem {
   availableActions += "Throw"
+
   def throwItem(
       character: Character,
       board: GameBoard,

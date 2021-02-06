@@ -11,6 +11,7 @@ object StringRenderer {
       origin: (Int, Int),
       writeColor: Color = defaultWriteColor
   ) {
+    g.setColor(writeColor)
     val size = g.getFont().getSize()
     var y = origin._2
     text
