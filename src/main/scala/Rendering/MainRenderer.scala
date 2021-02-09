@@ -54,6 +54,12 @@ class Renderer {
                    |- R to equip an item
                    |- F to unequip and item
                    |""".stripMargin
-    StringRenderer.drawString(g, infos, (boardSize + 2 * padding, padding))
+    //StringRenderer.drawString(g, infos, (boardSize + 2 * padding, padding))
+    InventoryRenderer.drawInventory(
+      g,
+      (boardSize + 2 * padding, padding),
+      board.playerEntity,
+      true
+    )
   }
 }
