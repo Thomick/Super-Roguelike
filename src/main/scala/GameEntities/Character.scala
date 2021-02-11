@@ -4,6 +4,8 @@ import Items._
 import map_objects._
 import scala.collection._
 import scala.math.min
+import scala.util.Random
+import scala.math.{min, max}
 
 abstract class Character(init_pos: (Int, Int), b: GameBoard)
     extends GameEntity(init_pos, b) {
@@ -21,7 +23,18 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
     if (board.isFree(nextPos)) {
       board.entityMoved(this, nextPos)
       pos = nextPos
-    }
+    } 
+  }
+
+  def attack(c : Character): Unit = {
+    val rnd = new Random
+    val damage = max(0,(getAtt() * (1 + 3*rnd.nextGaussian())).toInt)
+    c.take_damage(damage)
+  }
+
+  def take_damage(d : Int): Unit = {
+    val effective_damage = max(0, d - getDef())
+    c.currentHP -= effective_damage
   }
 
   def getDef(): Int = baseDef
