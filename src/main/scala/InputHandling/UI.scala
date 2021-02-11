@@ -11,7 +11,7 @@ class UI {
   var lastIsMove: Boolean = false
   var lastDir: Direction.Value = Direction.Nop
   var inInventory: Boolean = false
-  var itemSlected: Int = 0
+  var selectedItem: Int = 0
   def newKeyPressed(keyCode: Value) = {
     keyCode match {
       case Up => {

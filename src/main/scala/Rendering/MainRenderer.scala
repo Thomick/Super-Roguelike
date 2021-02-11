@@ -47,7 +47,8 @@ class Renderer {
       30
     )
 
-    val infos = "last key pressed : " + ui.lastKey + """|
+    val infos = "last key pressed : " + ui.lastKey +
+      """|
                    |Implemented command :
                    |- Move with Arrows keys
                    |- E to pick items up
@@ -62,7 +63,7 @@ class Renderer {
       g,
       (boardSize + 2 * padding, padding),
       board.playerEntity,
-      ui.inInventory
+      ui
     )
   }
 }
