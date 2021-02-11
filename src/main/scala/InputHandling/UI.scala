@@ -60,9 +60,10 @@ class UI {
           if (isSelectedItemEquiped) player.unequipItem(currentIndex)
           else player.equipItem(currentIndex)
         case "F" => if (isSelectedItemEquiped) player.unequipItem(currentIndex)
-        case "I" =>
+        // Unused
+        /*case "I" =>
           inInventory = !inInventory
-          doUpdate = false
+          doUpdate = false*/
         case "J" =>
           selectedItem -= 1
           doUpdate = false
