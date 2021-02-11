@@ -6,6 +6,7 @@ import java.awt.Color
 import scala.math.{min, max}
 import map_objects._
 import fov_functions._
+import InputHandling._
 
 class Renderer {
   val bgColor = new Color(48, 99, 99)
@@ -20,7 +21,8 @@ class Renderer {
       board: GameBoard,
       lastkey: String,
       screenSize: Dimension,
-      fovmap: FovMap
+      fovmap: FovMap,
+      ui: UI
   ) {
     fovmap.compute_fov(board.playerEntity.pos._1, board.playerEntity.pos._2)
     g.setColor(bgColor)
@@ -45,7 +47,8 @@ class Renderer {
       30
     )
 
-    val infos = """|Implemented command :
+    val infos = "last key pressed : " + ui.lastKey + """|
+                   |Implemented command :
                    |- Move with Arrows keys
                    |- E to pick items up
                    |- D to drop an item
@@ -59,7 +62,7 @@ class Renderer {
       g,
       (boardSize + 2 * padding, padding),
       board.playerEntity,
-      true
+      ui.inInventory
     )
   }
 }

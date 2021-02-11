@@ -6,10 +6,12 @@ import event.Key._
 import GameEntities._
 import map_objects.GameBoard
 
-class AbstractUI {
+class UI {
   var lastKey: String = ""
   var lastIsMove: Boolean = false
   var lastDir: Direction.Value = Direction.Nop
+  var inInventory: Boolean = false
+  var itemSlected: Int = 0
   def newKeyPressed(keyCode: Value) = {
     keyCode match {
       case Up => {
@@ -40,14 +42,21 @@ class AbstractUI {
   def applyCommand(board: GameBoard) {
     if (lastIsMove) {
       board.playerEntity.move(lastDir)
+    } else if (inInventory) {
+      lastKey match {
+        case "E"      => board.playerEntity.pickUpItem()
+        case "D"      => board.playerEntity.dropItem(0)
+        case "C"      => board.playerEntity.consumeItem(0)
+        case "T"      => board.playerEntity.throwItem(0, lastDir)
+        case "R"      => board.playerEntity.equipItem(0)
+        case "F"      => board.playerEntity.unequipItem(0)
+        case "Escape" => inInventory = false
+        case _        => {}
+      }
     } else {
       lastKey match {
         case "E" => board.playerEntity.pickUpItem()
-        case "D" => board.playerEntity.dropItem(0)
-        case "C" => board.playerEntity.consumeItem(0)
-        case "T" => board.playerEntity.throwItem(0, lastDir)
-        case "R" => board.playerEntity.equipItem(0)
-        case "F" => board.playerEntity.unequipItem(0)
+        case "I" => inInventory = true
         case _   => {}
       }
     }
