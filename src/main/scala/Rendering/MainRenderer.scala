@@ -49,9 +49,10 @@ class Renderer {
 
     val infos = "Last key pressed : " + ui.lastKey +
       """|
-         |Implemented command :
+         |Additional commands :
          |- Move with Arrows keys
-         |- Move item selector J:↑ and K:↓
+         |- Move item selector with J:↑ and K:↓
+         |- Pick up an item under you with E
          |""".stripMargin
 
     val yNext = InventoryRenderer.drawInventory(

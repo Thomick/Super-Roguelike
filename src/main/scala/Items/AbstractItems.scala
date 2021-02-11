@@ -10,7 +10,7 @@ abstract class AbstractItem() {
   val weight: Int
   val image: String = "src/main/resources/placeholder.png"
   val availableActions: ArrayBuffer[String] = new ArrayBuffer[String]
-  availableActions += "Drop" += "Use"
+  availableActions += "D - Drop" += "U - Use (not implemented)"
 
   def drop(character: Character, board: GameBoard, pos: (Int, Int)): Boolean = {
     if (board.addItem(new ItemEntity(pos, board, this), pos)) {
@@ -29,7 +29,7 @@ abstract class AbstractItem() {
 }
 
 trait Consumable extends AbstractItem {
-  availableActions += "Consume"
+  availableActions += "C - Consume"
   def consume(character: Character): Boolean = {
     println("Item consumed")
     true
@@ -37,7 +37,7 @@ trait Consumable extends AbstractItem {
 }
 
 trait Throwable extends AbstractItem {
-  availableActions += "Throw"
+  availableActions += "T - Throw"
 
   def throwItem(
       character: Character,
@@ -55,7 +55,7 @@ object BodyPart extends Enumeration {
 }
 
 trait Equipable extends AbstractItem {
-  availableActions += "Equip"
+  availableActions += "R - Equip/Unequip"
   val part: BodyPart.Value
 }
 

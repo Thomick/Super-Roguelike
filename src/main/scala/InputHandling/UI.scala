@@ -5,6 +5,7 @@ import event._
 import event.Key._
 import GameEntities._
 import map_objects.GameBoard
+import scala.math.max
 
 class UI {
   var lastKey: String = ""
@@ -41,6 +42,7 @@ class UI {
 
   def applyCommand(board: GameBoard) {
     val player = board.playerEntity
+    var doUpdate = true
     val isSelectedItemEquiped = selectedItem < player.equipedItems.length
     val currentIndex =
       if (isSelectedItemEquiped) selectedItem
@@ -54,18 +56,27 @@ class UI {
         case "C" => if (!isSelectedItemEquiped) player.consumeItem(currentIndex)
         case "T" =>
           if (!isSelectedItemEquiped) player.throwItem(currentIndex, lastDir)
-        case "R" => if (!isSelectedItemEquiped) player.equipItem(currentIndex)
+        case "R" =>
+          if (isSelectedItemEquiped) player.unequipItem(currentIndex)
+          else player.equipItem(currentIndex)
         case "F" => if (isSelectedItemEquiped) player.unequipItem(currentIndex)
-        case "I" => inInventory = !inInventory
-        case "J" => selectedItem -= 1
-        case "K" => selectedItem += 1
-        case _   => {}
+        case "I" =>
+          inInventory = !inInventory
+          doUpdate = false
+        case "J" =>
+          selectedItem -= 1
+          doUpdate = false
+        case "K" =>
+          selectedItem += 1
+          doUpdate = false
+        case _ => {}
       }
     }
-    board.update()
+    if (doUpdate)
+      board.update()
     selectedItem = Math.floorMod(
       selectedItem,
-      player.inventory.length + player.equipedItems.length
+      max(1, player.inventory.length + player.equipedItems.length)
     )
   }
 }

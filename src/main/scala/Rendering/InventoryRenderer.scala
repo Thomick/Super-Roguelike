@@ -19,6 +19,7 @@ object InventoryRenderer {
     val menuBuffer = new StringBuilder()
     var currentIndex: Int = 0
     var yNext = origin._2
+    var selectedItem: Option[AbstractItem] = None
 
     def addToMenu(index: Int, item: AbstractItem): Unit = {
       val printedIndex =
@@ -36,6 +37,7 @@ object InventoryRenderer {
           selectedColor
         )
         menuBuffer.clear()
+        selectedItem = Some(item)
       } else
         menuBuffer ++= " " + printedIndex + " - " + item.name + "\n"
     }
@@ -51,6 +53,15 @@ object InventoryRenderer {
       currentIndex += 1
     })
 
-    return StringRenderer.drawString(g, menuBuffer.toString, (origin._1, yNext))
+    selectedItem match {
+      case None => ()
+      case Some(item) =>
+        menuBuffer ++= "\nAvailable actions :\n"
+        item.availableActions.foreach(action => menuBuffer ++= action + "\n")
+    }
+
+    yNext =
+      StringRenderer.drawString(g, menuBuffer.toString, (origin._1, yNext))
+    return yNext
   }
 }
