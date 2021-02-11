@@ -34,7 +34,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
 
   def take_damage(d : Int): Unit = {
     val effective_damage = max(0, d - getDef())
-    c.currentHP -= effective_damage
+    currentHP -= effective_damage
   }
 
   def getDef(): Int = baseDef
