@@ -5,6 +5,7 @@ import event._
 import event.Key._
 import GameEntities._
 import map_objects.GameBoard
+import scala.math.{min, max}
 
 class UI {
   var lastKey: String = ""
@@ -40,26 +41,35 @@ class UI {
   def last: String = lastKey
 
   def applyCommand(board: GameBoard) {
+    val player = board.playerEntity
+    val isSelectedItemEquiped = selectedItem < player.equipedItems.length
+    val currentIndex =
+      if (isSelectedItemEquiped) selectedItem
+      else selectedItem - player.equipedItems.length
     if (lastIsMove) {
-      board.playerEntity.move(lastDir)
-    } else if (inInventory) {
-      lastKey match {
-        case "E"      => board.playerEntity.pickUpItem()
-        case "D"      => board.playerEntity.dropItem(0)
-        case "C"      => board.playerEntity.consumeItem(0)
-        case "T"      => board.playerEntity.throwItem(0, lastDir)
-        case "R"      => board.playerEntity.equipItem(0)
-        case "F"      => board.playerEntity.unequipItem(0)
-        case "Escape" => inInventory = false
-        case _        => {}
-      }
+      player.move(lastDir)
     } else {
       lastKey match {
-        case "E" => board.playerEntity.pickUpItem()
-        case "I" => inInventory = true
+        case "E" => player.pickUpItem()
+        case "D" => if (!isSelectedItemEquiped) player.dropItem(currentIndex)
+        case "C" => if (!isSelectedItemEquiped) player.consumeItem(currentIndex)
+        case "T" =>
+          if (!isSelectedItemEquiped) player.throwItem(currentIndex, lastDir)
+        case "R" => if (!isSelectedItemEquiped) player.equipItem(currentIndex)
+        case "F" => if (isSelectedItemEquiped) player.unequipItem(currentIndex)
+        case "I" => inInventory = !inInventory
+        case "J" => selectedItem -= 1
+        case "K" => selectedItem += 1
         case _   => {}
       }
     }
     board.update()
+    selectedItem = max(
+      0,
+      min(
+        player.inventory.length + player.equipedItems.length - 1,
+        selectedItem
+      )
+    )
   }
 }
