@@ -13,7 +13,7 @@ object InventoryRenderer {
       origin: (Int, Int),
       player: Player,
       ui: UI
-  ): Unit = {
+  ): Int = {
     val equiped = player.getEquipedItems()
     val inventory = player.getInventoryItems()
     val menuBuffer = new StringBuilder()
@@ -51,6 +51,6 @@ object InventoryRenderer {
       currentIndex += 1
     })
 
-    StringRenderer.drawString(g, menuBuffer.toString, (origin._1, yNext))
+    return StringRenderer.drawString(g, menuBuffer.toString, (origin._1, yNext))
   }
 }

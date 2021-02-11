@@ -47,23 +47,23 @@ class Renderer {
       30
     )
 
-    val infos = "last key pressed : " + ui.lastKey +
+    val infos = "Last key pressed : " + ui.lastKey +
       """|
-                   |Implemented command :
-                   |- Move with Arrows keys
-                   |- E to pick items up
-                   |- D to drop an item
-                   |- C to consume an item
-                   |- T to throw an item
-                   |- R to equip an item
-                   |- F to unequip and item
-                   |""".stripMargin
-    //StringRenderer.drawString(g, infos, (boardSize + 2 * padding, padding))
-    InventoryRenderer.drawInventory(
+         |Implemented command :
+         |- Move with Arrows keys
+         |- Move item selector J:↑ and K:↓
+         |""".stripMargin
+
+    val yNext = InventoryRenderer.drawInventory(
       g,
       (boardSize + 2 * padding, padding),
       board.playerEntity,
       ui
+    )
+    StringRenderer.drawString(
+      g,
+      infos,
+      (boardSize + 2 * padding, yNext + padding)
     )
   }
 }

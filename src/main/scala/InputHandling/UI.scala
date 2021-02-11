@@ -5,7 +5,6 @@ import event._
 import event.Key._
 import GameEntities._
 import map_objects.GameBoard
-import scala.math.{min, max}
 
 class UI {
   var lastKey: String = ""
@@ -64,12 +63,9 @@ class UI {
       }
     }
     board.update()
-    selectedItem = max(
-      0,
-      min(
-        player.inventory.length + player.equipedItems.length - 1,
-        selectedItem
-      )
+    selectedItem = Math.floorMod(
+      selectedItem,
+      player.inventory.length + player.equipedItems.length
     )
   }
 }
