@@ -83,6 +83,8 @@ trait Enemy extends Character with AIControlled {
 trait HasInventory extends Character {
   val inventory = mutable.ArrayBuffer[AbstractItem]()
 
+  def getInventoryItems(): Array[AbstractItem] = inventory.toArray
+
   def obtainItem(item: AbstractItem) = {
     inventory += item
     println("You obtain : " + item.name)
@@ -151,6 +153,8 @@ trait HasInventory extends Character {
 trait CanEquip extends Character with HasInventory {
 
   val equipedItems = mutable.ArrayBuffer[Equipable]()
+
+  def getEquipedItems(): Array[AbstractItem] = equipedItems.toArray
 
   override def getDef(): Int = {
     baseDef + equipedItems.foldLeft[Int](0)((s, item) =>

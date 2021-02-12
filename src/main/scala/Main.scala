@@ -6,13 +6,12 @@ import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle, Toolkit}
 import fov_functions._
 import map_objects._
 import GameEntities._
-import render_functions._
 import InputHandling._
 import Rendering._
 
 object Main extends SimpleSwingApplication {
   val Renderer = new Renderer
-  val ui = new AbstractUI
+  val ui = new UI
   val board = new GameBoard(30, 30)
   board.newMap(20, 5, 7, board.size_x, board.size_y)
   var fovmap = new FovMap(board.grid)
@@ -31,7 +30,7 @@ object Main extends SimpleSwingApplication {
       repaint
     }
     override def paint(g: Graphics2D) {
-      Renderer.onPaint(g, board, ui.last, size, fovmap)
+      Renderer.onPaint(g, board, ui.last, size, fovmap, ui)
     }
   }
 }
