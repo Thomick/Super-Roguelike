@@ -5,11 +5,14 @@ import event._
 import event.Key._
 import GameEntities._
 import map_objects.GameBoard
+import scala.math.max
 
-class AbstractUI {
+class UI {
   var lastKey: String = ""
   var lastIsMove: Boolean = false
   var lastDir: Direction.Value = Direction.Nop
+  var inInventory: Boolean = false
+  var selectedItem: Int = 0
   def newKeyPressed(keyCode: Value) = {
     keyCode match {
       case Up => {
@@ -38,19 +41,43 @@ class AbstractUI {
   def last: String = lastKey
 
   def applyCommand(board: GameBoard) {
+    val player = board.playerEntity
+    var doUpdate = true
+    val isSelectedItemEquiped = selectedItem < player.equipedItems.length
+    val currentIndex =
+      if (isSelectedItemEquiped) selectedItem
+      else selectedItem - player.equipedItems.length
     if (lastIsMove) {
-      board.playerEntity.move(lastDir)
+      player.move(lastDir)
     } else {
       lastKey match {
-        case "E" => board.playerEntity.pickUpItem()
-        case "D" => board.playerEntity.dropItem(0)
-        case "C" => board.playerEntity.consumeItem(0)
-        case "T" => board.playerEntity.throwItem(0, lastDir)
-        case "R" => board.playerEntity.equipItem(0)
-        case "F" => board.playerEntity.unequipItem(0)
-        case _   => {}
+        case "E" => player.pickUpItem()
+        case "D" => if (!isSelectedItemEquiped) player.dropItem(currentIndex)
+        case "C" => if (!isSelectedItemEquiped) player.consumeItem(currentIndex)
+        case "T" =>
+          if (!isSelectedItemEquiped) player.throwItem(currentIndex, lastDir)
+        case "R" =>
+          if (isSelectedItemEquiped) player.unequipItem(currentIndex)
+          else player.equipItem(currentIndex)
+        case "F" => if (isSelectedItemEquiped) player.unequipItem(currentIndex)
+        // Unused
+        /*case "I" =>
+          inInventory = !inInventory
+          doUpdate = false*/
+        case "J" =>
+          selectedItem -= 1
+          doUpdate = false
+        case "K" =>
+          selectedItem += 1
+          doUpdate = false
+        case _ => {}
       }
     }
-    board.update()
+    if (doUpdate)
+      board.update()
+    selectedItem = Math.floorMod(
+      selectedItem,
+      max(1, player.inventory.length + player.equipedItems.length)
+    )
   }
 }

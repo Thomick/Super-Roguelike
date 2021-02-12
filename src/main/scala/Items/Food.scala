@@ -1,7 +1,8 @@
 package Items
 
 abstract class Food() extends AbstractItem() with Consumable with Throwable {
-  availableActions += "Eat"
+  availableActions -= "C - Consume"
+  availableActions += "C - Eat"
 }
 
 class Apple() extends Food() {
