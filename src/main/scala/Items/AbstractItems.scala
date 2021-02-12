@@ -10,7 +10,7 @@ abstract class AbstractItem() {
   val weight: Int
   val image: String = "src/main/resources/placeholder.png"
   val availableActions: ArrayBuffer[String] = new ArrayBuffer[String]
-  availableActions += "D - Drop" += "U - Use (not implemented)"
+  availableActions += "D - Drop" //+= "U - Use (not implemented)"
 
   def drop(character: Character, board: GameBoard, pos: (Int, Int)): Boolean = {
     if (board.addItem(new ItemEntity(pos, board, this), pos)) {
