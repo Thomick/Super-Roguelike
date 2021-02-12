@@ -6,7 +6,6 @@ import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle, Toolkit}
 import fov_functions._
 import map_objects._
 import GameEntities._
-import render_functions._
 import InputHandling._
 import Rendering._
 
