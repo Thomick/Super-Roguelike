@@ -29,7 +29,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
   }
 
   def action(c : Character): Unit = {
-    if (c.isInstanceOf[Ennemy]) {
+    if (c.isInstanceOf[Player]) {
       attack(c)
     }
   }
@@ -75,7 +75,7 @@ trait AIControlled extends Character {
   }
 }
 
-trait Ennemy extends Character with AIControlled {
+trait Enemy extends Character with AIControlled {
 
 
 }
