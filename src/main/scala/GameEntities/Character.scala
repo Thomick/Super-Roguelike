@@ -23,7 +23,15 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
     if (board.isFree(nextPos)) {
       board.entityMoved(this, nextPos)
       pos = nextPos
-    } 
+    } else if (board.hasCharacter(nextPos)) {
+      action(board.getCharacter(nextPos))
+    }
+  }
+
+  def action(c : Character): Unit = {
+    if (c.isInstanceOf[Ennemy]) {
+      attack(c)
+    }
   }
 
   def attack(c : Character): Unit = {
@@ -35,6 +43,13 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
   def take_damage(d : Int): Unit = {
     val effective_damage = max(0, d - getDef())
     currentHP -= effective_damage
+    if (currentHP <= 0) {
+      die()
+    }
+  }
+
+  def die() : Unit = {
+    board.removeCharacter(pos)
   }
 
   def getDef(): Int = baseDef

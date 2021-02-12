@@ -28,7 +28,7 @@ class GameBoard(n: Int, m: Int) {
   val playerEntity = new Player((0, 0), this)
   var itemEntities =
     new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
-  var otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
+  var otherCharacters = new mutable.HashMap[(Int, Int), Character]
   var grid = MapGenerator.make_empty(size_x, size_y)
 
   def newMap(
@@ -49,7 +49,7 @@ class GameBoard(n: Int, m: Int) {
     size_x = map_width
     size_y = map_height
     playerEntity.pos = map._2
-    otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
+    otherCharacters = new mutable.HashMap[(Int, Int), Character]
     itemEntities =
       new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
     // Test
@@ -64,20 +64,32 @@ class GameBoard(n: Int, m: Int) {
 
   def isFree(pos: (Int, Int)): Boolean = {
     if (inGrid(pos))
-      !(grid(pos._1)(pos._2).blocking || otherEntities.contains(pos))
+      !(grid(pos._1)(pos._2).blocking || otherCharacters.contains(pos) || playerEntity.pos == pos)
     else
       false
   }
 
+  def hasCharacter(pos : (Int, Int)): Boolean = {
+    if (inGrid(pos))
+      (otherCharacters.contains(pos) || playerEntity.pos == pos)
+    else
+      false
+  }
+
+
   // TODO pass the previous position as parameter
-  def entityMoved(e: GameEntity, newPos: (Int, Int)): Unit = {
+  def entityMoved(e: Character, newPos: (Int, Int)): Unit = {
     e match {
       case `playerEntity` => println("Player moved")
       case entity => {
-        otherEntities -= entity.pos
-        otherEntities += (newPos -> entity)
+        otherCharacters -= entity.pos
+        otherCharacters += (newPos -> entity)
       }
     }
+  }
+
+  def removeCharacter(pos : (Int,Int)) : Unit = {
+    otherCharacters -= pos
   }
 
   def addItem(entity: ItemEntity, pos: (Int, Int)): Boolean = {
@@ -96,8 +108,17 @@ class GameBoard(n: Int, m: Int) {
           buf: mutable.MutableList[GameEntity],
           keyAndValue: ((Int, Int), mutable.ArrayBuffer[ItemEntity])
       ) => buf ++= keyAndValue._2
-    ) ++= otherEntities.values += playerEntity).toList
+    ) ++= otherCharacters.values += playerEntity).toList
   }
+
+  def getCharacter(pos : (Int, Int)): Character = { 
+    if (playerEntity.pos == pos){
+      playerEntity
+    } else {
+      otherCharacters(pos)
+    }
+  }
+
 
   def pickUpItem(pos: (Int, Int), itemIndex: Int): Option[AbstractItem] = {
     if (itemEntities.contains(pos)) {
