@@ -12,7 +12,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
 
   val baseMaxHP: Int = 10
   val baseDef: Int = 0
-  val baseAtt: Int = 0
+  val baseAtt: Int = 1
   var currentMaxHP: Int = 10
   var currentDef: Int = 0
   var currentAtt: Int = 0

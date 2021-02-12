@@ -53,6 +53,7 @@ class GameBoard(n: Int, m: Int) {
     itemEntities =
       new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
     // Test
+    otherCharacters += ((map._2._1+1,map._2._2) -> new Robot((map._2._1+1,map._2._2),this))
     addItem(new ItemEntity(map._2, this, new Apple), map._2)
     addItem(new ItemEntity(map._2, this, new IronHelmet), map._2)
     // End of test
