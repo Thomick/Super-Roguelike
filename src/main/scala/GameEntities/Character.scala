@@ -18,8 +18,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
   var currentAtt: Int = 0
   var currentHP: Int = 10
 
-  def move(dir: Direction.Value): Unit = {
-    var nextPos = Direction.nextPos(pos, dir)
+  def move(nextPos : (Int,Int)): Unit = {
     if (board.isFree(nextPos)) {
       board.entityMoved(this, nextPos)
       pos = nextPos
@@ -66,18 +65,37 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
 }
 
 trait AIControlled extends Character {
-  var active = false
+  var active = true
   def activate(): Unit = {
     active = true
   }
   def desactivate(): Unit = {
     active = false
   }
+  def act(): Unit = ()
 }
 
 trait Enemy extends Character with AIControlled {
 
 
+}
+
+trait MeleeEnemy extends Character with Enemy {
+
+  def nextCell() : Option[(Int,Int)] = {
+    val sPath = board.shortestPath(pos,board.playerEntity.pos)
+    sPath match {
+      case Some(path) => Some(path(1))
+      case None => None
+    }
+  }
+
+  override def act(): Unit = {
+    nextCell() match {
+      case None => ()
+      case Some(cell) => move(cell)
+    }
+  }
 }
 
 trait HasInventory extends Character {

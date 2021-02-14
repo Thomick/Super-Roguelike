@@ -186,11 +186,13 @@ class GameBoard(n: Int, m: Int) {
     None
   }
 
-        
-
-
-
   def update() {
+    val entities = getEntities()
+    for (e <- entities) {
+      if (e.isInstanceOf[AIControlled] && e.asInstanceOf[AIControlled].active) {
+        e.asInstanceOf[AIControlled].act()
+      }
+    }
     println("Update all entities")
   }
 
