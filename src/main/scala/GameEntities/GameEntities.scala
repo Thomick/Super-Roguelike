@@ -5,6 +5,8 @@ import map_objects._
 object Direction extends Enumeration {
   val Up, Down, Left, Right, UpLeft, UpRight, DownLeft, DownRight, Nop = Value
 
+  val allDirections = List(Up, Down, Left, Right, UpLeft, UpRight, DownLeft, DownRight)
+
   def nextPos(pos: (Int, Int), dir: Direction.Value): (Int, Int) = {
     dir match {
       case Direction.Left       => (pos._1 - 1, pos._2)

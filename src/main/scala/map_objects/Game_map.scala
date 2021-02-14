@@ -5,11 +5,14 @@ import InputHandling._
 import Items._
 
 import scala.collection._
+import scala.math.{pow, sqrt}
+import scala.collection.mutable.PriorityQueue
 
 abstract class GameTile() {
   def blocking: Boolean
   def blocking_sight: Boolean
   var explored = false
+  val turnToCross = 1
 }
 
 case class FloorTile() extends GameTile {
@@ -139,7 +142,56 @@ class GameBoard(n: Int, m: Int) {
     }
   }
 
+  def distance(pos1 : (Int, Int), pos2 : (Int, Int)) : Double = {
+    sqrt(pow(2, pos1._1 - pos2._1) + pow(2, pos1._2 - pos2._2))
+  }
+
+  def shortestPath(s : (Int, Int), f : (Int, Int)) : Option[Vector[(Int,Int)]] = {
+    def order(t : (Double, (Int,Int), (Int, Int))) = -t._1
+    val open = new PriorityQueue[(Double, (Int,Int), (Int, Int))]()(Ordering.by(order))
+    open.enqueue((0,s,s))
+    val closed = new mutable.HashMap[(Int,Int),(Double, (Int, Int))]
+    while (!open.isEmpty) {
+      val q = open.dequeue
+      for (dir <- Direction.allDirections) {
+        val successor = Direction.nextPos(q._2,dir)
+        if (successor == f) {
+          var path = Vector[(Int,Int)](q._2,f)
+          if (q._2 == s) {
+            Some(path)
+          }
+          path = q._3 +: path
+          while ( path(0) != s) {
+            path = closed(path(0))._2 +: path
+          }
+          Some(path)
+        }
+        if (isFree(successor)) {
+          val w = q._1 + distance(successor,f) - distance(q._2,f) + grid(q._2._1)(q._2._2).turnToCross
+          val bSuccessorOpena = open.find(_._2 == successor) // We search if the successor is already in open
+          var pass = false
+          bSuccessorOpena match {
+            case Some(b) => if (b._1 <= w) pass = true
+            case None => ()
+          }
+          if (!pass) {
+            if ((! (closed contains successor)) || (closed(successor)._1 > w)) {
+              open.enqueue((w,successor,q._2))
+            }
+          }
+        }
+      }
+      closed += (q._2 -> (q._1,q._3))
+    }
+    None
+  }
+
+        
+
+
+
   def update() {
     println("Update all entities")
   }
+
 }
