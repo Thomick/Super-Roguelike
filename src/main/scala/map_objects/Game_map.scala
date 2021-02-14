@@ -158,13 +158,13 @@ class GameBoard(n: Int, m: Int) {
         if (successor == f) {
           var path = Vector[(Int,Int)](q._2,f)
           if (q._2 == s) {
-            Some(path)
+            return Some(path)
           }
           path = q._3 +: path
           while ( path(0) != s) {
             path = closed(path(0))._2 +: path
           }
-          Some(path)
+          return Some(path)
         }
         if (isFree(successor)) {
           val w = q._1 + distance(successor,f) - distance(q._2,f) + grid(q._2._1)(q._2._2).turnToCross
