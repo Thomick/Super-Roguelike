@@ -143,13 +143,13 @@ class GameBoard(n: Int, m: Int) {
   }
 
   def distance(pos1 : (Int, Int), pos2 : (Int, Int)) : Double = {
-    sqrt(pow(2, pos1._1 - pos2._1) + pow(2, pos1._2 - pos2._2))
+    sqrt(pow(pos1._1 - pos2._1,2) + pow(pos1._2 - pos2._2,2))
   }
 
   def shortestPath(s : (Int, Int), f : (Int, Int)) : Option[Vector[(Int,Int)]] = {
     def order(t : (Double, (Int,Int), (Int, Int))) = -t._1
     val open = new PriorityQueue[(Double, (Int,Int), (Int, Int))]()(Ordering.by(order))
-    open.enqueue((0,s,s))
+    open.enqueue((distance(s,f),s,s))
     val closed = new mutable.HashMap[(Int,Int),(Double, (Int, Int))]
     while (!open.isEmpty) {
       val q = open.dequeue
