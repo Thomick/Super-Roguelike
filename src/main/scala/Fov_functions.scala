@@ -11,7 +11,7 @@ class FovMap(board: Array[Array[GameTile]]) {
   val height = resistance_map(0).size
   val radius = 10
 
-  def norm(x: Double, y: Double) = sqrt(pow(2, x) + pow(2, y))
+  def norm(x: Double, y: Double) = sqrt(pow(x,2) + pow(y,2))
   def is_light(x: Int, y: Int) = light_map(x)(y)
 
   def compute_fov(startx: Int, starty: Int) = {
