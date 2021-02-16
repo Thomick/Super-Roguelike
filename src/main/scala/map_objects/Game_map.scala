@@ -51,14 +51,16 @@ class GameBoard(n: Int, m: Int) {
     grid = map._1
     size_x = map_width
     size_y = map_height
-    playerEntity.pos = map._2
+    playerEntity.pos = map._2(0)
     otherCharacters = new mutable.HashMap[(Int, Int), Character]
     itemEntities =
       new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
     // Test
-    otherCharacters += ((map._2._1+1,map._2._2) -> new Robot((map._2._1+1,map._2._2),this))
-    addItem(new ItemEntity(map._2, this, new Apple), map._2)
-    addItem(new ItemEntity(map._2, this, new IronHelmet), map._2)
+    for { x <- 1 to map._2.size-1 } {
+      otherCharacters += ((map._2(x)._1,map._2(x)._2) -> new Robot((map._2(x)._1,map._2(x)._2),this))
+    }
+    addItem(new ItemEntity(map._2(0), this, new Apple), map._2(0))
+    addItem(new ItemEntity(map._2(0), this, new IronHelmet), map._2(0))
     // End of test
   }
 
