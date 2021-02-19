@@ -3,6 +3,7 @@ package map_objects
 import GameEntities._
 import InputHandling._
 import Items._
+import fov_functions._
 
 import scala.collection._
 import scala.math.{pow, sqrt}
@@ -188,11 +189,16 @@ class GameBoard(n: Int, m: Int) {
     None
   }
 
-  def update() {
+  def update(fovmap : FovMap) {
     val entities = getEntities()
     for (e <- entities) {
-      if (e.isInstanceOf[AIControlled] && e.asInstanceOf[AIControlled].active) {
-        e.asInstanceOf[AIControlled].act()
+      if (e.isInstanceOf[AIControlled]) {
+        if (fovmap.is_light(e.pos._1, e.pos._2)) {
+          e.asInstanceOf[AIControlled].activate()
+        }
+        if (e.asInstanceOf[AIControlled].active) {
+          e.asInstanceOf[AIControlled].act()
+        }
       }
     }
     println("Update all entities")

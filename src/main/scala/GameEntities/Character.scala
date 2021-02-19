@@ -65,7 +65,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
 }
 
 trait AIControlled extends Character {
-  var active = true
+  var active = false
   def activate(): Unit = {
     active = true
   }

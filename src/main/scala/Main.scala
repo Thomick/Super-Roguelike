@@ -26,7 +26,7 @@ object Main extends SimpleSwingApplication {
     listenTo(keys)
     reactions += { case KeyPressed(_, key, _, _) =>
       ui.newKeyPressed(key)
-      ui.applyCommand(board)
+      ui.applyCommand(board,fovmap)
       repaint
     }
     override def paint(g: Graphics2D) {

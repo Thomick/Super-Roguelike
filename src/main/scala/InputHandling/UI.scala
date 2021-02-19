@@ -5,6 +5,7 @@ import event._
 import event.Key._
 import GameEntities._
 import map_objects.GameBoard
+import fov_functions._
 import scala.math.max
 
 class UI {
@@ -40,7 +41,7 @@ class UI {
 
   def last: String = lastKey
 
-  def applyCommand(board: GameBoard) {
+  def applyCommand(board: GameBoard, lightMap : FovMap) {
     val player = board.playerEntity
     var doUpdate = true
     val isSelectedItemEquiped = selectedItem < player.equipedItems.length
@@ -74,7 +75,7 @@ class UI {
       }
     }
     if (doUpdate)
-      board.update()
+      board.update(lightMap)
     selectedItem = Math.floorMod(
       selectedItem,
       max(1, player.inventory.length + player.equipedItems.length)
