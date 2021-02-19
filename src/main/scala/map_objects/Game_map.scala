@@ -168,8 +168,8 @@ class GameBoard(n: Int, m: Int) {
           }
           return Some(path)
         }
-        if (isFree(successor) || (!grid(q._2._1)(q._2._2).blocking && (distance(s,successor)>1.5))) {
-          val w = q._1 + distance(successor,f) - distance(q._2,f) + grid(q._2._1)(q._2._2).turnToCross
+        if (!grid(q._2._1)(q._2._2).blocking) {
+          val w = q._1 + distance(successor,f) - distance(q._2,f) + grid(q._2._1)(q._2._2).turnToCross + (if (!isFree(successor)) 5 else 0)
           val bSuccessorOpena = open.find(_._2 == successor) // We search if the successor is already in open
           var pass = false
           bSuccessorOpena match {
