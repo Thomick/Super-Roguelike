@@ -37,7 +37,7 @@ class Renderer {
       )
     )
 
-    BoardRenderer.drawBoard(
+    val drawnEntities = BoardRenderer.drawBoard(
       g,
       (padding, padding),
       board,
@@ -55,16 +55,23 @@ class Renderer {
          |- Pick up an item under you with E
          |""".stripMargin
 
-    val yNext = SideMenuRenderer.drawInventory(
+    var yNext = SideMenuRenderer.drawInventory(
       g,
       (boardSize + 2 * padding, padding),
       board.playerEntity,
       ui
     )
-    StringRenderer.drawString(
+
+    yNext = StringRenderer.drawString(
       g,
       infos,
       (boardSize + 2 * padding, yNext + padding)
+    )
+
+    yNext = SideMenuRenderer.drawVisibleEntitiesPanel(
+      g,
+      (boardSize + 2 * padding, yNext + padding),
+      drawnEntities
     )
   }
 }

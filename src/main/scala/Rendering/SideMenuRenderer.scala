@@ -9,6 +9,17 @@ import map_objects.GameBoard
 object SideMenuRenderer {
   val selectedColor = new Color(255, 200, 200)
 
+  def drawVisibleEntitiesPanel(
+      g: Graphics2D,
+      origin: (Int, Int),
+      drawnEntities: Array[GameEntity]
+  ): Int = {
+    val buffer = new StringBuilder()
+    buffer ++= "Visible : \n"
+    drawnEntities.foreach(e => buffer ++= " - " + e.name + "\n")
+    return StringRenderer.drawString(g, buffer.toString, origin)
+  }
+
   def drawInventory(
       g: Graphics2D,
       origin: (Int, Int),

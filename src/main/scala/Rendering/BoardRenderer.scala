@@ -5,6 +5,7 @@ import scala.math.min
 import map_objects._
 import GameEntities._
 import fov_functions._
+import scala.collection._
 
 object BoardRenderer {
   val lightfloorColor = new Color(99, 150, 150)
@@ -22,8 +23,9 @@ object BoardRenderer {
       baseTile: (Int, Int),
       boardSize: Int,
       nbTiles: Int
-  ): Unit = {
+  ): Array[GameEntity] = {
     val tileSize = boardSize / (nbTiles + tilePadding)
+    var drawnEntities = new mutable.ArrayBuffer[GameEntity]
 
     def buildRect(pos: (Int, Int)): Rectangle = {
       new Rectangle(
@@ -69,6 +71,7 @@ object BoardRenderer {
 
     def drawEntity(e: GameEntity) = {
       if (fovmap.is_light(e.pos._1, e.pos._2)) {
+        drawnEntities += e
         val img = Toolkit.getDefaultToolkit().getImage(e.image)
         g.drawImage(
           img,
@@ -89,5 +92,6 @@ object BoardRenderer {
 
     drawGrid()
     drawEntities()
+    return drawnEntities.toArray
   }
 }

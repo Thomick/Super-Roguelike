@@ -7,6 +7,7 @@ class Player(init_pos: (Int, Int), b: GameBoard)
     with Humanoid {
   val name = "Player"
   val description = "It's you !"
+  override val baseAtt: Int = 1
   def moveDir(dir: Direction.Value): Unit = {
     move(Direction.nextPos(pos, dir))
   }
@@ -24,5 +25,5 @@ class Robot(init_pos: (Int, Int), b: GameBoard)
     with MeleeEnemy {
   val name = "Robot"
   val description = "An angry robot"
-  override val image = "src/main/resources/enemy.png"
+  override val image = "src/main/resources/robot2.png"
 }
