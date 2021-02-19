@@ -2,7 +2,7 @@ package Rendering
 
 import GameEntities._
 import InputHandling.UI
-import java.awt.{Graphics2D, Color}
+import java.awt.{Graphics2D, Color, Toolkit}
 import Items.AbstractItem
 import map_objects.GameBoard
 
@@ -14,10 +14,26 @@ object SideMenuRenderer {
       origin: (Int, Int),
       drawnEntities: Array[GameEntity]
   ): Int = {
-    val buffer = new StringBuilder()
-    buffer ++= "Visible : \n"
-    drawnEntities.foreach(e => buffer ++= " - " + e.name + "\n")
-    return StringRenderer.drawString(g, buffer.toString, origin)
+    val entitySize = g.getFont().getSize()
+    var yNext =
+      StringRenderer.drawString(g, "Visible : \n", origin) + entitySize
+    drawnEntities.foreach(e => {
+      g.drawImage(
+        Toolkit.getDefaultToolkit().getImage(e.image),
+        origin._1,
+        yNext - entitySize,
+        entitySize,
+        entitySize,
+        null
+      )
+      g.finalize()
+      yNext = StringRenderer.drawString(
+        g,
+        e.name,
+        (origin._1 + entitySize + 2, yNext)
+      )
+    })
+    return yNext
   }
 
   def drawInventory(
