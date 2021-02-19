@@ -48,7 +48,7 @@ class UI {
       if (isSelectedItemEquiped) selectedItem
       else selectedItem - player.equipedItems.length
     if (lastIsMove) {
-      player.move(lastDir)
+      player.moveDir(lastDir)
     } else {
       lastKey match {
         case "E" => player.pickUpItem()

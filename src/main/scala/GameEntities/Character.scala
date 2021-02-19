@@ -4,25 +4,51 @@ import Items._
 import map_objects._
 import scala.collection._
 import scala.math.min
-import scala.annotation.varargs
+import scala.util.Random
+import scala.math.{min, max}
 
 abstract class Character(init_pos: (Int, Int), b: GameBoard)
     extends GameEntity(init_pos, b) {
 
   val baseMaxHP: Int = 10
   val baseDef: Int = 0
-  var baseAtt: Int = 0
+  val baseAtt: Int = 1
   var currentMaxHP: Int = 10
   var currentDef: Int = 0
   var currentAtt: Int = 0
   var currentHP: Int = 10
 
-  def move(dir: Direction.Value): Unit = {
-    var nextPos = Direction.nextPos(pos, dir)
+  def move(nextPos: (Int, Int)): Unit = {
     if (board.isFree(nextPos)) {
       board.entityMoved(this, nextPos)
       pos = nextPos
+    } else if (board.hasCharacter(nextPos)) {
+      action(board.getCharacter(nextPos))
     }
+  }
+
+  def action(c: Character): Unit = {
+    if (c.isInstanceOf[Player]) {
+      attack(c)
+    }
+  }
+
+  def attack(c: Character): Unit = {
+    val rnd = new Random
+    val damage = max(0, (getAtt() * (1 + 3 * rnd.nextGaussian())).toInt)
+    c.take_damage(damage)
+  }
+
+  def take_damage(d: Int): Unit = {
+    val effective_damage = max(0, d - getDef())
+    currentHP -= effective_damage
+    if (currentHP <= 0) {
+      die()
+    }
+  }
+
+  def die(): Unit = {
+    board.removeCharacter(pos)
   }
 
   def getDef(): Int = baseDef
@@ -36,6 +62,37 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
     currentHP = min(currentHP, currentMaxHP)
   }
 
+}
+
+trait AIControlled extends Character {
+  var active = true
+  def activate(): Unit = {
+    active = true
+  }
+  def desactivate(): Unit = {
+    active = false
+  }
+  def act(): Unit = ()
+}
+
+trait Enemy extends Character with AIControlled {}
+
+trait MeleeEnemy extends Character with Enemy {
+
+  def nextCell(): Option[(Int, Int)] = {
+    val sPath = board.shortestPath(pos, board.playerEntity.pos)
+    sPath match {
+      case Some(path) => Some(path(1))
+      case None       => None
+    }
+  }
+
+  override def act(): Unit = {
+    nextCell() match {
+      case None       => ()
+      case Some(cell) => move(cell)
+    }
+  }
 }
 
 trait HasInventory extends Character {

@@ -5,11 +5,14 @@ import InputHandling._
 import Items._
 
 import scala.collection._
+import scala.math.{pow, sqrt}
+import scala.collection.mutable.PriorityQueue
 
 abstract class GameTile() {
   def blocking: Boolean
   def blocking_sight: Boolean
   var explored = false
+  val turnToCross = 1
 }
 
 case class FloorTile() extends GameTile {
@@ -28,7 +31,7 @@ class GameBoard(n: Int, m: Int) {
   val playerEntity = new Player((0, 0), this)
   var itemEntities =
     new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
-  var otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
+  var otherCharacters = new mutable.HashMap[(Int, Int), Character]
   var grid = MapGenerator.make_empty(size_x, size_y)
 
   def newMap(
@@ -48,13 +51,19 @@ class GameBoard(n: Int, m: Int) {
     grid = map._1
     size_x = map_width
     size_y = map_height
-    playerEntity.pos = map._2
-    otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
+    playerEntity.pos = map._2(0)
+    otherCharacters = new mutable.HashMap[(Int, Int), Character]
     itemEntities =
       new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
     // Test
-    addItem(new ItemEntity(map._2, this, new Apple), map._2)
-    addItem(new ItemEntity(map._2, this, new IronHelmet), map._2)
+    for { x <- 1 to map._2.size - 1 } {
+      otherCharacters += ((map._2(x)._1, map._2(x)._2) -> new Robot(
+        (map._2(x)._1, map._2(x)._2),
+        this
+      ))
+    }
+    addItem(new ItemEntity(map._2(0), this, new Apple), map._2(0))
+    addItem(new ItemEntity(map._2(0), this, new IronHelmet), map._2(0))
     // End of test
   }
 
@@ -64,20 +73,33 @@ class GameBoard(n: Int, m: Int) {
 
   def isFree(pos: (Int, Int)): Boolean = {
     if (inGrid(pos))
-      !(grid(pos._1)(pos._2).blocking || otherEntities.contains(pos))
+      !(grid(pos._1)(pos._2).blocking || otherCharacters.contains(
+        pos
+      ) || playerEntity.pos == pos)
+    else
+      false
+  }
+
+  def hasCharacter(pos: (Int, Int)): Boolean = {
+    if (inGrid(pos))
+      (otherCharacters.contains(pos) || playerEntity.pos == pos)
     else
       false
   }
 
   // TODO pass the previous position as parameter
-  def entityMoved(e: GameEntity, newPos: (Int, Int)): Unit = {
+  def entityMoved(e: Character, newPos: (Int, Int)): Unit = {
     e match {
       case `playerEntity` => println("Player moved")
       case entity => {
-        otherEntities -= entity.pos
-        otherEntities += (newPos -> entity)
+        otherCharacters -= entity.pos
+        otherCharacters += (newPos -> entity)
       }
     }
+  }
+
+  def removeCharacter(pos: (Int, Int)): Unit = {
+    otherCharacters -= pos
   }
 
   def addItem(entity: ItemEntity, pos: (Int, Int)): Boolean = {
@@ -96,7 +118,15 @@ class GameBoard(n: Int, m: Int) {
           buf: mutable.MutableList[GameEntity],
           keyAndValue: ((Int, Int), mutable.ArrayBuffer[ItemEntity])
       ) => buf ++= keyAndValue._2
-    ) ++= otherEntities.values += playerEntity).toList
+    ) ++= otherCharacters.values += playerEntity).toList
+  }
+
+  def getCharacter(pos: (Int, Int)): Character = {
+    if (playerEntity.pos == pos) {
+      playerEntity
+    } else {
+      otherCharacters(pos)
+    }
   }
 
   def pickUpItem(pos: (Int, Int), itemIndex: Int): Option[AbstractItem] = {
@@ -117,7 +147,63 @@ class GameBoard(n: Int, m: Int) {
     }
   }
 
+  def distance(pos1: (Int, Int), pos2: (Int, Int)): Double = {
+    sqrt(pow(pos1._1 - pos2._1, 2) + pow(pos1._2 - pos2._2, 2))
+  }
+
+  def shortestPath(s: (Int, Int), f: (Int, Int)): Option[Vector[(Int, Int)]] = {
+    def order(t: (Double, (Int, Int), (Int, Int))) = -t._1
+    val open =
+      new PriorityQueue[(Double, (Int, Int), (Int, Int))]()(Ordering.by(order))
+    open.enqueue((distance(s, f), s, s))
+    val closed = new mutable.HashMap[(Int, Int), (Double, (Int, Int))]
+    while (!open.isEmpty) {
+      val q = open.dequeue
+      for (dir <- Direction.allDirections) {
+        val successor = Direction.nextPos(q._2, dir)
+        if (successor == f) {
+          var path = Vector[(Int, Int)](q._2, f)
+          if (q._2 == s) {
+            return Some(path)
+          }
+          path = q._3 +: path
+          while (path(0) != s) {
+            path = closed(path(0))._2 +: path
+          }
+          return Some(path)
+        }
+        if (!grid(q._2._1)(q._2._2).blocking) {
+          val w = q._1 + distance(successor, f) - distance(q._2, f) + grid(
+            q._2._1
+          )(q._2._2).turnToCross + (if (!isFree(successor)) 5 else 0)
+          val bSuccessorOpena = open.find(
+            _._2 == successor
+          ) // We search if the successor is already in open
+          var pass = false
+          bSuccessorOpena match {
+            case Some(b) => if (b._1 <= w) pass = true
+            case None    => ()
+          }
+          if (!pass) {
+            if ((!(closed contains successor)) || (closed(successor)._1 > w)) {
+              open.enqueue((w, successor, q._2))
+            }
+          }
+        }
+      }
+      closed += (q._2 -> (q._1, q._3))
+    }
+    None
+  }
+
   def update() {
+    val entities = getEntities()
+    for (e <- entities) {
+      if (e.isInstanceOf[AIControlled] && e.asInstanceOf[AIControlled].active) {
+        e.asInstanceOf[AIControlled].act()
+      }
+    }
     println("Update all entities")
   }
+
 }

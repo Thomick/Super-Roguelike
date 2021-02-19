@@ -44,7 +44,7 @@ object MapGenerator {
       room_max_size: Int,
       map_width: Int,
       map_height: Int
-  ): (Array[Array[GameTile]], (Int, Int)) = {
+  ): (Array[Array[GameTile]], Vector[(Int, Int)]) = {
     val grid = make_empty(map_width, map_height, WallTile())
     var startingPos = (0, 0)
 
@@ -65,6 +65,7 @@ object MapGenerator {
 
     var num_room = 0
     var rooms = Vector[Rect]()
+    var centersRoom = Vector[(Int, Int)]()
     val rnd = new Random
     for (r <- 0 to max_rooms - 1) {
       val w = room_min_size + rnd.nextInt((room_max_size - room_min_size) + 1)
@@ -80,10 +81,7 @@ object MapGenerator {
       }
       if (no_intersection) {
         create_room(new_room)
-        if (num_room == 0) {
-          startingPos = new_center
-          //place the player at the center of the first room
-        } else {
+        if (num_room != 0) {
           val prev_center = rooms(rooms.size - 1).center
           if (rnd.nextInt(2) == 1) {
             create_h_tunnel(prev_center._1, new_center._1, prev_center._2)
@@ -94,9 +92,10 @@ object MapGenerator {
           }
         }
         rooms = new_room +: rooms
+        centersRoom = centersRoom :+ new_center
         num_room += 1
       }
     }
-    return (grid, startingPos)
+    return (grid, centersRoom)
   }
 }
