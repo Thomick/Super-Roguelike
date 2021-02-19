@@ -5,7 +5,7 @@ import java.awt.{Color, Graphics2D}
 object StringRenderer {
   val defaultWriteColor = new Color(200, 200, 200)
 
-  // return the y-coordinate for the line just after what was written.
+  // draw multilined strings and return the y-coordinate for the line just after what was written.
   def drawString(
       g: Graphics2D,
       text: String,

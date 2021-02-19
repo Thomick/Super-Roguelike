@@ -10,7 +10,6 @@ import InputHandling._
 import Rendering._
 
 object Main extends SimpleSwingApplication {
-  val Renderer = new Renderer
   val ui = new UI
   val board = new GameBoard(30, 30)
   board.newMap(20, 5, 7, board.size_x, board.size_y)

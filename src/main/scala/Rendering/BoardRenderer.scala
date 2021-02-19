@@ -25,6 +25,7 @@ object BoardRenderer {
       nbTiles: Int
   ): Array[GameEntity] = {
     val tileSize = boardSize / (nbTiles + tilePadding)
+    //drawnEntities is used to show information about visible entities
     var drawnEntities = new mutable.ArrayBuffer[GameEntity]
 
     def buildRect(pos: (Int, Int)): Rectangle = {
@@ -42,6 +43,7 @@ object BoardRenderer {
         y <- baseTile._2 to min(baseTile._2 + nbTiles, board.size_y - 1)
         val pos = (x, y)
       } {
+        // Select tile color depending on tile type and visibility
         if (fovmap.is_light(x, y))
           board.grid(x)(y).explored = true
         if (board.grid(x)(y).explored) {
@@ -69,6 +71,7 @@ object BoardRenderer {
       }
     }
 
+    // Draw an entity on the board (if visible)
     def drawEntity(e: GameEntity) = {
       if (fovmap.is_light(e.pos._1, e.pos._2)) {
         drawnEntities += e
