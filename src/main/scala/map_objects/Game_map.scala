@@ -149,7 +149,7 @@ class GameBoard(n: Int, m: Int) {
     sqrt(pow(pos1._1 - pos2._1,2) + pow(pos1._2 - pos2._2,2))
   }
 
-  def shortestPath(s : (Int, Int), f : (Int, Int)) : Option[Vector[(Int,Int)]] = {
+  def shortestPath(s : (Int, Int), f : (Int, Int)) : Option[Vector[(Int,Int)]] = { // Based on the A* algorithm
     def order(t : (Double, (Int,Int), (Int, Int))) = -t._1
     val open = new PriorityQueue[(Double, (Int,Int), (Int, Int))]()(Ordering.by(order))
     open.enqueue((distance(s,f),s,s))

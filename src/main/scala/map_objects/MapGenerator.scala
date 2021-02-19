@@ -65,7 +65,7 @@ object MapGenerator {
 
     var num_room = 0
     var rooms = Vector[Rect]()
-    var centersRoom = Vector[(Int,Int)]()
+    var centersRoom = Vector[(Int,Int)]() // Stocks the center of every rooms
     val rnd = new Random
     for (r <- 0 to max_rooms - 1) {
       val w = room_min_size + rnd.nextInt((room_max_size - room_min_size) + 1)
@@ -75,7 +75,7 @@ object MapGenerator {
       val new_room = new Rect(x, y, w, h)
       val new_center = new_room.center
       var no_intersection = true
-      if (num_room > 0) {
+      if (num_room > 0) { // Checks if there is an intersection with a previous room 
         for (other_room <- rooms)
           no_intersection &= !(new_room.intersect(other_room))
       }
@@ -83,7 +83,7 @@ object MapGenerator {
         create_room(new_room)
         if (num_room != 0) {
           val prev_center = rooms(rooms.size - 1).center
-          if (rnd.nextInt(2) == 1) {
+          if (rnd.nextInt(2) == 1) { 
             create_h_tunnel(prev_center._1, new_center._1, prev_center._2)
             create_v_tunnel(new_center._1, prev_center._2, new_center._2)
           } else {
