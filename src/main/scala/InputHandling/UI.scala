@@ -70,7 +70,7 @@ class UI {
         case "K" =>
           selectedItem += 1
           doUpdate = false
-        case _ => {}
+        case _ => doUpdate = false
       }
     }
     if (doUpdate)

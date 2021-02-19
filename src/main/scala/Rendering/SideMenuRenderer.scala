@@ -8,15 +8,6 @@ import map_objects.GameBoard
 
 object SideMenuRenderer {
   val selectedColor = new Color(255, 200, 200)
-  val currentlyVisibleEntities = new 
-
-  def drawVisibleEntities(
-      g: Graphics2D,
-      origin: (Int),
-      board: GameBoard
-  ): Int = {
-
-  }
 
   def drawInventory(
       g: Graphics2D,
@@ -30,6 +21,10 @@ object SideMenuRenderer {
     var currentIndex: Int = 0
     var yNext = origin._2
     var selectedItem: Option[AbstractItem] = None
+
+    menuBuffer ++= "HP : " + player.currentHP.toString + "/" + player.getMaxHP.toString + "\n"
+    menuBuffer ++= "Attack power : " + player.getAtt.toString + "\n"
+    menuBuffer ++= "Defense : " + player.getDef.toString + "\n\n"
 
     def addToMenu(index: Int, item: AbstractItem): Unit = {
       val printedIndex =

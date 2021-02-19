@@ -55,7 +55,7 @@ class Renderer {
          |- Pick up an item under you with E
          |""".stripMargin
 
-    val yNext = InventoryRenderer.drawInventory(
+    val yNext = SideMenuRenderer.drawInventory(
       g,
       (boardSize + 2 * padding, padding),
       board.playerEntity,

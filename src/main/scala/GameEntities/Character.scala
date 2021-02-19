@@ -4,13 +4,14 @@ import Items._
 import map_objects._
 import scala.collection._
 import scala.math.min
+import scala.annotation.varargs
 
 abstract class Character(init_pos: (Int, Int), b: GameBoard)
     extends GameEntity(init_pos, b) {
 
   val baseMaxHP: Int = 10
   val baseDef: Int = 0
-  val baseAtt: Int = 0
+  var baseAtt: Int = 0
   var currentMaxHP: Int = 10
   var currentDef: Int = 0
   var currentAtt: Int = 0
