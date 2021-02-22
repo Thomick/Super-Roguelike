@@ -40,9 +40,9 @@ abstract class Character(
     val rnd = new Random
     val damage = max(0, (getAtt() * (1 + 3 * rnd.nextGaussian())).toInt)
     val (effective_damage, died) = c.take_damage(this, damage)
-    writeLog(name + " deal " + effective_damage.toString + " damages to " + c.name)
+    writeLog(name + " deals " + effective_damage.toString + " damages to " + c.name)
     if (died)
-      writeLog(name + " kill " + c.name)
+      writeLog(name + " kills " + c.name)
   }
 
   def take_damage(from: Character, d: Int): (Int, Boolean) = {
@@ -56,7 +56,7 @@ abstract class Character(
   }
 
   def die(): Unit = {
-    writeLog(name + " die. Goodbye cruel world !")
+    writeLog(name + " dies. Goodbye cruel world !")
     board.removeCharacter(pos)
   }
 

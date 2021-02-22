@@ -15,7 +15,7 @@ object Renderer {
   val errorColor = new Color(255, 0, 0)
   val gridOrigin = (10, 10)
   val rightPanelWidth = 200
-  val bottomPanelHeight = 50
+  val bottomPanelHeight = 60
   val padding = 10
 
   // Called on paint by the main panel
