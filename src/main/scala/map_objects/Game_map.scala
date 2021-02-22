@@ -4,6 +4,7 @@ import GameEntities._
 import InputHandling._
 import Items._
 import fov_functions._
+import logger._
 
 import scala.collection._
 import scala.math.{pow, sqrt}
@@ -26,7 +27,7 @@ case class WallTile() extends GameTile {
   def blocking_sight = true
 }
 
-class GameBoard(n: Int, m: Int) {
+class GameBoard(n: Int, m: Int, val logger: Logger) {
   var size_x = n
   var size_y = m
   val playerEntity = new Player((0, 0), this)
@@ -54,8 +55,7 @@ class GameBoard(n: Int, m: Int) {
     size_y = map_height
     playerEntity.pos = map._2(0)
     otherCharacters = new mutable.HashMap[(Int, Int), Character]
-    itemEntities =
-      new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
+    itemEntities = new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
     // Test
     for { x <- 1 to map._2.size - 1 } {
       otherCharacters += ((map._2(x)._1, map._2(x)._2) -> new Robot(
@@ -209,7 +209,7 @@ class GameBoard(n: Int, m: Int) {
         }
       }
     }
-    println("Update all entities")
+    //println("Update all entities")
   }
 
 }

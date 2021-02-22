@@ -7,8 +7,11 @@ import scala.math.min
 import scala.util.Random
 import scala.math.{min, max}
 
-abstract class Character(init_pos: (Int, Int), b: GameBoard)
-    extends GameEntity(init_pos, b) {
+abstract class Character(
+    init_pos: (Int, Int),
+    b: GameBoard,
+    hasLogs: Boolean = false
+) extends GameEntity(init_pos, b, hasLogs) {
 
   val baseMaxHP: Int = 10
   val baseDef: Int = 0
@@ -36,18 +39,24 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
   def attack(c: Character): Unit = {
     val rnd = new Random
     val damage = max(0, (getAtt() * (1 + 3 * rnd.nextGaussian())).toInt)
-    c.take_damage(damage)
+    val (effective_damage, died) = c.take_damage(this, damage)
+    writeLog(name + " deal " + effective_damage.toString + " damages to " + c.name)
+    if (died)
+      writeLog(name + " kill " + c.name)
   }
 
-  def take_damage(d: Int): Unit = {
+  def take_damage(from: Character, d: Int): (Int, Boolean) = {
     val effective_damage = max(0, d - getDef())
     currentHP -= effective_damage
     if (currentHP <= 0) {
       die()
+      return (effective_damage, true) // The second value indicates if the attack killed the character or not
     }
+    return (effective_damage, false)
   }
 
   def die(): Unit = {
+    writeLog(name + " die. Goodbye cruel world !")
     board.removeCharacter(pos)
   }
 
@@ -102,8 +111,9 @@ trait HasInventory extends Character {
 
   def obtainItem(item: AbstractItem) = {
     inventory += item
-    println("You obtain : " + item.name)
+    writeLog(name + " obtains " + item.name)
   }
+
   def destroyItem(item: AbstractItem) = {
     inventory -= item
   }
@@ -119,49 +129,47 @@ trait HasInventory extends Character {
   }
 
   def dropItem(itemSlot: Int): Boolean = {
-    if (itemSlot < inventory.length) {
+    if (!isSlotEmpty(itemSlot)) {
       val item = inventory(itemSlot)
       item.drop(this, board, pos)
       inventory.remove(itemSlot)
-      true
-    } else {
-      println("There is no item in this slot")
-      return false
+      return true
     }
+    return false
+  }
+
+  def isSlotEmpty(itemSlot: Int, container: Seq[AbstractItem] = inventory): Boolean = {
+    if (itemSlot < container.length)
+      return false
+    println("There is no item in this slot")
+    return true
   }
 
   def throwItem(itemSlot: Int, dir: Direction.Value): Boolean = {
-    if (itemSlot < inventory.length) {
+    if (!isSlotEmpty(itemSlot)) {
       val item = inventory(itemSlot)
       if (item.isInstanceOf[Throwable]) {
         item.asInstanceOf[Throwable].throwItem(this, board, pos, dir)
         inventory.remove(itemSlot)
         return true
-      } else {
-        println("This item can't be thrown")
-        return false
       }
-    } else {
-      println("There is no item in this slot")
-      return false
+      writeLog(item.name + " can't be thrown")
     }
+    return false
   }
 
   def consumeItem(itemSlot: Int): Boolean = {
-    if (itemSlot < inventory.length) {
+    if (!isSlotEmpty(itemSlot)) {
       val item = inventory(itemSlot)
       if (item.isInstanceOf[Consumable]) {
-        item.asInstanceOf[Consumable].consume(this)
+        val effect = item.asInstanceOf[Consumable].consume(this)
+        writeLog(effect)
         inventory.remove(itemSlot)
-        true
-      } else {
-        println("This item can't be consumed")
-        return false
+        return true
       }
-    } else {
-      println("There is no item in this slot")
-      return false
+      writeLog(item.name + " can't be consumed")
     }
+    return false
   }
 }
 
@@ -199,41 +207,35 @@ trait CanEquip extends Character with HasInventory {
   }
 
   def equipItem(itemSlot: Int): Boolean = {
-    if (itemSlot < inventory.length) {
+    if (!isSlotEmpty(itemSlot)) {
       if (inventory(itemSlot).isInstanceOf[Equipable]) {
         val item = inventory(itemSlot).asInstanceOf[Equipable]
         if (isBodyPartFree(item.part)) {
           equipedItems += item
           inventory.remove(itemSlot)
           updateMaxStat()
-          println(item.name + " equiped")
+          writeLog("You equip " + item.name)
           return true
         } else {
-          println("You must free this part before equiping another item")
-          return false
+          writeLog("You can't carry anymore item on this body part.")
         }
       } else {
-        println("You can not equip " + inventory(itemSlot).name)
-        return false
+        writeLog("You can not equip " + inventory(itemSlot).name)
       }
-    } else {
-      println("There is no item in this slot")
-      return false
     }
+    return false
   }
 
   def unequipItem(itemSlot: Int): Boolean = {
-    if (itemSlot < equipedItems.length) {
+    if (!isSlotEmpty(itemSlot, equipedItems)) {
       val item = equipedItems(itemSlot)
       inventory += item
       equipedItems.remove(itemSlot)
       updateMaxStat()
-      println(item.name + " unequiped")
+      writeLog("You unequip " + item.name)
       return true
-    } else {
-      println("There is no equipment in this slot")
-      return false
     }
+    return false
   }
 
   def isBodyPartFree(part: BodyPart.Value): Boolean

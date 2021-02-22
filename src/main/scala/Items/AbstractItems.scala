@@ -30,10 +30,7 @@ abstract class AbstractItem() {
 
 trait Consumable extends AbstractItem {
   availableActions += "C - Consume"
-  def consume(character: Character): Boolean = {
-    println("Item consumed")
-    true
-  }
+  def consume(character: Character): String = "Nothing happened."
 }
 
 trait Throwable extends AbstractItem {
