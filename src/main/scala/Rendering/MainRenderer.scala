@@ -7,6 +7,7 @@ import scala.math.{min, max}
 import map_objects._
 import fov_functions._
 import InputHandling._
+import logger._
 
 // Uses the different renderers to draw the main window.
 object Renderer {
@@ -14,8 +15,8 @@ object Renderer {
   val errorColor = new Color(255, 0, 0)
   val gridOrigin = (10, 10)
   val rightPanelWidth = 200
-  val bottomPanelHeight = 0
-  val padding = 20
+  val bottomPanelHeight = 60
+  val padding = 10
 
   // Called on paint by the main panel
   def onPaint(
@@ -24,7 +25,8 @@ object Renderer {
       lastkey: String,
       screenSize: Dimension,
       fovmap: FovMap,
-      ui: UI
+      ui: UI,
+      logger: Logger
   ) {
     fovmap.compute_fov(board.playerEntity.pos._1, board.playerEntity.pos._2)
     g.setColor(bgColor)
@@ -52,7 +54,7 @@ object Renderer {
 
     var yNext = SideMenuRenderer.drawPlayerInfo(
       g,
-      (boardSize + 2 * padding, padding),
+      (boardSize + 2 * padding, 2 * padding),
       board.playerEntity,
       ui
     )
@@ -75,6 +77,12 @@ object Renderer {
       g,
       infos,
       (boardSize + 2 * padding, yNext + padding)
+    )
+
+    StringRenderer.drawIterable(
+      g,
+      logger.getLogs,
+      (padding, boardSize + 3 * padding)
     )
   }
 }

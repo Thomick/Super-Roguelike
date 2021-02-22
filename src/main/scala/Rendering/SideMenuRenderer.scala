@@ -19,6 +19,14 @@ object SideMenuRenderer {
     var yNext =
       StringRenderer.drawString(g, "Visible : \n", origin) + entitySize
 
+    def getAdditionalInfo(e: GameEntity): String = {
+      if (e.isInstanceOf[Character]) {
+        val c = e.asInstanceOf[Character]
+        return " (" + c.currentHP + "/" + c.getMaxHP() + ")"
+      }
+      return ""
+    }
+
     drawnEntities.foreach(e => {
       g.drawImage(
         Toolkit.getDefaultToolkit().getImage(e.image),
@@ -31,7 +39,7 @@ object SideMenuRenderer {
       g.finalize()
       yNext = StringRenderer.drawString(
         g,
-        e.name,
+        e.name + getAdditionalInfo(e),
         (origin._1 + entitySize + 2, yNext)
       )
     })
@@ -98,8 +106,7 @@ object SideMenuRenderer {
         item.availableActions.foreach(action => menuBuffer ++= action + "\n")
     }
 
-    yNext =
-      StringRenderer.drawString(g, menuBuffer.toString, (origin._1, yNext))
+    yNext = StringRenderer.drawString(g, menuBuffer.toString, (origin._1, yNext))
     return yNext
   }
 }
