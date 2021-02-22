@@ -2,13 +2,44 @@ package Rendering
 
 import GameEntities._
 import InputHandling.UI
-import java.awt.{Graphics2D, Color}
+import java.awt.{Graphics2D, Color, Toolkit}
 import Items.AbstractItem
+import map_objects.GameBoard
 
-object InventoryRenderer {
+object SideMenuRenderer {
   val selectedColor = new Color(255, 200, 200)
 
-  def drawInventory(
+  // Show the name of visible entities
+  def drawVisibleEntitiesPanel(
+      g: Graphics2D,
+      origin: (Int, Int),
+      drawnEntities: Array[GameEntity]
+  ): Int = {
+    val entitySize = g.getFont().getSize()
+    var yNext =
+      StringRenderer.drawString(g, "Visible : \n", origin) + entitySize
+
+    drawnEntities.foreach(e => {
+      g.drawImage(
+        Toolkit.getDefaultToolkit().getImage(e.image),
+        origin._1,
+        yNext - entitySize,
+        entitySize,
+        entitySize,
+        null
+      )
+      g.finalize()
+      yNext = StringRenderer.drawString(
+        g,
+        e.name,
+        (origin._1 + entitySize + 2, yNext)
+      )
+    })
+    return yNext
+  }
+
+  // Show player status, equiped items, items in the inventory and possible actions for the currently selected item
+  def drawPlayerInfo(
       g: Graphics2D,
       origin: (Int, Int),
       player: Player,
@@ -17,13 +48,19 @@ object InventoryRenderer {
     val equiped = player.getEquipedItems()
     val inventory = player.getInventoryItems()
     val menuBuffer = new StringBuilder()
-    var currentIndex: Int = 0
+    var currentIndex: Int = 0 // Used for direct item selection
     var yNext = origin._2
     var selectedItem: Option[AbstractItem] = None
 
+    menuBuffer ++= "HP : " + player.currentHP.toString + "/" + player.getMaxHP.toString + "\n"
+    menuBuffer ++= "Attack power : " + player.getAtt.toString + "\n"
+    menuBuffer ++= "Defense : " + player.getDef.toString + "\n\n"
+
+    // Appends an item to the menu (with correct information and color)
     def addToMenu(index: Int, item: AbstractItem): Unit = {
       val printedIndex =
-        if (ui.inInventory) (index + 'a').toChar.toString else ""
+        if (ui.inInventory) (index + 'a').toChar.toString
+        else "" // Information for direct item selection
       if (ui.selectedItem == index) {
         yNext = StringRenderer.drawString(
           g,
@@ -47,6 +84,7 @@ object InventoryRenderer {
       addToMenu(currentIndex, item)
       currentIndex += 1
     })
+
     menuBuffer ++= "\nInventory :\n"
     inventory.foreach(item => {
       addToMenu(currentIndex, item)
