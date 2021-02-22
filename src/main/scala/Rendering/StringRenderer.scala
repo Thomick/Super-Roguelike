@@ -12,11 +12,19 @@ object StringRenderer {
       origin: (Int, Int),
       writeColor: Color = defaultWriteColor
   ): Int = {
+    return drawIterable(g, text.split("\n"), origin, writeColor)
+  }
+
+  def drawIterable(
+      g: Graphics2D,
+      lines: Iterable[String],
+      origin: (Int, Int),
+      writeColor: Color = defaultWriteColor
+  ): Int = {
     g.setColor(writeColor)
     val size = g.getFont().getSize()
     var y = origin._2
-    text
-      .split("\n")
+    lines
       .foreach(line => {
         g.drawString(line, origin._1, y)
         y += size
