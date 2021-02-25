@@ -5,6 +5,7 @@ import scala.math.min
 import map_objects._
 import GameEntities._
 import fov_functions._
+import scala.collection._
 
 object BoardRenderer {
   val lightfloorColor = new Color(99, 150, 150)
@@ -22,8 +23,10 @@ object BoardRenderer {
       baseTile: (Int, Int),
       boardSize: Int,
       nbTiles: Int
-  ): Unit = {
+  ): Array[GameEntity] = {
     val tileSize = boardSize / (nbTiles + tilePadding)
+    //drawnEntities is used to show information about visible entities
+    var drawnEntities = new mutable.ArrayBuffer[GameEntity]
 
     def buildRect(pos: (Int, Int)): Rectangle = {
       new Rectangle(
@@ -40,6 +43,7 @@ object BoardRenderer {
         y <- baseTile._2 to min(baseTile._2 + nbTiles, board.size_y - 1)
         val pos = (x, y)
       } {
+        // Select tile color depending on tile type and visibility
         if (fovmap.is_light(x, y))
           board.grid(x)(y).explored = true
         if (board.grid(x)(y).explored) {
@@ -67,8 +71,10 @@ object BoardRenderer {
       }
     }
 
+    // Draw an entity on the board (if visible)
     def drawEntity(e: GameEntity) = {
       if (fovmap.is_light(e.pos._1, e.pos._2)) {
+        drawnEntities += e
         val img = Toolkit.getDefaultToolkit().getImage(e.image)
         g.drawImage(
           img,
@@ -89,5 +95,6 @@ object BoardRenderer {
 
     drawGrid()
     drawEntities()
+    return drawnEntities.toArray
   }
 }

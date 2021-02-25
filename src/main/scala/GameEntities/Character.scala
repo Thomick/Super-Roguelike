@@ -12,13 +12,13 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
 
   val baseMaxHP: Int = 10
   val baseDef: Int = 0
-  val baseAtt: Int = 1
+  val baseAtt: Int = 0
   var currentMaxHP: Int = 10
   var currentDef: Int = 0
   var currentAtt: Int = 0
   var currentHP: Int = 10
 
-  def move(nextPos : (Int,Int)): Unit = {
+  def move(nextPos: (Int, Int)): Unit = {
     if (board.isFree(nextPos)) {
       board.entityMoved(this, nextPos)
       pos = nextPos
@@ -27,19 +27,19 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
     }
   }
 
-  def action(c : Character): Unit = {
+  def action(c: Character): Unit = {
     if (c.isInstanceOf[Player]) {
       attack(c)
     }
   }
 
-  def attack(c : Character): Unit = {
+  def attack(c: Character): Unit = {
     val rnd = new Random
-    val damage = max(0,(getAtt() * (1 + 3*rnd.nextGaussian())).toInt)
+    val damage = max(0, (getAtt() * (1 + 3 * rnd.nextGaussian())).toInt)
     c.take_damage(damage)
   }
 
-  def take_damage(d : Int): Unit = {
+  def take_damage(d: Int): Unit = {
     val effective_damage = max(0, d - getDef())
     currentHP -= effective_damage
     if (currentHP <= 0) {
@@ -47,7 +47,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard)
     }
   }
 
-  def die() : Unit = {
+  def die(): Unit = {
     board.removeCharacter(pos)
   }
 
@@ -75,24 +75,21 @@ trait AIControlled extends Character {
   def act(): Unit = ()
 }
 
-trait Enemy extends Character with AIControlled {
-
-
-}
+trait Enemy extends Character with AIControlled {}
 
 trait MeleeEnemy extends Character with Enemy {
 
-  def nextCell() : Option[(Int,Int)] = {
-    val sPath = board.shortestPath(pos,board.playerEntity.pos)
+  def nextCell(): Option[(Int, Int)] = {
+    val sPath = board.shortestPath(pos, board.playerEntity.pos)
     sPath match {
       case Some(path) => Some(path(1))
-      case None => None
+      case None       => None
     }
   }
 
   override def act(): Unit = {
     nextCell() match {
-      case None => ()
+      case None       => ()
       case Some(cell) => move(cell)
     }
   }
