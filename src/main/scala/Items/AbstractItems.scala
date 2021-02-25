@@ -12,16 +12,7 @@ abstract class AbstractItem() {
   val availableActions: ArrayBuffer[String] = new ArrayBuffer[String]
   availableActions += "D - Drop" //+= "U - Use (not implemented)"
 
-  def drop(character: Character, board: GameBoard, pos: (Int, Int)): Boolean = {
-    if (board.addItem(new ItemEntity(pos, board, this), pos)) {
-      println("Item dropped")
-      return true
-    } else {
-      println("This item can't be dropped here")
-      return false
-    }
-  }
-
+  // Activate the special ability of an item
   def use(character: Character, board: GameBoard, pos: (Int, Int)): Boolean = {
     println("It does nothing")
     true
@@ -30,12 +21,17 @@ abstract class AbstractItem() {
 
 trait Consumable extends AbstractItem {
   availableActions += "C - Consume"
+
+  // Apply consumption effect to the character and return action description (for the logs)
   def consume(character: Character): String = "Nothing happened."
 }
 
 trait Throwable extends AbstractItem {
   availableActions += "T - Throw"
 
+  // Throw an object from startingPos in the direction dir
+  // For now it only drop the item on the floor next to starting position
+  // Mechanic might change in the future
   def throwItem(
       character: Character,
       board: GameBoard,
@@ -43,20 +39,20 @@ trait Throwable extends AbstractItem {
       dir: Direction.Value
   ): Boolean = {
     val throwPos = Direction.nextPos(startingPos, dir)
-    this.drop(character, board, throwPos)
+    board.addItem(new ItemEntity(throwPos, board, this), throwPos)
   }
 }
 
+// Enumeration of bodyparts used for equipment restrictions
 object BodyPart extends Enumeration {
   val Head, Arm, Legs, Torso, Feet, Hand, Other = Value
 }
 
 trait Equipable extends AbstractItem {
   availableActions += "R - Equip/Unequip"
+  // Bodypart on which the item is equiped
   val part: BodyPart.Value
-}
 
-trait Passive extends AbstractItem {
   val bonusAtt: Int
   val bonusDef: Int
   val bonusHP: Int

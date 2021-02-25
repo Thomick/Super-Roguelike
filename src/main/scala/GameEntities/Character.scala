@@ -131,9 +131,10 @@ trait HasInventory extends Character {
   def dropItem(itemSlot: Int): Boolean = {
     if (!isSlotEmpty(itemSlot)) {
       val item = inventory(itemSlot)
-      item.drop(this, board, pos)
-      inventory.remove(itemSlot)
-      return true
+      if (board.addItem(new ItemEntity(pos, board, item), pos)) {
+        inventory.remove(itemSlot)
+        return true
+      }
     }
     return false
   }
@@ -149,9 +150,11 @@ trait HasInventory extends Character {
     if (!isSlotEmpty(itemSlot)) {
       val item = inventory(itemSlot)
       if (item.isInstanceOf[Throwable]) {
-        item.asInstanceOf[Throwable].throwItem(this, board, pos, dir)
-        inventory.remove(itemSlot)
-        return true
+        val success = item.asInstanceOf[Throwable].throwItem(this, board, pos, dir)
+        if (success) {
+          inventory.remove(itemSlot)
+          return true
+        }
       }
       writeLog(item.name + " can't be thrown")
     }
@@ -179,32 +182,14 @@ trait CanEquip extends Character with HasInventory {
 
   def getEquipedItems(): Array[AbstractItem] = equipedItems.toArray
 
-  override def getDef(): Int = {
-    baseDef + equipedItems.foldLeft[Int](0)((s, item) =>
-      if (item.isInstanceOf[Passive])
-        s + item.asInstanceOf[Passive].bonusDef
-      else
-        s
-    )
-  }
+  override def getDef(): Int =
+    baseDef + equipedItems.foldLeft[Int](0)((s, item) => s + item.bonusDef)
 
-  override def getAtt(): Int = {
-    baseAtt + equipedItems.foldLeft[Int](0)((s, item) =>
-      if (item.isInstanceOf[Passive])
-        s + item.asInstanceOf[Passive].bonusAtt
-      else
-        s
-    )
-  }
+  override def getAtt(): Int =
+    baseAtt + equipedItems.foldLeft[Int](0)((s, item) => s + item.bonusAtt)
 
-  override def getMaxHP(): Int = {
-    baseMaxHP + equipedItems.foldLeft[Int](0)((s, item) =>
-      if (item.isInstanceOf[Passive])
-        s + item.asInstanceOf[Passive].bonusHP
-      else
-        s
-    )
-  }
+  override def getMaxHP(): Int =
+    baseMaxHP + equipedItems.foldLeft[Int](0)((s, item) => s + item.bonusHP)
 
   def equipItem(itemSlot: Int): Boolean = {
     if (!isSlotEmpty(itemSlot)) {

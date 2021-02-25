@@ -56,7 +56,8 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
     playerEntity.pos = map._2(0)
     otherCharacters = new mutable.HashMap[(Int, Int), Character]
     itemEntities = new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
-    // Test
+
+    // Setup of some entities in order to test the features
     for { x <- 1 to map._2.size - 1 } {
       otherCharacters += ((map._2(x)._1, map._2(x)._2) -> new Robot(
         (map._2(x)._1, map._2(x)._2),
@@ -68,25 +69,14 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
     // End of test
   }
 
-  def inGrid(pos: (Int, Int)): Boolean = {
+  def inGrid(pos: (Int, Int)): Boolean =
     pos._1 >= 0 && pos._1 < size_x && pos._2 >= 0 && pos._2 < size_y
-  }
 
-  def isFree(pos: (Int, Int)): Boolean = {
-    if (inGrid(pos))
-      !(grid(pos._1)(pos._2).blocking || otherCharacters.contains(
-        pos
-      ) || playerEntity.pos == pos)
-    else
-      false
-  }
+  def isFree(pos: (Int, Int)): Boolean =
+    inGrid(pos) && (!(grid(pos._1)(pos._2).blocking || otherCharacters.contains(pos) || playerEntity.pos == pos))
 
-  def hasCharacter(pos: (Int, Int)): Boolean = {
-    if (inGrid(pos))
-      (otherCharacters.contains(pos) || playerEntity.pos == pos)
-    else
-      false
-  }
+  def hasCharacter(pos: (Int, Int)): Boolean =
+    inGrid(pos) && (otherCharacters.contains(pos) || playerEntity.pos == pos)
 
   // TODO pass the previous position as parameter
   def entityMoved(e: Character, newPos: (Int, Int)): Unit = {
@@ -104,13 +94,12 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
   }
 
   def addItem(entity: ItemEntity, pos: (Int, Int)): Boolean = {
-    if (inGrid(pos)) {
-      if (!itemEntities.contains(pos))
-        itemEntities(pos) = new mutable.ArrayBuffer[ItemEntity]
-      itemEntities(pos) += entity
-      true
-    } else
+    if (!inGrid(pos))
       false
+    if (!itemEntities.contains(pos))
+      itemEntities(pos) = new mutable.ArrayBuffer[ItemEntity]
+    itemEntities(pos) += entity
+    true
   }
 
   def getEntities(): List[GameEntity] = {

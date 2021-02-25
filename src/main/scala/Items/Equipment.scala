@@ -1,11 +1,11 @@
 package Items
 
-abstract class Armor() extends AbstractItem with Equipable with Passive {
+abstract class Armor() extends AbstractItem with Equipable {
   val bonusAtt: Int = 0
   val bonusHP: Int = 0
 }
 
-abstract class BasicWeapon() extends AbstractItem with Equipable with Passive {
+abstract class Weapon() extends AbstractItem with Equipable {
   val part = BodyPart.Hand
   val bonusDef: Int = 0
   val bonusHP: Int = 0
