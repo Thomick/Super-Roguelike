@@ -19,3 +19,11 @@ class IronHelmet() extends Armor {
   val bonusDef: Int = 5
   val weight = 500
 }
+
+class LaserChainsaw() extends Weapon {
+  val name: String = "Laser chainsaw"
+  val description: String = "It is a laser chainsaw. It seems really powerful."
+  override val image = "src/main/resources/laserchainsaw.png"
+  val bonusAtt: Int = 15
+  val weight = 1500
+}

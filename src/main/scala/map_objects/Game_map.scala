@@ -74,12 +74,14 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
           ))
         case 2 => ()
       }
-      rnd.nextInt(3) match {
+      rnd.nextInt(4) match {
         case 0 => 
           addItem(new ItemEntity(map._2(x), this, new Apple), map._2(x))
         case 1 => 
           addItem(new ItemEntity(map._2(x), this, new IronHelmet), map._2(x))
-        case 2 => ()
+        case 2 => 
+          addItem(new ItemEntity(map._2(x), this, new LaserChainsaw), map._2(x))
+        case 3 => ()
       }
     }
     // End of test
