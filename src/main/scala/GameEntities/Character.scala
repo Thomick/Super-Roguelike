@@ -6,16 +6,18 @@ import scala.math.min
 import scala.util.Random
 import scala.math.{min, max}
 
-abstract class Character(
-    init_pos: (Int, Int),
-    b: GameBoard,
-    hasLogs: Boolean = false
-) extends GameEntity(init_pos, b, hasLogs) {
+// Base class for game characters
+abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = false)
+    extends GameEntity(init_pos, b, hasLogs) {
 
   val baseMaxHP: Int = 10
   val baseDef: Int = 0
   val baseAtt: Int = 0
   var currentHP: Int = 10
+
+  def getDef(): Int = baseDef
+  def getAtt(): Int = baseAtt
+  def getMaxHP(): Int = baseMaxHP
 
   // Move the character(C1) to a new position on the board
   // If there another character(C2) at this position, triggers the the current character action on the other character(C2)
@@ -60,23 +62,20 @@ abstract class Character(
     return (effectiveDamage, false)
   }
 
+  // Called when a character dies
   def die(): Unit = {
     writeLog(name + " dies. Goodbye cruel world !")
     board.removeCharacter(pos)
   }
-
-  def getDef(): Int = baseDef
-  def getAtt(): Int = baseAtt
-  def getMaxHP(): Int = baseMaxHP
 }
 
+// Shared trait for npc
+// active attribute should change the npc behaviour during board update
 trait AIControlled extends Character {
-  var active = false
-  def activate(): Unit = {
-    active = true
-  }
-  def desactivate(): Unit = {
-    active = false
-  }
+  var active: Boolean = false
+  def activate(): Unit = active = true
+  def deactivate(): Unit = active = false
+
+  // Called during board update
   def act(): Unit = ()
 }
