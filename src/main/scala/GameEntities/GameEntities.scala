@@ -2,27 +2,6 @@ package GameEntities
 
 import map_objects._
 
-object Direction extends Enumeration {
-  val Up, Down, Left, Right, UpLeft, UpRight, DownLeft, DownRight, Nop = Value
-
-  val allDirections =
-    List(Up, Down, Left, Right, UpLeft, UpRight, DownLeft, DownRight)
-
-  def nextPos(pos: (Int, Int), dir: Direction.Value): (Int, Int) = {
-    dir match {
-      case Direction.Left      => (pos._1 - 1, pos._2)
-      case Direction.Right     => (pos._1 + 1, pos._2)
-      case Direction.Up        => (pos._1, pos._2 - 1)
-      case Direction.Down      => (pos._1, pos._2 + 1)
-      case Direction.UpLeft    => (pos._1 - 1, pos._2 - 1)
-      case Direction.UpRight   => (pos._1 + 1, pos._2 - 1)
-      case Direction.DownLeft  => (pos._1 - 1, pos._2 + 1)
-      case Direction.DownRight => (pos._1 + 1, pos._2 + 1)
-      case Direction.Nop       => pos
-    }
-  }
-}
-
 abstract class GameEntity(
     init_pos: (Int, Int),
     b: GameBoard,
@@ -34,13 +13,9 @@ abstract class GameEntity(
   val board: GameBoard = b
   val image: String = "src/main/resources/placeholder.png"
 
+  // Write the input message to the logger of the gameboard
   def writeLog(message: String): Unit = {
     if (hasLogs)
       board.logger.writeLog(message)
   }
-}
-
-class Rock(init_pos: (Int, Int), b: GameBoard) extends GameEntity(init_pos, b) {
-  val name = "A Rock"
-  val description = "A Big Rock"
 }

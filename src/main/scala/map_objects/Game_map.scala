@@ -75,11 +75,11 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
         case 2 => ()
       }
       rnd.nextInt(4) match {
-        case 0 => 
+        case 0 =>
           addItem(new ItemEntity(map._2(x), this, new Apple), map._2(x))
-        case 1 => 
+        case 1 =>
           addItem(new ItemEntity(map._2(x), this, new IronHelmet), map._2(x))
-        case 2 => 
+        case 2 =>
           addItem(new ItemEntity(map._2(x), this, new LaserChainsaw), map._2(x))
         case 3 => ()
       }
@@ -140,7 +140,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
   def pickUpItem(pos: (Int, Int), itemIndex: Int): Option[AbstractItem] = {
     if (itemEntities.contains(pos)) {
       if (itemEntities(pos).length > itemIndex) {
-        val item = itemEntities(pos)(itemIndex).attachedItem
+        val item = itemEntities(pos)(itemIndex).associatedItem
         itemEntities(pos).remove(itemIndex)
         if (itemEntities(pos).length == 0)
           itemEntities -= pos

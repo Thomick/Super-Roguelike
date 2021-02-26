@@ -16,43 +16,49 @@ abstract class Character(
   val baseMaxHP: Int = 10
   val baseDef: Int = 0
   val baseAtt: Int = 0
-  var currentMaxHP: Int = 10
-  var currentDef: Int = 0
-  var currentAtt: Int = 0
   var currentHP: Int = 10
 
+  // Move the character(C1) to a new position on the board
+  // If there another character(C2) at this position, triggers the the current character action on the other character(C2)
   def move(nextPos: (Int, Int)): Unit = {
-    if (board.isFree(nextPos)) {
-      board.entityMoved(this, nextPos)
-      pos = nextPos
-    } else if (board.hasCharacter(nextPos)) {
-      action(board.getCharacter(nextPos))
-    }
+    if (!(pos == nextPos))
+      if (board.isFree(nextPos)) {
+        board.entityMoved(this, nextPos)
+        pos = nextPos
+      } else if (board.hasCharacter(nextPos)) {
+        action(board.getCharacter(nextPos))
+      }
   }
 
-  def action(c: Character): Unit = {
-    if (c.isInstanceOf[Player]) {
-      attack(c)
-    }
-  }
+  // Move the character to an adjacent square according to the specified direction
+  def moveDir(dir: Direction.Value): Unit = move(Direction.nextPos(pos, dir))
 
+  // Action of the current character on another character
+  // (Usually triggered during collisions)
+  def action(c: Character): Unit
+
+  // Hand to hand attack based on the character stats
   def attack(c: Character): Unit = {
     val rnd = new Random
     val damage = max(0, (getAtt() * (1 + 3 * rnd.nextGaussian())).toInt)
-    val (effective_damage, died) = c.take_damage(this, damage)
-    writeLog(name + " deals " + effective_damage.toString + " damages to " + c.name)
+    val (effectiveDamage, died) = c.take_damage(this, damage)
+    writeLog(name + " deals " + effectiveDamage.toString + " damages to " + c.name)
     if (died)
       writeLog(name + " kills " + c.name)
   }
 
-  def take_damage(from: Character, d: Int): (Int, Boolean) = {
-    val effective_damage = max(0, d - getDef())
-    currentHP -= effective_damage
+  // Compute effective damage based on defense stat and apply them to this character
+  // Called by the opponent in order to effectively apply damages to its target
+  // Return effective damage
+  def take_damage(from: Character, dam: Int): (Int, Boolean) = {
+    val effectiveDamage = max(0, dam - getDef())
+    currentHP -= effectiveDamage
+    writeLog(name + "receives " + effectiveDamage.toString + "damages from" + from.name)
     if (currentHP <= 0) {
       die()
-      return (effective_damage, true) // The second value indicates if the attack killed the character or not
+      return (effectiveDamage, true) // The second value indicates if the attack killed the character or not
     }
-    return (effective_damage, false)
+    return (effectiveDamage, false)
   }
 
   def die(): Unit = {
@@ -63,14 +69,6 @@ abstract class Character(
   def getDef(): Int = baseDef
   def getAtt(): Int = baseAtt
   def getMaxHP(): Int = baseMaxHP
-
-  def updateMaxStat(): Unit = {
-    currentAtt = getAtt()
-    currentDef = getDef()
-    currentMaxHP = getMaxHP()
-    currentHP = min(currentHP, currentMaxHP)
-  }
-
 }
 
 trait AIControlled extends Character {
@@ -84,7 +82,13 @@ trait AIControlled extends Character {
   def act(): Unit = ()
 }
 
-trait Enemy extends Character with AIControlled {}
+trait Enemy extends Character with AIControlled {
+  def action(c: Character): Unit = {
+    if (c.isInstanceOf[Player]) {
+      attack(c)
+    }
+  }
+}
 
 trait MeleeEnemy extends Character with Enemy {
 
@@ -198,7 +202,6 @@ trait CanEquip extends Character with HasInventory {
         if (isBodyPartFree(item.part)) {
           equipedItems += item
           inventory.remove(itemSlot)
-          updateMaxStat()
           writeLog("You equip " + item.name)
           return true
         } else {
@@ -216,7 +219,6 @@ trait CanEquip extends Character with HasInventory {
       val item = equipedItems(itemSlot)
       inventory += item
       equipedItems.remove(itemSlot)
-      updateMaxStat()
       writeLog("You unequip " + item.name)
       return true
     }
