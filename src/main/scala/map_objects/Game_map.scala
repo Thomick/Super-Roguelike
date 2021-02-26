@@ -9,6 +9,7 @@ import logger._
 import scala.collection._
 import scala.math.{pow, sqrt}
 import scala.collection.mutable.PriorityQueue
+import scala.util.Random
 
 abstract class GameTile() {
   def blocking: Boolean
@@ -58,14 +59,29 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
     itemEntities = new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
 
     // Setup of some entities in order to test the features
+    val rnd = new Random
     for { x <- 1 to map._2.size - 1 } {
-      otherCharacters += ((map._2(x)._1, map._2(x)._2) -> new Robot(
-        (map._2(x)._1, map._2(x)._2),
-        this
-      ))
+      rnd.nextInt(3) match {
+        case 0 =>
+          otherCharacters += ((map._2(x)._1, map._2(x)._2) -> new Robot(
+            (map._2(x)._1, map._2(x)._2),
+            this
+          ))
+        case 1 =>
+          otherCharacters += ((map._2(x)._1, map._2(x)._2) -> new Dog(
+            (map._2(x)._1, map._2(x)._2),
+            this
+          ))
+        case 2 => ()
+      }
+      rnd.nextInt(3) match {
+        case 0 => 
+          addItem(new ItemEntity(map._2(x), this, new Apple), map._2(x))
+        case 1 => 
+          addItem(new ItemEntity(map._2(x), this, new IronHelmet), map._2(x))
+        case 2 => ()
+      }
     }
-    addItem(new ItemEntity(map._2(0), this, new Apple), map._2(0))
-    addItem(new ItemEntity(map._2(0), this, new IronHelmet), map._2(0))
     // End of test
   }
 

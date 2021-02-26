@@ -31,6 +31,13 @@ Pour le champs de vision, nous avons utilisé l'algorithme dit de "recursive sha
 
 Dans la version actuelle, les seuls ennemis implémentés dans le jeu combattent au corps à corps, ainsi le plus adapté est d'utiliser un algorithme de plus court chemin. Nous avons donc décidé d'utiliser l'algorithme A*.
 
+\section{Difficultés rencontrées}
+
+La principale source de difficulté a été d'utiliser Scala.
+
+Par exemple, le fait qu'il n'y ai pas de commande \texttt{break}, ou au moins pas qui fonctionne comme dans la plupart des autres langages de programmation, nous a forcé à adapter notre code à cette contrainte.
+
+De plus, ce n'était pas toujours évident de trouver de la documentation compréhensible, tout particulièrement pour les aspects très techniques comme l'interface qui ont du être en partie fait avec du Java. Par exemple, pour afficher une image avec Graphics2D, il existe une demi-douzaine de fonctions qui demande chacune des arguments différents et des classes différentes pour l'image et la différence est difficilement compréhensible.
 
 \end{document}
 

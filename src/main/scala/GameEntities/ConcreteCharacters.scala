@@ -21,9 +21,16 @@ class Player(init_pos: (Int, Int), b: GameBoard)
 
 class Robot(init_pos: (Int, Int), b: GameBoard)
     extends Character(init_pos, b)
-    with Humanoid
     with MeleeEnemy {
   val name = "Robot"
   val description = "An angry robot"
   override val image = "src/main/resources/robot2.png"
+}
+
+class Dog(init_pos: (Int, Int), b: GameBoard)
+    extends Character(init_pos, b)
+    with MeleeEnemy {
+  val name = "Dog"
+  val description = "An angry robot dog"
+  override val image = "src/main/resources/doggo.png"
 }
