@@ -1,0 +1,49 @@
+\section{Annexe}
+\subsection{Diagramme d'héritage des objets}
+
+\begin{center}
+    \begin{tikzpicture}
+        \begin{umlpackage}{Items}
+            \umlclass[type=abstract]{AbstractItem}{
+                name : String\\
+                description : String\\
+                weight : Int\\
+                image : String\\
+                availableActions : Array[String]
+            }{
+                use(character: Character, board: GameBoard, \\
+                \qquad pos: (Int, Int)): Boolean
+            }
+            \umlclass[y = -11, x = -1.2,type = Trait]{Equipable}{
+                part : BodyPart.Value\\
+                bonusAtt : Int\\
+                bonusDef : Int\\
+                bonusHP : Int
+            }{}
+            \umlclass[y=-4,x=0.2,type = Trait]{Consumable}{
+            }{consume(character: Character): String}
+            \umlclass[y=-7.5,x=2,type = Trait]{Throwable}{}{
+                throwItem(
+                character: Character,
+                board: GameBoard,\\ \qquad
+                startingPos: (Int, Int),
+                dir: Direction.Value
+                ): Boolean
+            }
+
+            \umlclass[y=-4,x=10,type=abstract]{Food}{
+            }{}
+            \umlclass[y=-10,x=10,type=abstract]{Weapon}{}{}
+            \umlclass[y=-12,x=10,type=abstract]{Armor}{}{}
+        \end{umlpackage}
+
+
+        \umlinherit[geometry=-|,anchors=west and -150,arm1=-5mm]{Consumable}{AbstractItem}
+        \umlinherit[geometry=-|,anchors=west and -150,arm1=-5mm]{Equipable}{AbstractItem}
+        \umlinherit[geometry=-|,anchors=west and -150,arm1=-5mm]{Throwable}{AbstractItem}
+        \umlinherit[geometry=--]{Food}{Consumable}
+        \umlinherit[geometry=-|-,anchor2 = east,arm1=-2cm]{Food}{Throwable}
+        \umlinherit[geometry=-|-]{Weapon}{Equipable}
+        \umlinherit[geometry=-|-]{Armor}{Equipable}
+    \end{tikzpicture}
+\end{center}

@@ -4,5 +4,6 @@
 .bloop
 .scalafmt.conf
 *.gz
+*.sty
 target/
 project/

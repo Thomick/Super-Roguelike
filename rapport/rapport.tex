@@ -9,6 +9,7 @@
 \usepackage{amsfonts}
 \usepackage{stmaryrd}
 \usepackage{xcolor}
+%\usepackage{tikz-uml}
 \title{Projet Programmation 2 : Rapport Partie 1}
 \author{MANGEL Léo et MICHEL Thomas}
 \date{}
@@ -22,26 +23,29 @@ Nous avons implémenté les fonctionnalités suivantes :
 \subsection*{Affichage :}
 
 \begin{itemize}
-	\item Affichage de la carte et du champ de vision du joueur. Seuls les entités dans le champ de vision du joueur sont visibles. De plus, seules les cases de la cartes visibles par le joueur, ou déjà visitées, sont affichées.
-	\item Interface avec les informations sur le personnage du joueur, son inventaire ainsi que les entités dans son champ de vision.
-	\item Affichage des événements récents sous forme de logs, comme les actions du joueur ainsi que les attaques subies.
+    \item Affichage de la carte et du champ de vision du joueur. Seuls les entités dans le champ de vision du joueur sont visibles. De plus, seules les cases de la cartes visibles par le joueur, ou déjà visitées, sont affichées.
+    \item Interface avec les informations sur le personnage du joueur, son inventaire ainsi que les entités dans son champ de vision.
+    \item Affichage des événements récents sous forme de logs, comme les actions du joueur ainsi que les attaques subies.
 \end{itemize}
 
 \subsection*{Jeu :}
 
 \begin{itemize}
-	\item Génération aléatoire de la carte, ainsi que des ennemis et des objets sur cette carte.
-	\item Gestion des déplacement du joueur dans 8 directions.
-	\item Système d'objet et d'inventaire. Le joueur peut ramasser les objets au sol pour les mettre dans son inventaire. Il peut consommer, équiper(avec des contraintes sur le nombre d'objets sur une même partie du corps), jetter et déposer les objets de son inventaire.
-	\item Système d'ennemis et de combat. Les ennemis ne bougent pas avant d'être activés, ce qui se produit lorsqu'ils entrent dans le champ de vision du joueur. Lorsqu'ils sont activés, ils se déplacent vers le joueur et l'attaquent au corps à corps. Le joueur peut également attaquer au corps à corps en se déplaçant sur la case d'un ennemi. Il y a également des statistiques qui déterminent les dégats d'une attaque et reçus par l'adversaire. Ces statistiques peuvent être modifiées par les objets.
+    \item Génération aléatoire de la carte, ainsi que des ennemis et des objets sur cette carte.
+    \item Gestion des déplacement du joueur dans 8 directions.
+    \item Système d'objet et d'inventaire. Le joueur peut ramasser les objets au sol pour les mettre dans son inventaire. Il peut consommer, équiper(avec des contraintes sur le nombre d'objets sur une même partie du corps), jetter et déposer les objets de son inventaire.
+    \item Système d'ennemis et de combat. Les ennemis ne bougent pas avant d'être activés, ce qui se produit lorsqu'ils entrent dans le champ de vision du joueur. Lorsqu'ils sont activés, ils se déplacent vers le joueur et l'attaquent au corps à corps. Le joueur peut également attaquer au corps à corps en se déplaçant sur la case d'un ennemi. Il y a également des statistiques qui déterminent les dégats d'une attaque et reçus par l'adversaire. Ces statistiques peuvent être modifiées par les objets.
 \end{itemize}
 
 \section{Organisation du code}
 Le code du projet est organisé en plusieurs parties:
 \begin{itemize}
-	\item Affichage: La fenêtre du jeu ainsi que les classes gérant la mécanique du jeu sont instanciés par l'objet \texttt{Main}. Nous utilisons Swing pour la gestion de la fenêtre et des entrées du joueurs. Nous dessinons directement à l'interieur de la fenêtre à l'aide des méthodes de la classe \texttt{Graphics2D} qui est utilisée pour l'affichage de la fenêtre. Le dessin des différentes parties de l'interface est géré par les objets de notre package \emph{rendering}. La carte est une zone carré dont la taille s'adapte à la taille de la fenêtre (affiché par l'objet \texttt{BoardRenderer}). Le reste de l'interface se compose d'une barre latérale et d'un affichage des logs sous la carte. Pour afficher les différentes informations nous avons mis en place l'objet \texttt{StringRenderer} qui affiche les de manière correcte les chaînes de caractères sur plusieurs lignes.
-	\item Gestion des entrées (package \emph{input\_handling}): Les entrées détectés par Swing sont envoyées à une instance de la classe \texttt{UI} qui gère l'état de l'interface (objet sélectionné) et qui met à jour l'état du jeux en effectuant l'action demandées par le joueur et en donnant la possibilité aux personnages non joueurs d'effectuer une action.
-	\item Gestion de la carte : La carte est essentiellement gérée par la classe \texttt{GameBoard}. Le terrain est un tableau d'objets héritant de la classe \texttt{GameTile} stockant les caractéristiques d'une case(explorées, bloque le joueur).
+    \item Affichage: La fenêtre du jeu ainsi que les classes gérant la mécanique du jeu sont instanciées par l'objet \texttt{Main}. Nous utilisons Swing pour la gestion de la fenêtre et des entrées du joueur. Nous dessinons directement à l'intérieur de la fenêtre à l'aide des méthodes de la classe \texttt{Graphics2D}. Le dessin des différentes parties de l'interface est géré par les objets de notre package \emph{rendering}. La carte est une zone carrée dont la taille s'adapte à la taille de la fenêtre (\texttt{BoardRenderer}). Le reste de l'interface se compose d'une barre latérale et d'un affichage des logs sous la carte. Pour afficher les différentes informations nous avons mis en place l'objet \texttt{StringRenderer} qui est capable d'afficher les chaînes de caractères sur plusieurs lignes.
+    \item Gestion des entrées (package \emph{input\_handling}): Les entrées détectées par Swing sont envoyées à une instance de la classe \texttt{UI} qui gère l'état de l'interface (objet sélectionné) et qui met à jour l'état du jeu en effectuant l'action demandée par le joueur et en donnant la possibilité aux personnages non-joueurs d'effectuer une action.
+    \item Gestion de la carte : La carte est essentiellement gérée par la classe \texttt{GameBoard}. Le terrain est un tableau d'objets héritant de la classe \texttt{GameTile} stockant les caractéristiques d'une case(explorées, bloque le joueur). La carte est peuplée par des entités qui peuvent être des objets, des personnages ou d'autres éléments avec lesquels le joueur peut interagir. Un nombre illimité d'objets peuvent coexister sur une même case, mais les autres entitées sont limitées à une par case. La carte est générée procéduralement par un algorithme expliqué dans la suite de ce rapport. La génération d'une nouvelle carte est pour l'instant effectuée au lancement du jeu, mais pourra par la suite être utilisée pour faire plusieurs niveaux. La vue du personnage du joueur est calculée par la classe \texttt{FovMap} à chaque mise à jour de la fenêtre de jeu.
+    \item Les entités: Les entités se divisent pour le moment en deux types principaux que sont les objets et les personnages. Un diagramme des relations d'héritage se trouve en annexe.
+    \item Les personnages: Les classes des personnages dérivent toutes de la classe \texttt{Character}. Tous les personnages ont des statistiques(points de vie, défense, points d'attaque) et peuvent se déplacer sur la carte, attaquer et recevoir des dégâts. On peut créer un personnage avec un inventaire à l'aide de certains traits (fichier \texttt{CharacterInventories.scala}). Les personnages non-joueurs ont un trait \texttt{AIControlled} qu'il faut ensuite associer avec d'autres traits pour définir le comportement final du personnage. Les personnages qui y sont autorisé décrivent leurs actions à l'aide d'une instance de la classe \texttt{Logger} associée à la carte. Ces logs sont ensuite affichés à l'écran.
+    \item Les objets: Nous différencions les objets eux même de l'entité qui les représente sur la carte. Les objets sont définis dans le package \emph{items}. Les objets concrets peuvent êtres créés en associant des traits déjà définis qui ajoutent de nouvelles actions possibles aux objets telles que consommer l'objet, le lancer ou encore l'équiper. Certaines associations sont déjà faites de façon à créer des armes, armures ou de la nourriture facilement. Les objets équipables ont également un attribut indiquant la partie du corps sur laquelle ils sont portés. Le nombre maximal d'objets sur chaque partie du corps est défini par des traits de personnage (par exemple \texttt{Humanoid} dans \texttt{CharacterInventories.scala}). Un diagramme d'héritage pour les objets se trouve également en annexe.
 \end{itemize}
 
 \section{Algorithmes utilisés}
@@ -75,6 +79,10 @@ Par exemple, le fait qu'il n'y ai pas de commande \texttt{break}, ou au moins qu
 De plus, ce n'était pas toujours évident de trouver de la documentation compréhensible, tout particulièrement pour l'interface que nous avons réalisé avec un package commun avec Java (Graphics). Par exemple, pour afficher une image avec Graphics2D, il existe une demi-douzaine de fonctions qui demande chacune des arguments différents et des classes différentes pour l'image et les différences ne sont que peu documentées.
 
 Cependant, nous avont été surpris de la facilité de prise en main de Scala de manière générale.
+
+\newpage
+
+%\input{annexe}
 
 \end{document}
 
