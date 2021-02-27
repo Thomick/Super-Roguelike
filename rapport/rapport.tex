@@ -23,15 +23,15 @@ Nous avons implémenté les fonctionnalités suivantes :
 
 \begin{itemize}
 	\item Affichage de la carte et du champ de vision du joueur. Seuls les entités dans le champ de vision du joueur sont visibles. De plus, seules les cases de la cartes visibles par le joueur, ou déjà visitées, sont affichées.
-	\item Interface avec les informations sur le personnage du joueur, son inventaire ainsi que les entités dans son champ de vision
-	\item Affichage des événements récents sous forme de logs, comme les actions du joueur ainsi que les attaques subites
+	\item Interface avec les informations sur le personnage du joueur, son inventaire ainsi que les entités dans son champ de vision.
+	\item Affichage des événements récents sous forme de logs, comme les actions du joueur ainsi que les attaques subies.
 \end{itemize}
 
 \subsection*{Jeu :}
 
 \begin{itemize}
-	\item Génération aléatoire de la carte, ainsi que des ennemis et des objets sur cette carte
-	\item Gestion des déplacement du joueur dans 8 directions
+	\item Génération aléatoire de la carte, ainsi que des ennemis et des objets sur cette carte.
+	\item Gestion des déplacement du joueur dans 8 directions.
 	\item Système d'objet et d'inventaire. Le joueur peut ramasser les objets au sol pour les mettre dans son inventaire. Il peut consommer, équiper, jetter et déposer les objets de son inventaire.
 	\item Système d'ennemis et de combat. Les ennemis ne bougent pas avant d'être activés, ce qui se produit lorsqu'ils entrent dans le champ de vision du joueur. Lorsqu'ils sont activés, ils se déplacent vers le joueur et l'attaquent au corps à corps. Le joueur peut également attaquer au corps à corps en se déplaçant sur la case d'un ennemi. Il y a également des statistiques qui déterminent les dégats faits et reçus. Ces statistiques peuvent être modifiées par les objets.
 \end{itemize}
@@ -42,15 +42,21 @@ Nous avons utilisé plusieurs algorithmes existants pour certaines parties du pr
 
 \subsection{Génération aléatoire de la carte}
 
-Pour la génération de la carte, nous avons utilisé un algorithme appelé "Tunneling Algorithm".
+Pour la génération de la carte, nous avons utilisé un algorithme appelé "Tunneling Algorithm". Cela consiste à générer des salles de tailles et de position aléatoire à la suite, de vérifier qu'elles n'intersectent pas avec des salles précédentes, puis de les relier entre elles dans l'ordre de génération à l'aide de couloirs en forme de "L".
+
+Pour la suite, nous envisageons de rajouter d'autres types d'environnement qui utiliseraient des algorithmes différents de génération de carte.
 
 \subsection{Champs de vision}
 
-Pour le champs de vision, nous avons utilisé l'algorithme dit de "recursive shadowcasting".
+Pour le champs de vision, nous avons utilisé l'algorithme dit de "recursive shadowcasting". Cet algorithme consiste traiter chaque octants autour du personnage de manière indépendante. Sur chaque octant, on parcourt les colonnes une par une de manière récursive en mettant à jour les lignes délimitant les contours de la zone visible lorsqu'on examine un mur.
+
+Cet algorithme a l'avantage d'être un des plus rapides, car il ne considère que les cases visibles et il ne regarde chaque case qu'au plus deux fois.
+
+De plus, nous avons ajouté la contrainte qu'une case ne contenant pas un mur n'est visible que si le centre de la case est visible. Cela rend l'algorithme symmétrique, dans le sens où une case B est visible depuis une case A si et seulement si la case A est visible depuis la case B si A et B ne sont pas des murs.
 
 \subsection{Déplacement des ennemis}
 
-Dans la version actuelle, les seuls ennemis implémentés dans le jeu combattent au corps à corps, ainsi le plus adapté est d'utiliser un algorithme de plus court chemin. Nous avons donc décidé d'utiliser l'algorithme A*.
+Dans la version actuelle, les seuls ennemis implémentés dans le jeu combattent au corps à corps, ainsi le plus adapté est d'utiliser un algorithme de plus court chemin. Nous avons donc décidé d'utiliser l'algorithme A*. Cet algorithme consiste à ajouter une heuristique au choix des arcs à considérer dans l'algorithme de Dijkstra qui prennent en compte la distance euclidienne au point d'arrivée désiré. Cela permet d'être plus rapide même si ça ne renvoie pas nécessairement la meilleure solution.
 
 \section{Difficultés rencontrées}
 
@@ -59,6 +65,8 @@ La principale source de difficulté a été d'utiliser Scala.
 Par exemple, le fait qu'il n'y ai pas de commande \texttt{break}, ou au moins pas qui fonctionne comme dans la plupart des autres langages de programmation, nous a forcé à adapter notre code à cette contrainte.
 
 De plus, ce n'était pas toujours évident de trouver de la documentation compréhensible, tout particulièrement pour les aspects très techniques comme l'interface qui ont du être en partie fait avec du Java. Par exemple, pour afficher une image avec Graphics2D, il existe une demi-douzaine de fonctions qui demande chacune des arguments différents et des classes différentes pour l'image et la différence est difficilement compréhensible.
+
+Cependant, nous avont été surpris de la facilité de prise en main de Scala de manière générale.
 
 \end{document}
 
