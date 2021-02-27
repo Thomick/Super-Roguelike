@@ -81,7 +81,7 @@ class UI {
         /*case "I" =>
           inInventory = !inInventory
           doUpdate = false*/
-        case "Virgule" =>
+        case "O" =>
           selectedItem -= 1
           doUpdate = false
         case "I" =>

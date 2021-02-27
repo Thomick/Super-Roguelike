@@ -17,7 +17,7 @@
 
 \section{Etat du projet}
 
-Nous avons implémenté les fonctionnalités suivantes : 
+Nous avons implémenté les fonctionnalités suivantes :
 
 \subsection*{Affichage :}
 
@@ -36,9 +36,17 @@ Nous avons implémenté les fonctionnalités suivantes :
 	\item Système d'ennemis et de combat. Les ennemis ne bougent pas avant d'être activés, ce qui se produit lorsqu'ils entrent dans le champ de vision du joueur. Lorsqu'ils sont activés, ils se déplacent vers le joueur et l'attaquent au corps à corps. Le joueur peut également attaquer au corps à corps en se déplaçant sur la case d'un ennemi. Il y a également des statistiques qui déterminent les dégats d'une attaque et reçus par l'adversaire. Ces statistiques peuvent être modifiées par les objets.
 \end{itemize}
 
+\section{Organisation du code}
+Le code du projet est organisé en plusieurs parties:
+\begin{itemize}
+	\item Affichage: La fenêtre du jeu ainsi que les classes gérant la mécanique du jeu sont instanciés par l'objet \texttt{Main}. Nous utilisons Swing pour la gestion de la fenêtre et des entrées du joueurs. Nous dessinons directement à l'interieur de la fenêtre à l'aide des méthodes de la classe \texttt{Graphics2D} qui est utilisée pour l'affichage de la fenêtre. Le dessin des différentes parties de l'interface est géré par les objets de notre package \emph{rendering}. La carte est une zone carré dont la taille s'adapte à la taille de la fenêtre (affiché par l'objet \texttt{BoardRenderer}). Le reste de l'interface se compose d'une barre latérale et d'un affichage des logs sous la carte. Pour afficher les différentes informations nous avons mis en place l'objet \texttt{StringRenderer} qui affiche les de manière correcte les chaînes de caractères sur plusieurs lignes.
+	\item Gestion des entrées (package \emph{input\_handling}): Les entrées détectés par Swing sont envoyées à une instance de la classe \texttt{UI} qui gère l'état de l'interface (objet sélectionné) et qui met à jour l'état du jeux en effectuant l'action demandées par le joueur et en donnant la possibilité aux personnages non joueurs d'effectuer une action.
+	\item Gestion de la carte : La carte est essentiellement gérée par la classe \texttt{GameBoard}. Le terrain est un tableau d'objets héritant de la classe \texttt{GameTile} stockant les caractéristiques d'une case(explorées, bloque le joueur).
+\end{itemize}
+
 \section{Algorithmes utilisés}
 
-Nous avons utilisé plusieurs algorithmes existants pour certaines parties du projet. 
+Nous avons utilisé plusieurs algorithmes existants pour certaines parties du projet.
 
 \subsection{Génération aléatoire de la carte}
 

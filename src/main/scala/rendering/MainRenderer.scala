@@ -69,7 +69,7 @@ object Renderer {
       """|
          |Additional commands :
          |- Move with Arrows keys or HJKL and YUBN for the diagonals
-         |- Move item selector with I:↑ and ,:↓
+         |- Move item selector with I:↑ and O:↓
          |- Pick up an item under you with E
          |""".stripMargin
 
