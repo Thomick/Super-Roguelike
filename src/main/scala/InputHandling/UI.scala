@@ -16,20 +16,36 @@ class UI {
   var selectedItem: Int = 0
   def newKeyPressed(keyCode: Value) = {
     keyCode match {
-      case Up => {
+      case Up | K => {
         lastDir = Direction.Up
         lastIsMove = true
       }
-      case Down => {
+      case Down | J => {
         lastDir = Direction.Down
         lastIsMove = true
       }
-      case Left => {
+      case Left | H => {
         lastDir = Direction.Left
         lastIsMove = true
       }
-      case Right => {
+      case Right | L => {
         lastDir = Direction.Right
+        lastIsMove = true
+      }
+      case Y => {
+        lastDir = Direction.UpLeft
+        lastIsMove = true
+      }
+      case U => {
+        lastDir = Direction.UpRight
+        lastIsMove = true
+      }
+      case B => {
+        lastDir = Direction.DownLeft
+        lastIsMove = true
+      }
+      case N => {
+        lastDir = Direction.DownRight
         lastIsMove = true
       }
       case _ => {
@@ -65,10 +81,10 @@ class UI {
         /*case "I" =>
           inInventory = !inInventory
           doUpdate = false*/
-        case "J" =>
+        case "Virgule" =>
           selectedItem -= 1
           doUpdate = false
-        case "K" =>
+        case "I" =>
           selectedItem += 1
           doUpdate = false
         case _ => doUpdate = false
