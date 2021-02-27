@@ -13,6 +13,8 @@ class Apple() extends Food() {
   val weight = 200
   override val image = "src/main/resources/apple.png"
 
-  override def consume(character: Character): String =
-    "You eat this apple. You feel ready to continue your quest."
+  override def consume(character: Character): String = {
+    character.addToHP(5)
+    return "You eat this apple. You feel ready to continue your quest."
+  }
 }

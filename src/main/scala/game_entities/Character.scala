@@ -18,6 +18,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   def getDef(): Int = baseDef
   def getAtt(): Int = baseAtt
   def getMaxHP(): Int = baseMaxHP
+  def addToHP(n: Int) = currentHP = max(0, min(getMaxHP(), currentHP + n))
 
   // Move the character(C1) to a new position on the board
   // If there another character(C2) at this position, triggers the the current character action on the other character(C2)
