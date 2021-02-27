@@ -1,9 +1,9 @@
-package InputHandling
+package input_handling
 
 import swing._
 import event._
 import event.Key._
-import GameEntities._
+import game_entities._
 import map_objects.GameBoard
 import fov_functions._
 import scala.math.max
@@ -57,7 +57,7 @@ class UI {
 
   def last: String = lastKey
 
-  def applyCommand(board: GameBoard, lightMap : FovMap) {
+  def applyCommand(board: GameBoard, lightMap: FovMap) {
     val player = board.playerEntity
     var doUpdate = true
     val isSelectedItemEquiped = selectedItem < player.equipedItems.length

@@ -1,6 +1,6 @@
-package Items
+package items
 
-import GameEntities._
+import game_entities._
 
 abstract class Food() extends AbstractItem() with Consumable with Throwable {
   availableActions -= "C - Consume"

@@ -1,7 +1,7 @@
-package Items
+package items
 
 import map_objects._
-import GameEntities._
+import game_entities._
 import scala.collection.mutable.ArrayBuffer
 
 abstract class AbstractItem() {

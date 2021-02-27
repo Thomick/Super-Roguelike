@@ -1,9 +1,9 @@
-package Rendering
+package rendering
 
 import java.awt.{Color, Graphics2D, Rectangle, Toolkit}
 import scala.math.min
 import map_objects._
-import GameEntities._
+import game_entities._
 import fov_functions._
 import scala.collection._
 

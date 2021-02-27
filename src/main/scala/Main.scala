@@ -5,9 +5,9 @@ import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle, Toolkit}
 
 import fov_functions._
 import map_objects._
-import GameEntities._
-import InputHandling._
-import Rendering._
+import game_entities._
+import input_handling._
+import rendering._
 import logger._
 
 object Main extends SimpleSwingApplication {

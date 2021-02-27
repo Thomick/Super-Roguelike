@@ -1,8 +1,8 @@
 package map_objects
 
-import GameEntities._
-import InputHandling._
-import Items._
+import game_entities._
+import input_handling._
+import items._
 import fov_functions._
 import logger._
 

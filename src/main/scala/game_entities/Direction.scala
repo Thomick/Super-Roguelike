@@ -1,4 +1,4 @@
-package GameEntities
+package game_entities
 
 object Direction extends Enumeration {
   val Up, Down, Left, Right, UpLeft, UpRight, DownLeft, DownRight, Nop = Value

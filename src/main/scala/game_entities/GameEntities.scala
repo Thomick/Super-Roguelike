@@ -1,4 +1,4 @@
-package GameEntities
+package game_entities
 
 import map_objects._
 

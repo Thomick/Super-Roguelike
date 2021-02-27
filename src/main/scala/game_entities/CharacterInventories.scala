@@ -1,6 +1,6 @@
-package GameEntities
+package game_entities
 
-import Items._
+import items._
 import map_objects._
 import scala.collection._
 
@@ -104,7 +104,7 @@ trait CanEquip extends Character with HasInventory {
           writeLog("You equip " + item.name)
           return true
         } else {
-          writeLog("You can't carry anymore item on this body part.")
+          writeLog("You already equiped items on this body part")
         }
       } else {
         writeLog("You can not equip " + inventory(itemSlot).name)

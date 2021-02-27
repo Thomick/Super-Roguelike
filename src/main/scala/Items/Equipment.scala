@@ -1,4 +1,4 @@
-package Items
+package items
 
 abstract class Armor() extends AbstractItem with Equipable {
   val bonusAtt: Int = 0

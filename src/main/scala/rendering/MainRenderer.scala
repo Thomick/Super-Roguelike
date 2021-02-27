@@ -1,4 +1,4 @@
-package Rendering
+package rendering
 
 import swing._
 import java.awt.{Graphics2D, Dimension}
@@ -6,7 +6,7 @@ import java.awt.Color
 import scala.math.{min, max}
 import map_objects._
 import fov_functions._
-import InputHandling._
+import input_handling._
 import logger._
 
 // Uses the different renderers to draw the main window.

@@ -1,9 +1,9 @@
-package Rendering
+package rendering
 
-import GameEntities._
-import InputHandling.UI
+import game_entities._
+import input_handling.UI
 import java.awt.{Graphics2D, Color, Toolkit}
-import Items.AbstractItem
+import items.AbstractItem
 import map_objects.GameBoard
 
 object SideMenuRenderer {

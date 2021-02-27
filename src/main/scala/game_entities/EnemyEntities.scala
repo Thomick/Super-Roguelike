@@ -1,4 +1,4 @@
-package GameEntities
+package game_entities
 
 trait Enemy extends Character with AIControlled {
   def action(c: Character): Unit =

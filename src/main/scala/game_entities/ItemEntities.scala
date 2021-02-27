@@ -1,6 +1,6 @@
-package GameEntities
+package game_entities
 
-import Items._
+import items._
 import map_objects._
 import java.awt.Color
 
