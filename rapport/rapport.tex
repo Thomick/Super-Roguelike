@@ -32,8 +32,8 @@ Nous avons implémenté les fonctionnalités suivantes :
 \begin{itemize}
 	\item Génération aléatoire de la carte, ainsi que des ennemis et des objets sur cette carte.
 	\item Gestion des déplacement du joueur dans 8 directions.
-	\item Système d'objet et d'inventaire. Le joueur peut ramasser les objets au sol pour les mettre dans son inventaire. Il peut consommer, équiper, jetter et déposer les objets de son inventaire.
-	\item Système d'ennemis et de combat. Les ennemis ne bougent pas avant d'être activés, ce qui se produit lorsqu'ils entrent dans le champ de vision du joueur. Lorsqu'ils sont activés, ils se déplacent vers le joueur et l'attaquent au corps à corps. Le joueur peut également attaquer au corps à corps en se déplaçant sur la case d'un ennemi. Il y a également des statistiques qui déterminent les dégats faits et reçus. Ces statistiques peuvent être modifiées par les objets.
+	\item Système d'objet et d'inventaire. Le joueur peut ramasser les objets au sol pour les mettre dans son inventaire. Il peut consommer, équiper(avec des contraintes sur le nombre d'objets sur une même partie du corps), jetter et déposer les objets de son inventaire.
+	\item Système d'ennemis et de combat. Les ennemis ne bougent pas avant d'être activés, ce qui se produit lorsqu'ils entrent dans le champ de vision du joueur. Lorsqu'ils sont activés, ils se déplacent vers le joueur et l'attaquent au corps à corps. Le joueur peut également attaquer au corps à corps en se déplaçant sur la case d'un ennemi. Il y a également des statistiques qui déterminent les dégats d'une attaque et reçus par l'adversaire. Ces statistiques peuvent être modifiées par les objets.
 \end{itemize}
 
 \section{Algorithmes utilisés}
@@ -62,9 +62,9 @@ Dans la version actuelle, les seuls ennemis implémentés dans le jeu combattent
 
 La principale source de difficulté a été d'utiliser Scala.
 
-Par exemple, le fait qu'il n'y ai pas de commande \texttt{break}, ou au moins pas qui fonctionne comme dans la plupart des autres langages de programmation, nous a forcé à adapter notre code à cette contrainte.
+Par exemple, le fait qu'il n'y ai pas de commande \texttt{break}, ou au moins qui ne fonctionne pas comme dans d'autres langages de programmation, nous a forcé à adapter notre code à cette contrainte.
 
-De plus, ce n'était pas toujours évident de trouver de la documentation compréhensible, tout particulièrement pour les aspects très techniques comme l'interface qui ont du être en partie fait avec du Java. Par exemple, pour afficher une image avec Graphics2D, il existe une demi-douzaine de fonctions qui demande chacune des arguments différents et des classes différentes pour l'image et la différence est difficilement compréhensible.
+De plus, ce n'était pas toujours évident de trouver de la documentation compréhensible, tout particulièrement pour l'interface que nous avons réalisé avec un package commun avec Java (Graphics). Par exemple, pour afficher une image avec Graphics2D, il existe une demi-douzaine de fonctions qui demande chacune des arguments différents et des classes différentes pour l'image et les différences ne sont que peu documentées.
 
 Cependant, nous avont été surpris de la facilité de prise en main de Scala de manière générale.
 

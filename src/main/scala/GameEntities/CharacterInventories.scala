@@ -10,12 +10,12 @@ trait HasInventory extends Character {
   def getInventoryItems(): Array[AbstractItem] = inventory.toArray
 
   // Add an item to the inventory
-  def obtainItem(item: AbstractItem) = {
+  def obtainItem(item: AbstractItem): Unit = {
     inventory += item
     writeLog(name + " obtains " + item.name)
   }
 
-  // pick up an item from the ground (if any)
+  // pick up an item from the ground at current position (if any)
   // returns true if an item has been picked up, else false
   def pickUpItem(): Boolean = {
     board.pickUpItem(pos, 0) match {

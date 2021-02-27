@@ -3,5 +3,6 @@
 .vscode
 .bloop
 .scalafmt.conf
+*.gz
 target/
 project/
