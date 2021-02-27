@@ -68,8 +68,8 @@ object Renderer {
     val infos = "Last key pressed : " + ui.lastKey +
       """|
          |Additional commands :
-         |- Move with Arrows keys
-         |- Move item selector with J:↑ and K:↓
+         |- Move with Arrows keys or HJKL and YUBN for the diagonals
+         |- Move item selector with I:↑ and ,:↓
          |- Pick up an item under you with E
          |""".stripMargin
 
