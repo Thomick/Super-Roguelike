@@ -15,6 +15,27 @@
 \begin{document}
 \maketitle
 
+\section{Etat du projet}
+
+Nous avons implémenté les fonctionnalités suivantes : 
+
+\subsection*{Affichage :}
+
+\begin{itemize}
+	\item Affichage de la carte et du champ de vision du joueur. Seuls les entités dans le champ de vision du joueur sont visibles. De plus, seules les cases de la cartes visibles par le joueur, ou déjà visitées, sont affichées.
+	\item Interface avec les informations sur le personnage du joueur, son inventaire ainsi que les entités dans son champ de vision
+	\item Affichage des événements récents sous forme de logs, comme les actions du joueur ainsi que les attaques subites
+\end{itemize}
+
+\subsection*{Jeu :}
+
+\begin{itemize}
+	\item Génération aléatoire de la carte, ainsi que des ennemis et des objets sur cette carte
+	\item Gestion des déplacement du joueur dans 8 directions
+	\item Système d'objet et d'inventaire. Le joueur peut ramasser les objets au sol pour les mettre dans son inventaire. Il peut consommer, équiper, jetter et déposer les objets de son inventaire.
+	\item Système d'ennemis et de combat. Les ennemis ne bougent pas avant d'être activés, ce qui se produit lorsqu'ils entrent dans le champ de vision du joueur. Lorsqu'ils sont activés, ils se déplacent vers le joueur et l'attaquent au corps à corps. Le joueur peut également attaquer au corps à corps en se déplaçant sur la case d'un ennemi. Il y a également des statistiques qui déterminent les dégats faits et reçus. Ces statistiques peuvent être modifiées par les objets.
+\end{itemize}
+
 \section{Algorithmes utilisés}
 
 Nous avons utilisé plusieurs algorithmes existants pour certaines parties du projet. 
