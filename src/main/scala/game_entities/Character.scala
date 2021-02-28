@@ -55,7 +55,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   def takeDamage(from: Character, dam: Int): (Int, Boolean) = {
     val effectiveDamage = max(0, dam - getDef())
     currentHP -= effectiveDamage
-    writeLog(name + "receives " + effectiveDamage.toString + "damage from" + from.name)
+    writeLog(name + " receives " + effectiveDamage.toString + " damage from " + from.name)
     if (currentHP <= 0) {
       die()
       return (effectiveDamage, true) // The second value indicates if the attack killed the character or not
