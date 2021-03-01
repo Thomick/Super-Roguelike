@@ -1,6 +1,6 @@
 \documentclass[10pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
-\usepackage[margin=2cm]{geometry}
+\usepackage[margin=1.8cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage[french]{babel}
 \usepackage{amsmath}
@@ -60,9 +60,9 @@ Pour la suite, nous envisageons de rajouter d'autres types d'environnement qui u
 
 \subsection{Champs de vision}
 
-Pour le champs de vision, nous avons utilisé l'algorithme dit de "recursive shadowcasting". Cet algorithme consiste traiter chaque octants autour du personnage de manière indépendante. Sur chaque octant, on parcourt colonne par colonne (ou ligne par ligne en fonction des octants) en partant du joueur vers l'extérieur. Lorsqu'on arrive sur un mur, on calcule les cases qui ne sont pas visbles à cause de ce mur. Pour cela, on calcule les équations des droites qui forment le contour de la zone d'ombre.
+Pour le champs de vision, nous avons utilisé l'algorithme dit de "recursive shadowcasting". Cet algorithme consiste traiter chaque octants autour du personnage de manière indépendante. Sur chaque octant, on parcourt chaque colonne (ou chaque ligne en fonction des octants) en partant du joueur vers l'extérieur. Lorsque l'on arrive sur un mur, on calcule les cases qui ne sont pas visibles à cause de ce mur. Pour cela, on calcule les équations des droites qui forment le contour de la zone d'ombre.
 
-Cet algorithme a l'avantage d'être un des plus rapides, car il ne considère que les cases visibles et il ne regarde chaque case qu'au plus deux fois.
+Cet algorithme a l'avantage d'être l'un des plus rapides, car il ne considère que les cases visibles et pas plus de deux fois.
 
 De plus, nous avons ajouté la contrainte qu'une case ne contenant pas un mur n'est visible que si le centre de la case est visible. Cela rend l'algorithme symmétrique, dans le sens où une case B est visible depuis une case A si et seulement si la case A est visible depuis la case B si A et B ne sont pas des murs.
 
@@ -79,8 +79,8 @@ Par exemple, le fait qu'il n'y ai pas de commande \texttt{break}, ou au moins qu
 De plus, ce n'était pas toujours évident de trouver de la documentation compréhensible, tout particulièrement pour l'interface que nous avons réalisé avec un package commun avec Java (Graphics). Par exemple, pour afficher une image avec Graphics2D, il existe une demi-douzaine de fonctions qui demande chacune des arguments différents et des classes différentes pour l'image et les différences ne sont que peu documentées.
 
 Cependant, nous avont été surpris de la facilité de prise en main de Scala de manière générale.
+L'aspect programmation orientée objet de ce début de projet ne nous a pas posé de problèmes. Nous avons trouvé que la notion de traits de Scala était très bien adaptée à la création de nouveaux objets et personnages pour le jeu en donnant la possibilité d'ajouter des fonctionnalités de manière très modulaire.
 
-\newpage
 
 %\input{annexe}
 
