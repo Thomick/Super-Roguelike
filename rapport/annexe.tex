@@ -1,6 +1,6 @@
 \section{Annexe}
 \subsection{Diagramme d'héritage des objets}
-
+La portée n'est pas indiquée car tous les attributs et les méthodes sont publics. J'ai représenté les relations entre les traits et les classes étendues par ceux-ci par des relations d'héritage (bien que les traits ne soient pas des classes).
 \begin{center}
     \begin{tikzpicture}
         \begin{umlpackage}{Items}
@@ -46,4 +46,97 @@
         \umlinherit[geometry=-|-]{Weapon}{Equipable}
         \umlinherit[geometry=-|-]{Armor}{Equipable}
     \end{tikzpicture}
+
+    \subsection{Diagramme d'héritage des entités}
+    \begin{center}
+        \resizebox{\hsize}{\vsize}{
+            \begin{tikzpicture}
+                \begin{umlpackage}{GameEntities}
+                    \umlclass[type=abstract]{GameEntity}{
+                        name: String\\
+                        description: String\\
+                        pos: (Int, Int)\\
+                        board: GameBoard\\
+                        image: String
+                    }{
+                        writeLog(message: String): Unit
+                    }
+                    \umlclass[y =-0.5,x=7]{ItemEntity}{
+                        associatedItem: AbstractItem
+                    }{}
+                    \umlclass[y=-7,x=2.1,type = abstract]{Character}{
+                        baseMaxHP: Int \\
+                        baseDef: Int\\
+                        baseAtt: Int\\
+                        currentHP: Int
+                    }{
+                        getDef(): Int\\
+                        getAtt(): Int\\
+                        getMaxHP(): Int\\
+                        move(nextPos: (Int, Int)): Unit\\
+                        moveDir(dir: Direction.Value): Unit\\
+                        action(c: Character): Unit\\
+                        attack(c: Character): Unit\\
+                        takeDamage(from: Character, dam: Int): (Int, Boolean)\\
+                        die(): Unit
+                    }
+
+                    \umlclass[y=-13.3,x=0,type = Trait]{AIControlled}{
+                        active: Boolean
+                    }{
+                        act(): Unit
+                    }
+                    \umlclass[y=-13.3,x=4.5,type = Trait]{Enemy}{}{Implements action}
+                    \umlclass[y=-13.3,x=10,type = Trait]{MeleeEnemy}{}{
+                        nextCell(): Option[(Int, Int)]
+                    }
+                    \umlclass[y=-10.5,x=11.8]{Dog}{}{}
+                    \umlclass[y=-16,x=11.8]{Robot}{}{}
+
+                    \umlclass[y=-18,x=3,type = Trait]{HasInventory}{
+                        inventory = mutable.ArrayBuffer[AbstractItem]
+                    }{
+                        getInventoryItems(): Array[AbstractItem]\\
+                        obtainItem(item: AbstractItem): Unit\\
+                        pickUpItem(): Boolean\\
+                        dropItem(itemSlot: Int): Boolean\\
+                        isSlotEmpty(itemSlot: Int, container: Seq[AbstractItem]): Boolean\\
+                        throwItem(itemSlot: Int, dir: Direction.Value): Boolean\\
+                        consumeItem(itemSlot: Int): Boolean
+                    }
+
+                    \umlclass[y=-23.5,x=1.5,type = Trait]{CanEquip}{
+                        equipedItems = mutable.ArrayBuffer[Equipable]
+                    }{
+                        getEquipedItems(): Array[AbstractItem]\\
+                        equipItem(itemSlot: Int): Boolean\\
+                        unequipItem(itemSlot: Int): Boolean\\
+                        isBodyPartFree(part: BodyPart.Value): Boolean
+                    }
+
+
+                    \umlclass[y=-23.5,x=9.5,type = Trait]{Humanoid}{}{
+                        Implements isBodyPartFree
+                    }
+
+                    \umlclass[y=-23.5,x=14]{Player}{}{}
+
+                \end{umlpackage}
+
+
+                \umlinherit[geometry=|-]{ItemEntity}{GameEntity}
+                \umlinherit[geometry=-|]{Character}{GameEntity}
+                \umlinherit[geometry=-|,anchor2 = -125]{AIControlled}{Character}
+                \umlinherit[geometry=-|,anchor2 = -142]{HasInventory}{Character}
+                \umlinherit[geometry=--]{Enemy}{AIControlled}
+                \umlinherit[geometry=--]{MeleeEnemy}{Enemy}
+                \umlinherit[geometry=-|]{CanEquip}{HasInventory}
+                \umlinherit[geometry=--]{Humanoid}{CanEquip}
+                \umlinherit[geometry=--]{Player}{Humanoid}
+                \umlinherit[geometry=|-|]{Robot}{Humanoid}
+                \umlinherit[geometry=-|,anchor2 = -34]{Robot}{MeleeEnemy}
+                \umlinherit[geometry=-|,anchor2 = 34]{Dog}{MeleeEnemy}
+            \end{tikzpicture}
+        }
+    \end{center}
 \end{center}
