@@ -60,7 +60,7 @@ Pour la suite, nous envisageons de rajouter d'autres types d'environnement qui u
 
 \subsection{Champs de vision}
 
-Pour le champs de vision, nous avons utilisé l'algorithme dit de "recursive shadowcasting". Cet algorithme consiste traiter chaque octants autour du personnage de manière indépendante. Sur chaque octant, on parcourt les colonnes une par une de manière récursive en mettant à jour les lignes délimitant les contours de la zone visible lorsqu'on examine un mur.
+Pour le champs de vision, nous avons utilisé l'algorithme dit de "recursive shadowcasting". Cet algorithme consiste traiter chaque octants autour du personnage de manière indépendante. Sur chaque octant, on parcourt colonne par colonne (ou ligne par ligne en fonction des octants) en partant du joueur vers l'extérieur. Lorsqu'on arrive sur un mur, on calcule les cases qui ne sont pas visbles à cause de ce mur. Pour cela, on calcule les équations des droites qui forment le contour de la zone d'ombre.
 
 Cet algorithme a l'avantage d'être un des plus rapides, car il ne considère que les cases visibles et il ne regarde chaque case qu'au plus deux fois.
 
