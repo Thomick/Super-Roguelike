@@ -11,33 +11,20 @@ class FovMap(board: Array[Array[GameTile]]) {
   val height = resistance_map(0).size
   val radius = 10
 
-  def norm(x: Double, y: Double) = sqrt(pow(x,2) + pow(y,2))
+  def norm(x: Double, y: Double) = sqrt(pow(x, 2) + pow(y, 2))
   def is_light(x: Int, y: Int) = light_map(x)(y)
 
   def compute_fov(startx: Int, starty: Int) = {
     light_map = resistance_map.map(_.map(x => false))
     light_map(startx)(starty) = true
-    for {
-      x <- 0 to 1
-      y <- 0 to 1
-    } {
+    for { x <- 0 to 1; y <- 0 to 1 } {
       castLight(1, 1.0, 0.0, 0, (2 * x) - 1, (2 * y) - 1, 0, startx, starty)
       castLight(1, 1.0, 0.0, (2 * x) - 1, 0, 0, (2 * y) - 1, startx, starty)
     }
     light_map
   }
 
-  def castLight(
-      row: Int,
-      start: Double,
-      end: Double,
-      xx: Int,
-      xy: Int,
-      yx: Int,
-      yy: Int,
-      startx: Int,
-      starty: Int
-  ) {
+  def castLight(row: Int, start: Double, end: Double, xx: Int, xy: Int, yx: Int, yy: Int, startx: Int, starty: Int) {
     var startvar = start
     var newStart = 0.0
     if (startvar >= end) {
@@ -52,41 +39,27 @@ class FovMap(board: Array[Array[GameTile]]) {
           val leftSlope = (deltaX - 0.5) / (deltaY + 0.5)
           val rightSlope = (deltaX + 0.5) / (deltaY - 0.5)
           val centerSlope = (deltaX + 0.0) / (deltaY + 0.0)
-          if (
-            !(currentX >= 0 && currentY >= 0 && currentX < width && currentY < height) || startvar < rightSlope
-          ) {} else if (end > leftSlope) {
-            deltaX = 1
-          } else {
-            if (norm(deltaX, deltaY) <= radius) {
+          if ((currentX >= 0 && currentY >= 0 && currentX < width && currentY < height) || startvar < rightSlope) {
+            if (end > leftSlope)
+              deltaX = 1
+            else {
               if (
-                resistance_map(currentX)(
-                  currentY
-                ) || ((centerSlope <= startvar) && (centerSlope >= end))
-              ) {
+                norm(deltaX, deltaY) <= radius
+                && resistance_map(currentX)(currentY)
+                || ((centerSlope <= startvar) && (centerSlope >= end))
+              )
                 light_map(currentX)(currentY) = true
-              }
-            }
-            if (blocked) {
-              if (resistance_map(currentX)(currentY)) {
-                newStart = rightSlope
-              } else {
-                blocked = false
-                startvar = newStart
-              }
-            } else {
-              if (resistance_map(currentX)(currentY) && distance < radius) {
+
+              if (blocked) {
+                if (resistance_map(currentX)(currentY)) {
+                  newStart = rightSlope
+                } else {
+                  blocked = false
+                  startvar = newStart
+                }
+              } else if (resistance_map(currentX)(currentY) && distance < radius) {
                 blocked = true
-                castLight(
-                  distance + 1,
-                  startvar,
-                  leftSlope,
-                  xx,
-                  xy,
-                  yx,
-                  yy,
-                  startx,
-                  starty
-                )
+                castLight(distance + 1, startvar, leftSlope, xx, xy, yx, yy, startx, starty)
                 newStart = rightSlope
               }
             }
