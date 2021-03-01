@@ -112,12 +112,12 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
   }
 
   def addItem(entity: ItemEntity, pos: (Int, Int)): Boolean = {
-    if (!inGrid(pos))
-      false
+    if (!inGrid(pos) || grid(pos._1)(pos._2).blocking)
+      return false
     if (!itemEntities.contains(pos))
       itemEntities(pos) = new mutable.ArrayBuffer[ItemEntity]
     itemEntities(pos) += entity
-    true
+    return true
   }
 
   def getEntities(): List[GameEntity] = {

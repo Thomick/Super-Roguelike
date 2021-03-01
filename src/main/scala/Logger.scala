@@ -3,7 +3,7 @@ package logger
 import scala.collection._
 
 class Logger {
-  var nbBufferedLines = 5
+  var nbBufferedLines = 7
   val buffer = new mutable.Queue[String]
 
   def writeLog(message: String): Unit = {

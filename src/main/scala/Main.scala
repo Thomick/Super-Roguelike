@@ -22,7 +22,7 @@ object Main extends SimpleSwingApplication {
     contents = mainPanel
   }
   def mainPanel = new Panel {
-    preferredSize = new Dimension(1000, 750)
+    preferredSize = new Dimension(1100, 700)
     focusable = true
     listenTo(keys)
     reactions += { case KeyPressed(_, key, _, _) =>
