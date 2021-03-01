@@ -39,30 +39,29 @@ class FovMap(board: Array[Array[GameTile]]) {
           val leftSlope = (deltaX - 0.5) / (deltaY + 0.5)
           val rightSlope = (deltaX + 0.5) / (deltaY - 0.5)
           val centerSlope = (deltaX + 0.0) / (deltaY + 0.0)
-          if ((currentX >= 0 && currentY >= 0 && currentX < width && currentY < height) || startvar < rightSlope) {
-            if (end > leftSlope)
-              deltaX = 1
-            else {
-              if (
-                norm(deltaX, deltaY) <= radius
-                && resistance_map(currentX)(currentY)
-                || ((centerSlope <= startvar) && (centerSlope >= end))
-              )
+          if (
+            !(currentX >= 0 && currentY >= 0 && currentX < width && currentY < height) || startvar < rightSlope
+          ) {} else if (end > leftSlope) {
+            deltaX = 1
+          } else {
+            if (norm(deltaX, deltaY) <= radius) {
+              if (resistance_map(currentX)(currentY) || ((centerSlope <= startvar) && (centerSlope >= end))) {
                 light_map(currentX)(currentY) = true
-
-              if (blocked) {
-                if (resistance_map(currentX)(currentY)) {
-                  newStart = rightSlope
-                } else {
-                  blocked = false
-                  startvar = newStart
-                }
-              } else if (resistance_map(currentX)(currentY) && distance < radius) {
-                blocked = true
-                castLight(distance + 1, startvar, leftSlope, xx, xy, yx, yy, startx, starty)
-                newStart = rightSlope
               }
             }
+            if (blocked) {
+              if (resistance_map(currentX)(currentY)) {
+                newStart = rightSlope
+              } else {
+                blocked = false
+                startvar = newStart
+              }
+            } else if (resistance_map(currentX)(currentY) && distance < radius) {
+              blocked = true
+              castLight(distance + 1, startvar, leftSlope, xx, xy, yx, yy, startx, starty)
+              newStart = rightSlope
+            }
+
           }
           deltaX += 1
         }
