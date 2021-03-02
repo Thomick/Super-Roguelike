@@ -8,7 +8,7 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
   val description = "It's you !"
   override val baseMaxHP: Int = 100
   currentHP = 100
-  override val image = "src/main/resources/hero3.png"
+  override val image = "src/main/resources/hero.png"
 
   // Player action when encountering another character
   override def action(c: Character): Unit = {
@@ -27,11 +27,11 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
 class Robot(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with MeleeEnemy with Humanoid {
   val name = "Robot"
   val description = "An angry robot"
-  override val image = "src/main/resources/robot4.png"
+  override val image = "src/main/resources/robot2.png"
 }
 
 class Dog(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with MeleeEnemy {
   val name = "Dog"
   val description = "An angry robot dog"
-  override val image = "src/main/resources/dog2.png"
+  override val image = "src/main/resources/dog1.png"
 }
