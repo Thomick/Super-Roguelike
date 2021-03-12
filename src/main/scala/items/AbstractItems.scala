@@ -19,13 +19,6 @@ abstract class AbstractItem() {
   }
 }
 
-trait Consumable extends AbstractItem {
-  availableActions += "C - Consume"
-
-  // Apply consumption effect to the character and return action description (for the logs)
-  def consume(character: Character): String = "Nothing happened."
-}
-
 trait Throwable extends AbstractItem {
   availableActions += "T - Throw"
 
