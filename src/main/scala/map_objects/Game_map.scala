@@ -32,8 +32,6 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
   var size_x = n
   var size_y = m
   val playerEntity = new Player((0, 0), this)
-  // Test
-  playerEntity.statusList += new BleedingStatus(10)
   var itemEntities =
     new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
   var otherCharacters = new mutable.HashMap[(Int, Int), Character]

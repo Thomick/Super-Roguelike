@@ -15,7 +15,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   val baseDef: Int = 0
   val baseAtt: Int = 1
   var currentHP: Int = 10
-  var statusList = new mutable.MutableList[Status]
+  var statusList = new mutable.HashSet[Status]
   val activeEffects = new StatusResults
 
   def getDef(): Int = baseDef
@@ -84,9 +84,12 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   def updateStatus(): Unit = {
     activeEffects.reset()
     statusList.foreach(status => status.applyEffect(activeEffects))
-    statusList = statusList.filter(_.remainingTime != 0)
+    statusList.retain(_.remainingTime != 0)
     addToHP(activeEffects.healthModifier)
   }
+
+  // Remove the status that verify the predicate p
+  def removeStatus(p: Status => Boolean): Unit = statusList.retain(s => !p(s))
 }
 
 // Shared trait for npc

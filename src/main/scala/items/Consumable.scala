@@ -42,7 +42,7 @@ class Bandage() extends AbstractItem with Consumable with Throwable {
   val consumptionMessage = "It hurts but at least you stop bleeding"
 
   override def consume(character: Character): String = {
-    //character.removeStatus(Bleeding) // TODO
+    character.removeStatus(_.isInstanceOf[BleedingStatus])
     super.consume(character)
   }
 }
