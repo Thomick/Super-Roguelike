@@ -22,4 +22,5 @@ trait MeleeEnemy extends Character with Enemy {
       case None       => ()
       case Some(cell) => move(cell)
     }
+  super.act()
 }

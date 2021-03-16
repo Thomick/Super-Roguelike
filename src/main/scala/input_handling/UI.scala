@@ -90,8 +90,10 @@ class UI {
         case _ => doUpdate = false
       }
     }
-    if (doUpdate)
+    if (doUpdate) {
+      player.updateStatus()
       board.update(lightMap)
+    }
     selectedItem = Math.floorMod(
       selectedItem,
       max(1, player.inventory.length + player.equipedItems.length)

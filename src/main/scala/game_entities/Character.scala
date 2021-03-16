@@ -15,6 +15,8 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   val baseDef: Int = 0
   val baseAtt: Int = 1
   var currentHP: Int = 10
+  var statusList = new mutable.MutableList[Status]
+  val activeEffects = new StatusResults
 
   def getDef(): Int = baseDef
   def getAtt(): Int = baseAtt
@@ -25,7 +27,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   // Move the character(C1) to a new position on the board
   // If there another character(C2) at this position, triggers the the current character action on the other character(C2)
   def move(nextPos: (Int, Int)): Unit = {
-    if (!(pos == nextPos))
+    if (!(pos == nextPos) && activeEffects.canMove)
       if (board.isFree(nextPos)) {
         board.entityMoved(this, nextPos)
         pos = nextPos
@@ -75,6 +77,13 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
     writeLog(name + " dies. Goodbye cruel world !")
     board.removeCharacter(pos)
   }
+
+  def updateStatus(): Unit = {
+    activeEffects.reset()
+    statusList.foreach(status => status.applyEffect(activeEffects))
+    statusList.filter(_.remainingTime == 0)
+    addToHP(activeEffects.healthModifier)
+  }
 }
 
 // Shared trait for npc
@@ -85,5 +94,5 @@ trait AIControlled extends Character {
   def deactivate(): Unit = active = false
 
   // Called during board update
-  def act(): Unit = ()
+  def act(): Unit = updateStatus()
 }

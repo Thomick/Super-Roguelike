@@ -1,17 +1,13 @@
 package game_entities
 
-object StatusHandler {
-  // Gather the effects of the status in a StatusResults and return it.
-  def getEffects(statusCollection: Iterable[Status]): StatusResults = {
-    val results = new StatusResults
-    statusCollection.foreach(status => status.applyEffect(results))
-    return results
-  }
-}
-
 class StatusResults {
   var canMove: Boolean = true
   var healthModifier: Int = 0
+
+  def reset(): Unit = {
+    canMove = true
+    healthModifier = 0
+  }
 }
 
 abstract class Status(var remainingTime: Int) {
