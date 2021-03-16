@@ -10,9 +10,10 @@ class StatusResults {
   }
 }
 
-abstract class Status(var remainingTime: Int) {
+abstract class Status(duration: Int) {
   val name: String
   val effectDescription: String
+  var remainingTime = duration
 
   // Get remaining time as a string
   def remainingTimeString(): String =
@@ -22,12 +23,13 @@ abstract class Status(var remainingTime: Int) {
       return remainingTime.toString()
 
   def applyEffect(results: StatusResults): Unit = {
-    if (remainingTime >= 0)
+    if (remainingTime > 0)
       remainingTime -= 1
+    println(remainingTime)
   }
 }
 
-class BleedingStatus(remainingTime: Int) extends Status(remainingTime) {
+class BleedingStatus(duration: Int) extends Status(duration) {
   val name = "Bleeding"
   val effectDescription = "You lose health each turn"
 
@@ -37,7 +39,7 @@ class BleedingStatus(remainingTime: Int) extends Status(remainingTime) {
   }
 }
 
-class RegenerationStatus(remainingTime: Int) extends Status(remainingTime) {
+class RegenerationStatus(duration: Int) extends Status(duration) {
   val name = "Regeneration"
   val effectDescription = "You gain health each turn"
 
@@ -47,7 +49,7 @@ class RegenerationStatus(remainingTime: Int) extends Status(remainingTime) {
   }
 }
 
-class StunnedStatus(remainingTime: Int) extends Status(remainingTime) {
+class StunnedStatus(duration: Int) extends Status(duration) {
   val name = "Stunned"
   val effectDescription = "You can move for the duration of the status"
 

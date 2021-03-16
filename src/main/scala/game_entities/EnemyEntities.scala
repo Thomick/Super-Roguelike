@@ -17,10 +17,11 @@ trait MeleeEnemy extends Character with Enemy {
     }
   }
 
-  override def act(): Unit =
+  override def act(): Unit = {
     nextCell match {
       case None       => ()
       case Some(cell) => move(cell)
     }
-  super.act()
+    updateStatus()
+  }
 }

@@ -21,8 +21,15 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   def getDef(): Int = baseDef
   def getAtt(): Int = baseAtt
   def getMaxHP(): Int = baseMaxHP
+
   // Add an integer(positive or negative) to current HP and keep the value between 0 and getMaxHP()
-  def addToHP(n: Int) = currentHP = max(0, min(getMaxHP(), currentHP + n))
+  // Return true if the character died
+  def addToHP(n: Int): Boolean = {
+    currentHP = max(0, min(getMaxHP(), currentHP + n))
+    if (currentHP == 0)
+      die()
+    return currentHP == 0
+  }
 
   // Move the character(C1) to a new position on the board
   // If there another character(C2) at this position, triggers the the current character action on the other character(C2)
@@ -63,13 +70,9 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
     if (currentHP == 0)
       return (0, false) // This character is already dead
     val effectiveDamage = max(0, dam - getDef())
-    addToHP(-effectiveDamage) // Decreases HP and keeps the value in
+    val died = addToHP(-effectiveDamage) // Decreases HP and keeps the value in
     writeLog(name + " receives " + effectiveDamage.toString + " damage from " + from.name)
-    if (currentHP <= 0) {
-      die()
-      return (effectiveDamage, true) // The second value indicates if the attack killed the character or not
-    }
-    return (effectiveDamage, false)
+    return (effectiveDamage, died)
   }
 
   // Called when a character dies
@@ -81,7 +84,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   def updateStatus(): Unit = {
     activeEffects.reset()
     statusList.foreach(status => status.applyEffect(activeEffects))
-    statusList.filter(_.remainingTime == 0)
+    statusList = statusList.filter(_.remainingTime != 0)
     addToHP(activeEffects.healthModifier)
   }
 }
