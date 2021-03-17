@@ -118,20 +118,20 @@ class UI {
           case _ => doUpdate = false
         }
       }
-      if (isCursorMode()) {
+      else if (isCursorMode()) {
         lastKey match {
-          case "Echap" =>
+          case "Echap" || "Escape" =>
             mode = "normal"
             cursor.makeInvisible
           case _ => ()
         }
       }
-      if (isThrowMode()) {
+      else if (isThrowMode()) {
         lastKey match {
-          case "Echap" =>
+          case "Echap" || "Escape" =>
             mode = "normal"
             cursor.makeInvisible
-          case "A" =>
+          case "T" =>
             if (lightMap.is_light(cursor.xpos,cursor.ypos)) {
               if(!board.grid(cursor.xpos)(cursor.ypos).blocking) {
                 player.throwItem(currentIndex,cursor.pos)
@@ -144,9 +144,9 @@ class UI {
           case _ => ()
         }
       }
-      if (isFireMode()) {
+      else if (isFireMode()) {
         lastKey match {
-          case "Echap" =>
+          case "Echap" || "Escape" =>
             mode = "normal"
             cursor.makeInvisible
           case _ => ()
