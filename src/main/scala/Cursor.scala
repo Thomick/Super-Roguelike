@@ -8,6 +8,7 @@ class Cursor (board : GameBoard) {
   var ypos = 0
   var visible = false
   var highlightPath = false
+  def pos : (Int,Int) = (xpos,ypos)
   def backToPlayer : Unit = {
     xpos = board.playerEntity.pos._1
     ypos = board.playerEntity.pos._2
@@ -15,7 +16,7 @@ class Cursor (board : GameBoard) {
   def makeVisible : Unit = {
     visible = true
   }
-  def makeInvisble : Unit = {
+  def makeInvisible : Unit = {
     visible = false
   }
   def move (dir : Direction.Value): Unit = {
