@@ -4,6 +4,7 @@ import game_entities._
 import map_objects._
 
 class Cursor (board : GameBoard) {
+  val image = "src/main/resources/cursor.png"
   var xpos = 0
   var ypos = 0
   var visible = false
