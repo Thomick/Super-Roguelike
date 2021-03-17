@@ -120,7 +120,7 @@ class UI {
       }
       else if (isCursorMode()) {
         lastKey match {
-          case "Echap" || "Escape" =>
+          case "Echap" | "Escape" =>
             mode = "normal"
             cursor.makeInvisible
           case _ => ()
@@ -128,7 +128,7 @@ class UI {
       }
       else if (isThrowMode()) {
         lastKey match {
-          case "Echap" || "Escape" =>
+          case "Echap" | "Escape" =>
             mode = "normal"
             cursor.makeInvisible
           case "T" =>
@@ -146,7 +146,7 @@ class UI {
       }
       else if (isFireMode()) {
         lastKey match {
-          case "Echap" || "Escape" =>
+          case "Echap" | "Escape" =>
             mode = "normal"
             cursor.makeInvisible
           case _ => ()
