@@ -9,11 +9,14 @@ import fov_functions._
 import scala.math.max
 
 class UI {
+  var mode: String = "normal"
   var lastKey: String = ""
   var lastIsMove: Boolean = false
   var lastDir: Direction.Value = Direction.Nop
   var inInventory: Boolean = false
   var selectedItem: Int = 0
+  def isNormalMode() : Boolean = (mode == "normal")
+  def isCursorMode() : Boolean = (mode == "cursor")
   def newKeyPressed(keyCode: Value) = {
     keyCode match {
       case Up | K => {
@@ -59,33 +62,62 @@ class UI {
 
   def applyCommand(board: GameBoard, lightMap: FovMap) {
     val player = board.playerEntity
+    val cursor = board.cursor
     var doUpdate = true
     val isSelectedItemEquiped = selectedItem < player.equipedItems.length
     val currentIndex =
       if (isSelectedItemEquiped) selectedItem
       else selectedItem - player.equipedItems.length
     if (lastIsMove) {
-      player.moveDir(lastDir)
+      if (isNormalMode()) player.moveDir(lastDir)
+      if (isCursorMode()) {
+        cursor.move(lastDir)
+        doUpdate = false
+      }
+
     } else {
       lastKey match {
-        case "E" => player.pickUpItem()
-        case "D" => if (!isSelectedItemEquiped) player.dropItem(currentIndex)
-        case "C" => if (!isSelectedItemEquiped) player.consumeItem(currentIndex)
+        case "E" => 
+          if (isNormalMode()) player.pickUpItem()
+          if (isCursorMode()) doUpdate = false
+        case "D" => 
+          if (!isSelectedItemEquiped && isNormalMode()) player.dropItem(currentIndex)
+          if (isCursorMode()) doUpdate = false
+        case "C" => 
+          if (!isSelectedItemEquiped && isNormalMode()) player.consumeItem(currentIndex)
+          if(isCursorMode()) doUpdate = false
         case "T" =>
-          if (!isSelectedItemEquiped) player.throwItem(currentIndex, lastDir)
+          if (!isSelectedItemEquiped && isNormalMode()) player.throwItem(currentIndex, lastDir)
+          if (isCursorMode()) doUpdate = false
         case "R" =>
-          if (isSelectedItemEquiped) player.unequipItem(currentIndex)
-          else player.equipItem(currentIndex)
-        case "F" => if (isSelectedItemEquiped) player.unequipItem(currentIndex)
+          if (isSelectedItemEquiped && isNormalMode()) player.unequipItem(currentIndex)
+          else if (isNormalMode()) player.equipItem(currentIndex)
+          if (isCursorMode()) doUpdate = false
+        case "F" => 
+          if (isSelectedItemEquiped && isNormalMode()) player.unequipItem(currentIndex)
+          if (isCursorMode()) doUpdate = false
         // Unused
         /*case "I" =>
           inInventory = !inInventory
           doUpdate = false*/
         case "O" =>
-          selectedItem -= 1
+          if (isNormalMode()){
+            selectedItem -= 1
+          }
           doUpdate = false
         case "I" =>
-          selectedItem += 1
+          if (isNormalMode()){
+            selectedItem += 1
+          }
+          doUpdate = false
+        case "V" =>
+          mode = "cursor"
+          cursor.makeVisible
+          cursor.backToPlayer
+          doUpdate = false
+        case "Echap" =>
+          mode = "normal"
+          cursor.makeInvisble
           doUpdate = false
         case _ => doUpdate = false
       }
