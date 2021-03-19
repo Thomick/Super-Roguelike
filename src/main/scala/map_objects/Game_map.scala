@@ -103,7 +103,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
   // TODO pass the previous position as parameter
   def entityMoved(e: Character, newPos: (Int, Int)): Unit = {
     e match {
-      case `playerEntity` => println("Player moved")
+      case `playerEntity` => ()
       case entity => {
         otherCharacters -= entity.pos
         otherCharacters += (newPos -> entity)
