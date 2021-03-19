@@ -5,6 +5,7 @@ import scala.math.min
 import map_objects._
 import game_entities._
 import fov_functions._
+import cursor._
 import scala.collection._
 
 object BoardRenderer {
@@ -93,8 +94,25 @@ object BoardRenderer {
       entities.foreach(e => drawEntity(e))
     }
 
+    def drawCursor(): Unit = {
+      if (board.cursor.visible) {
+        val img = Toolkit.getDefaultToolkit().getImage(board.cursor.image)
+        g.drawImage(
+          img,
+          board.cursor.xpos * (tilePadding + tileSize) + gridOrigin._1,
+          board.cursor.ypos * (tilePadding + tileSize) + gridOrigin._2,
+          tileSize,
+          tileSize,
+          null
+        )
+        g.finalize()
+      }
+    }
+
+
     drawGrid()
     drawEntities()
+    drawCursor()
     return drawnEntities.toArray
   }
 }

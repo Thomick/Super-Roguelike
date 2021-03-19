@@ -11,6 +11,10 @@ abstract class Weapon() extends AbstractItem with Equipable {
   val bonusHP: Int = 0
 }
 
+abstract class DistanceWeapon() extends Weapon {
+  val range: Int = 10
+}
+
 class IronHelmet() extends Armor {
   val part: BodyPart.Value = BodyPart.Head
   val name: String = "Iron helmet"
