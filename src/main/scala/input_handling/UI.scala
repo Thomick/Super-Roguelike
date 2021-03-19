@@ -8,17 +8,21 @@ import map_objects.GameBoard
 import fov_functions._
 import scala.math.max
 
+object GameMode extends Enumeration {
+  val Normal, Cursor, Throw, Shoot, Shop = Value
+}
+
 class UI {
-  var mode: String = "normal"
+  var mode: GameMode.Value = GameMode.Normal
   var lastKey: Key.Value = Up
   var lastIsMove: Boolean = false
   var lastDir: Direction.Value = Direction.Nop
   var inInventory: Boolean = false
   var selectedItem: Int = 0
-  def isNormalMode(): Boolean = (mode == "normal")
-  def isCursorMode(): Boolean = (mode == "cursor")
-  def isThrowMode(): Boolean = (mode == "throw")
-  def isFireMode(): Boolean = (mode == "shoot")
+  def isNormalMode(): Boolean = (mode == GameMode.Normal)
+  def isCursorMode(): Boolean = (mode == GameMode.Cursor)
+  def isThrowMode(): Boolean = (mode == GameMode.Throw)
+  def isFireMode(): Boolean = (mode == GameMode.Shoot)
   def newKeyPressed(keyCode: Key.Value) = {
     keyCode match {
       case Up | K => {
@@ -89,7 +93,7 @@ class UI {
           case T =>
             if (!isSelectedItemEquiped) {
               if (player.canThrowItem(currentIndex)) {
-                mode = "throw"
+                mode = GameMode.Throw
                 cursor.makeVisible
                 cursor.backToPlayer
                 doUpdate = false
@@ -111,7 +115,7 @@ class UI {
             selectedItem += 1
             doUpdate = false
           case V =>
-            mode = "cursor"
+            mode = GameMode.Cursor
             cursor.makeVisible
             cursor.backToPlayer
             doUpdate = false
@@ -120,20 +124,20 @@ class UI {
       } else if (isCursorMode()) {
         lastKey match {
           case Escape =>
-            mode = "normal"
+            mode = GameMode.Normal
             cursor.makeInvisible
           case _ => ()
         }
       } else if (isThrowMode()) {
         lastKey match {
           case Escape =>
-            mode = "normal"
+            mode = GameMode.Normal
             cursor.makeInvisible
           case T =>
             if (lightMap.is_light(cursor.xpos, cursor.ypos)) {
               if (!board.grid(cursor.xpos)(cursor.ypos).blocking) {
                 player.throwItem(currentIndex, cursor.pos)
-                mode = "normal"
+                mode = GameMode.Normal
                 cursor.makeInvisible
                 doUpdate = true
               }
@@ -144,7 +148,7 @@ class UI {
       } else if (isFireMode()) {
         lastKey match {
           case Escape =>
-            mode = "normal"
+            mode = GameMode.Normal
             cursor.makeInvisible
           case _ => ()
         }
