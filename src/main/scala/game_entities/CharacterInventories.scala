@@ -17,14 +17,13 @@ trait HasInventory extends Character {
 
   // pick up an item from the ground at current position (if any)
   // returns true if an item has been picked up, else false
-  def pickUpItem(): Boolean = {
-    board.pickUpItem(pos, 0) match {
-      case Some(item) => {
-        obtainItem(item)
-        true
-      }
-      case None => false
+  def pickUpItem(): Option[AbstractItem] = {
+    val it = board.pickUpItem(pos, 0)
+    it match {
+      case Some(item) => obtainItem(item)
+      case None       => ()
     }
+    return it
   }
 
   // Drop the item of index (itemSlot) on the ground (if possible)
