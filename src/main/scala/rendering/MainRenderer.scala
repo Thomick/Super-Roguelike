@@ -65,7 +65,7 @@ object Renderer {
       drawnEntities
     )
 
-    val infos = "Last key pressed : " + ui.lastKey +
+    val infos = "Last key pressed : " + ui.last +
       """|
          |Additional commands :
          |- Move with Arrow keys or HJKL and YUBN for the diagonals

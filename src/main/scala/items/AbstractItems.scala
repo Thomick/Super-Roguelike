@@ -20,19 +20,18 @@ abstract class AbstractItem() {
 }
 
 trait Throwable extends AbstractItem {
+  val consumedWhenThrown : Boolean
   availableActions += "T - Throw"
 
-  // Throw an object from startingPos in the direction dir
-  // For now it only drop the item on the floor next to starting position
-  // Mechanic might change in the future
+  def effectWhenThrown(board: GameBoard, pos: (Int, Int)) : Unit
   def throwItem(
-      character: Character,
       board: GameBoard,
-      startingPos: (Int, Int),
-      dir: Direction.Value
-  ): Boolean = {
-    val throwPos = Direction.nextPos(startingPos, dir)
-    board.addItem(new ItemEntity(throwPos, board, this), throwPos)
+      throwPos: (Int, Int),
+  ): Unit = {
+    effectWhenThrown(board,throwPos)
+    if (!consumedWhenThrown) {
+      board.addItem(new ItemEntity(throwPos, board, this), throwPos)
+    }
   }
 }
 
