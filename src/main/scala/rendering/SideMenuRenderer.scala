@@ -62,7 +62,8 @@ object SideMenuRenderer {
 
     menuBuffer ++= "HP : " + player.currentHP.toString + "/" + player.getMaxHP.toString + "\n"
     menuBuffer ++= "Attack power : " + player.getAtt.toString + "\n"
-    menuBuffer ++= "Defense : " + player.getDef.toString + "\n\n"
+    menuBuffer ++= "Defense : " + player.getDef.toString + "\n"
+    menuBuffer ++= "Money : " + player.money.toString + "\n\n"
 
     // Appends an item to the menu (with correct information and color)
     def addToMenu(index: Int, item: AbstractItem): Unit = {
