@@ -1,6 +1,7 @@
 package items
 
 import game_entities._
+import map_objects._
 
 trait Consumable extends AbstractItem {
   availableActions += "C - Consume"
@@ -13,6 +14,8 @@ trait Consumable extends AbstractItem {
 abstract class Food extends AbstractItem with Consumable with Throwable {
   availableActions -= "C - Consume"
   availableActions += "C - Eat"
+  val consumedWhenThrown = false
+  def effectWhenThrown(board : GameBoard, pos : (Int,Int)): Unit = ()
 }
 
 class Morphin extends AbstractItem with Consumable with Throwable {
@@ -20,6 +23,8 @@ class Morphin extends AbstractItem with Consumable with Throwable {
   val description = "A cute little needle to feel a little better"
   val weight = 50
   val consumptionMessage = "It stings. You feel a little better."
+  val consumedWhenThrown = false
+  def effectWhenThrown(board : GameBoard, pos : (Int,Int)): Unit = ()
 
   override def consume(character: Character): String = {
     character.addToHP(5)
@@ -35,7 +40,7 @@ class Syringe extends AbstractItem {
   val weight = 30
 }
 
-class Bandage() extends AbstractItem with Consumable with Throwable {
+class Bandage() extends AbstractItem with Consumable {
   val name = "Bandage"
   val description = "A cute little needle to feel a little better"
   val weight = 50
