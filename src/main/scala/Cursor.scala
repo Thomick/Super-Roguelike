@@ -46,13 +46,27 @@ class Cursor (board : GameBoard) {
       ypos = newpos._2
     }
   }
+  def round (x : Double) : Int = {
+    if (Math.abs(x-x.toInt) >= 0.5) {
+      if (x<0) {
+        return x.toInt -1
+      }
+      else {
+        return x.toInt +1
+      }
+    } 
+    else {
+      return x.toInt
+    }
+  }
+
   def highlightedCells : (Vector[(Int,Int)],Boolean) = {
     var hCells = Vector[(Int,Int)]()
     val dx : Double = xpos - board.playerEntity.pos._1 
     val dy : Double = ypos - board.playerEntity.pos._2
     var steps : Double = max(Math.abs(dx),Math.abs(dy))
-    val xIncrement = dx / steps
-    val yIncrement = dy / steps
+    val xIncrement : Double = dx / steps
+    val yIncrement : Double = dy / steps
     var x : Double = board.playerEntity.pos._1
     var y : Double = board.playerEntity.pos._2
     var finish = false
@@ -67,13 +81,13 @@ class Cursor (board : GameBoard) {
         x += xIncrement
         y += yIncrement
         if ( 
-          !board.grid(x.toInt)(y.toInt).explored 
-          || board.grid(x.toInt)(y.toInt).blocking_sight 
-          || (board.distance(board.playerEntity.pos, (x.toInt,y.toInt)) > highlightLength) 
+          !board.grid(round(x))(round(y)).explored 
+          || !board.isFree(round(x),round(y))
+          || (board.distance(board.playerEntity.pos, (round(x),round(y))) > highlightLength) 
         ) {
           finish = true
         } else {
-          hCells = hCells :+ (x.toInt,y.toInt)
+          hCells = hCells :+ (round(x),round(y))
           i+=1
         }
       }
