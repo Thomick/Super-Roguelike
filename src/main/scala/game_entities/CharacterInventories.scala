@@ -50,6 +50,10 @@ trait HasInventory extends Character {
 
   def canThrowItem(itemSlot : Int) : Boolean = (!isSlotEmpty(itemSlot) && inventory(itemSlot).isInstanceOf[Throwable])
 
+  def canFireItem(itemSlot : Int) : Boolean = (!isSlotEmpty(itemSlot) && inventory(itemSlot).isInstanceOf[RangedWeapon])
+
+  def itemRange(itemSlot : Int) : Int = inventory(itemSlot).asInstanceOf[RangedWeapon].range
+
   // Throw an item if the item is throwable, the effect depends on the item
   def throwItem(itemSlot: Int, pos : (Int,Int)): Unit = {
     val item = inventory(itemSlot)
@@ -78,6 +82,7 @@ trait HasInventory extends Character {
 // Items can only be equiped if the body part on which they must be equiped is free
 trait CanEquip extends Character with HasInventory {
   val equipedItems = mutable.ArrayBuffer[Equipable]()
+  val equipedRangedWeapons = mutable.ArrayBuffer[RangedWeapon]()
 
   def getEquipedItems(): Array[AbstractItem] = equipedItems.toArray
 
@@ -88,6 +93,17 @@ trait CanEquip extends Character with HasInventory {
   override def getMaxHP(): Int =
     baseMaxHP + equipedItems.foldLeft[Int](0)((s, item) => s + item.bonusHP)
 
+  def fire(mainWeapon: Boolean, itemSlot: Int, pos : (Int,Int)): Unit = {
+    if (mainWeapon) {
+      equipedRangedWeapons(0).shoot(board,pos)
+    }
+    else {
+      inventory(itemSlot).asInstanceOf[RangedWeapon].shoot(board,pos)
+    }
+    //writeLog(item.name + " can't be thrown")
+  }
+
+
   def equipItem(itemSlot: Int): Boolean = {
     if (!isSlotEmpty(itemSlot)) {
       if (inventory(itemSlot).isInstanceOf[Equipable]) {
@@ -95,6 +111,9 @@ trait CanEquip extends Character with HasInventory {
         if (isBodyPartFree(item.part)) {
           equipedItems += item
           inventory.remove(itemSlot)
+          if (item.isInstanceOf[RangedWeapon]) {
+            equipedRangedWeapons += item.asInstanceOf[RangedWeapon]
+          }
           writeLog("You equip " + item.name)
           return true
         } else {
@@ -112,6 +131,9 @@ trait CanEquip extends Character with HasInventory {
       val item = equipedItems(itemSlot)
       inventory += item
       equipedItems.remove(itemSlot)
+      if (item.isInstanceOf[RangedWeapon]) {
+        equipedRangedWeapons -= item.asInstanceOf[RangedWeapon]
+      }
       writeLog("You unequip " + item.name)
       return true
     }

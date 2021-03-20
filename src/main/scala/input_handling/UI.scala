@@ -9,11 +9,12 @@ import fov_functions._
 import scala.math.max
 
 object GameMode extends Enumeration {
-  val Normal, Cursor, Throw, Shoot, Shop = Value
+  val Normal, Cursor, Throw, Fire, Shop = Value
 }
 
 class UI {
   var mode: GameMode.Value = GameMode.Normal
+  var mainWeapon: Boolean = false
   var lastKey: Key.Value = Up
   var lastIsMove: Boolean = false
   var lastDir: Direction.Value = Direction.Nop
@@ -22,7 +23,7 @@ class UI {
   def isNormalMode(): Boolean = (mode == GameMode.Normal)
   def isCursorMode(): Boolean = (mode == GameMode.Cursor)
   def isThrowMode(): Boolean = (mode == GameMode.Throw)
-  def isFireMode(): Boolean = (mode == GameMode.Shoot)
+  def isFireMode(): Boolean = (mode == GameMode.Fire)
   def newKeyPressed(keyCode: Key.Value) = {
     keyCode match {
       case Up | K => {
@@ -88,22 +89,42 @@ class UI {
             player.pickUpItem()
           case D =>
             if (!isSelectedItemEquiped) player.dropItem(currentIndex)
+            else doUpdate = false
           case C =>
             if (!isSelectedItemEquiped) player.consumeItem(currentIndex)
+            else doUpdate = false
           case T =>
             if (!isSelectedItemEquiped) {
               if (player.canThrowItem(currentIndex)) {
                 mode = GameMode.Throw
                 cursor.makeVisible
                 cursor.backToPlayer
-                doUpdate = false
               }
             }
+            doUpdate = false
+          case F =>
+            if (isSelectedItemEquiped && player.canFireItem(currentIndex)) { // By default, fire with selected weapon
+              mode = GameMode.Fire
+              mainWeapon = false
+              cursor.makeVisible
+              cursor.activateHighlight(player.itemRange(currentIndex))
+              cursor.backToPlayer
+            }
+            else if (player.equipedRangedWeapons != Nil) { // If not possible, fire with main weapon
+              mode = GameMode.Fire
+              mainWeapon = true
+              cursor.makeVisible
+              cursor.activateHighlight(player.equipedRangedWeapons(0).range)
+              cursor.backToPlayer
+            }
+            doUpdate = false
+
+              
           case R =>
             if (isSelectedItemEquiped) player.unequipItem(currentIndex)
             else player.equipItem(currentIndex)
-          case F =>
-            if (isSelectedItemEquiped) player.unequipItem(currentIndex)
+          //case F =>
+           // if (isSelectedItemEquiped) player.unequipItem(currentIndex)
           // Unused
           /*case I =>
             inInventory = !inInventory
@@ -150,6 +171,15 @@ class UI {
           case Escape =>
             mode = GameMode.Normal
             cursor.makeInvisible
+            cursor.deactivateHighlight
+          case F =>
+            if (cursor.highlightedCells._2) {
+              player.fire(mainWeapon, currentIndex, cursor.pos)
+              mode = GameMode.Normal
+              cursor.makeInvisible
+              cursor.deactivateHighlight
+              doUpdate = true
+            }
           case _ => ()
         }
       }
