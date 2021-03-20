@@ -108,7 +108,7 @@ object BoardRenderer {
         g.finalize()
       }
       if (board.cursor.highlightPath) {
-        val imgH = Toolkit.getDefaultToolkit().getImage(board.cursor.image)
+        val imgH = Toolkit.getDefaultToolkit().getImage(board.cursor.highlightImage)
         val path = board.cursor.highlightedCells._1
         for (cell <- path) {
           g.drawImage(
