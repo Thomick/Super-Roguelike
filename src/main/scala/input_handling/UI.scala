@@ -173,7 +173,7 @@ class UI {
             cursor.makeInvisible
             cursor.deactivateHighlight
           case F =>
-            if (cursor.highlightedCells._2) {
+            if (cursor.highlightedCells._2 && lightMap.is_light(cursor.xpos, cursor.ypos)) {
               player.fire(mainWeapon, currentIndex, cursor.pos)
               mode = GameMode.Normal
               cursor.makeInvisible

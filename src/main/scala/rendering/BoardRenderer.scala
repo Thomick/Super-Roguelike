@@ -107,19 +107,21 @@ object BoardRenderer {
         )
         g.finalize()
       }
-      if (board.cursor.highlightPath) {
+      if (board.cursor.highlightPath && board.cursor.highlightedCells._2) {
         val imgH = Toolkit.getDefaultToolkit().getImage(board.cursor.highlightImage)
         val path = board.cursor.highlightedCells._1
         for (cell <- path) {
-          g.drawImage(
-            imgH,
-            cell._1 * (tilePadding + tileSize) + gridOrigin._1,
-            cell._2 * (tilePadding + tileSize) + gridOrigin._2,
-            tileSize,
-            tileSize,
-            null
-          )
-          g.finalize()
+          if (fovmap.is_light(cell._1, cell._2)) {
+            g.drawImage(
+              imgH,
+              cell._1 * (tilePadding + tileSize) + gridOrigin._1,
+              cell._2 * (tilePadding + tileSize) + gridOrigin._2,
+              tileSize,
+              tileSize,
+              null
+            )
+            g.finalize()
+          }
         }
       }
     }

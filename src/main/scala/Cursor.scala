@@ -67,10 +67,10 @@ class Cursor (board : GameBoard) {
     var steps : Double = max(Math.abs(dx),Math.abs(dy))
     val xIncrement : Double = dx / steps
     val yIncrement : Double = dy / steps
-    var x : Double = board.playerEntity.pos._1
-    var y : Double = board.playerEntity.pos._2
+    var x : Double = 0
+    var y : Double = 0
     var finish = false
-    var accessible = true
+    var accessible = false
     var i = 0
     while (!finish) {
       if (i>= steps){
@@ -81,14 +81,20 @@ class Cursor (board : GameBoard) {
         x += xIncrement
         y += yIncrement
         if ( 
-          !board.grid(round(x))(round(y)).explored 
-          || !board.isFree(round(x),round(y))
-          || (board.distance(board.playerEntity.pos, (round(x),round(y))) > highlightLength) 
+          !board.grid(board.playerEntity.pos._1+round(x))(board.playerEntity.pos._2+round(y)).explored 
+          || board.grid(board.playerEntity.pos._1+round(x))(board.playerEntity.pos._2+round(y)).blocking_sight
+          || (board.distance((0,0), (round(x),round(y))) > highlightLength) 
         ) {
           finish = true
         } else {
-          hCells = hCells :+ (round(x),round(y))
+          hCells = hCells :+ (board.playerEntity.pos._1+round(x),board.playerEntity.pos._2+round(y))
           i+=1
+          if (!board.isFree(board.playerEntity.pos._1+round(x),board.playerEntity.pos._2+round(y))) {
+            finish = true
+            if (i >= steps) {
+              accessible = true
+            }
+          }
         }
       }
     }
