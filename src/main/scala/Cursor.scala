@@ -101,5 +101,4 @@ class Cursor (board : GameBoard) {
     return (hCells,accessible)
   }
 
-
 }

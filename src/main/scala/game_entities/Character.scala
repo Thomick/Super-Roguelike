@@ -54,6 +54,10 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   def attack(c: Character): Unit = {
     val rnd = new Random
     val damage = max(0, (getAtt() * (1 + 3 * rnd.nextGaussian())).toInt)
+    giveDamage(damage,c)
+  }
+
+  def giveDamage(damage: Int, c: Character): Unit = {
     val (effectiveDamage, died) = c.takeDamage(this, damage)
     writeLog(name + " deals " + effectiveDamage.toString + " damage to " + c.name)
     if (died) {
@@ -62,6 +66,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
         writeLog("### All enemies have been destroyed ###")
     }
   }
+    
 
   // Compute effective damage based on defense stat and apply them to this character
   // Called by the opponent in order to effectively apply damages to its target

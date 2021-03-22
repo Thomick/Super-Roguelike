@@ -95,10 +95,10 @@ trait CanEquip extends Character with HasInventory {
 
   def fire(mainWeapon: Boolean, itemSlot: Int, pos : (Int,Int)): Unit = {
     if (mainWeapon) {
-      equipedRangedWeapons(0).shoot(board,pos)
+      equipedRangedWeapons(0).shoot(this,board,pos)
     }
     else {
-      inventory(itemSlot).asInstanceOf[RangedWeapon].shoot(board,pos)
+      inventory(itemSlot).asInstanceOf[RangedWeapon].shoot(this,board,pos)
     }
     //writeLog(item.name + " can't be thrown")
   }

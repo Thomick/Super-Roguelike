@@ -51,7 +51,7 @@ class RegenerationStatus(duration: Int) extends Status(duration) {
 
 class StunnedStatus(duration: Int) extends Status(duration) {
   val name = "Stunned"
-  val effectDescription = "You can move for the duration of the status"
+  val effectDescription = "You can't move for the duration of the status"
 
   override def applyEffect(results: StatusResults): Unit = {
     results.canMove = false
