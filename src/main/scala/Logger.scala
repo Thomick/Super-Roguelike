@@ -2,7 +2,8 @@ package logger
 
 import scala.collection._
 
-class Logger {
+@SerialVersionUID(103L)
+class Logger extends Serializable {
   var nbBufferedLines = 7
   val buffer = new mutable.Queue[String]
 

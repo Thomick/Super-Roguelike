@@ -4,7 +4,8 @@ import map_objects._
 
 // Base class for game entities
 // hasLog specifies if this entity can write to the gameboard logger
-abstract class GameEntity(init_pos: (Int, Int), b: GameBoard, val hasLogs: Boolean = false) {
+@SerialVersionUID(104L)
+abstract class GameEntity(init_pos: (Int, Int), b: GameBoard, val hasLogs: Boolean = false) extends Serializable {
   val name: String
   val description: String
   var pos: (Int, Int) = init_pos

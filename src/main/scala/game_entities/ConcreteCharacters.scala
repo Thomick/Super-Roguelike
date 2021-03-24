@@ -3,7 +3,8 @@ package game_entities
 import map_objects._
 
 // Character controlled by the player
-class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, true) with Humanoid {
+@SerialVersionUID(100L)
+class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, true) with Humanoid with Serializable {
   val name = "Player"
   val description = "It's you !"
   override val baseMaxHP: Int = 100

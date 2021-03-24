@@ -4,7 +4,8 @@ import game_entities._
 import map_objects._
 import scala.math.{min, max}
 
-class Cursor (board : GameBoard) {
+@SerialVersionUID(101L)
+class Cursor (board : GameBoard) extends Serializable {
   val image = "src/main/resources/cursor.png"
   val highlightImage = "src/main/resources/highlight.png"
   var xpos = 0

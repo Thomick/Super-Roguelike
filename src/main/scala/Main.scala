@@ -2,6 +2,7 @@ import swing._
 import event._
 import event.Key._
 import java.awt.{Dimension, Graphics2D, Graphics, Image, Rectangle, Toolkit}
+import java.io._
 
 import fov_functions._
 import map_objects._
@@ -13,8 +14,15 @@ import logger._
 object Main extends SimpleSwingApplication {
   val ui = new UI
   val logger = new Logger
-  val board = new GameBoard(30, 30, logger)
-  board.newMap(20, 5, 7, board.size_x, board.size_y)
+  val boardt = new GameBoard(30, 30, logger)
+  boardt.newMap(20, 5, 7, boardt.size_x, boardt.size_y)
+  val oos = new ObjectOutputStream(new FileOutputStream("src/main/resources/test.ser"))
+  oos.writeObject(boardt)
+  oos.close
+  val ois = new ObjectInputStream(new FileInputStream("src/main/resources/test.ser"))
+  val board = ois.readObject.asInstanceOf[GameBoard]
+  ois.close
+
   var fovmap = new FovMap(board.grid)
 
   def top = new MainFrame {

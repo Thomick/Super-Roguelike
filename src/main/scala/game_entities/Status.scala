@@ -1,6 +1,7 @@
 package game_entities
 
-class StatusResults {
+@SerialVersionUID(106L)
+class StatusResults extends Serializable {
   var canMove: Boolean = true
   var healthModifier: Int = 0
 
