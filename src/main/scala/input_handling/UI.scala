@@ -7,6 +7,7 @@ import game_entities._
 import map_objects.GameBoard
 import fov_functions._
 import scala.math.max
+import scala.collection.immutable.Stack
 
 object GameMode extends Enumeration {
   val Normal, Cursor, Throw, Shoot, Shop = Value
@@ -19,6 +20,8 @@ class UI {
   var lastDir: Direction.Value = Direction.Nop
   var inInventory: Boolean = false
   var selectedItem: Int = 0
+  val menuStack = new mutable.Stack
+
   def isNormalMode(): Boolean = (mode == GameMode.Normal)
   def isCursorMode(): Boolean = (mode == GameMode.Cursor)
   def isThrowMode(): Boolean = (mode == GameMode.Throw)
@@ -74,6 +77,7 @@ class UI {
     val currentIndex =
       if (isSelectedItemEquiped) selectedItem
       else selectedItem - player.equipedItems.length
+    if (!menuStack.isEmpty) {}
     if (lastIsMove) {
       if (isNormalMode()) {
         player.moveDir(lastDir)

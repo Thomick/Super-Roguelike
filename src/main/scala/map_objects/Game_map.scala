@@ -39,6 +39,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
   var otherCharacters = new mutable.HashMap[(Int, Int), Character]
   var grid = MapGenerator.make_empty(size_x, size_y)
 
+  playerEntity.statusList += new StunnedStatus(10)
   def newMap(
       max_rooms: Int,
       room_min_size: Int,

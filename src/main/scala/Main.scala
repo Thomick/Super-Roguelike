@@ -31,7 +31,7 @@ object Main extends SimpleSwingApplication {
       repaint
     }
     override def paint(g: Graphics2D) {
-      Renderer.onPaint(g, board, ui.last, size, fovmap, ui, logger)
+      Renderer.onPaint(g, board, size, fovmap, ui, logger)
     }
   }
 }

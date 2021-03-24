@@ -22,7 +22,6 @@ object Renderer {
   def onPaint(
       g: Graphics2D,
       board: GameBoard,
-      lastkey: String,
       screenSize: Dimension,
       fovmap: FovMap,
       ui: UI,
@@ -34,36 +33,14 @@ object Renderer {
 
     val drawingAreaWidth = screenSize.width - 2 * padding
     val drawingAreaHeight = screenSize.height - 2 * padding
-    val boardSize = max(
-      0,
-      min(
-        drawingAreaWidth - rightPanelWidth - padding,
-        drawingAreaHeight - bottomPanelHeight - padding
-      )
-    )
+    val boardSize =
+      max(0, min(drawingAreaWidth - rightPanelWidth - padding, drawingAreaHeight - bottomPanelHeight - padding))
 
-    val drawnEntities = BoardRenderer.drawBoard(
-      g,
-      (padding, padding),
-      board,
-      fovmap,
-      (0, 0),
-      boardSize,
-      30
-    )
+    val drawnEntities = BoardRenderer.drawBoard(g, (padding, padding), board, fovmap, (0, 0), boardSize, 30)
 
-    var yNext = SideMenuRenderer.drawPlayerInfo(
-      g,
-      (boardSize + 2 * padding, 2 * padding),
-      board.playerEntity,
-      ui
-    )
+    var yNext = SideMenuRenderer.drawPlayerInfo(g, (boardSize + 2 * padding, 2 * padding), board.playerEntity, ui)
 
-    yNext = SideMenuRenderer.drawVisibleEntitiesPanel(
-      g,
-      (boardSize + 2 * padding, yNext + padding),
-      drawnEntities
-    )
+    yNext = SideMenuRenderer.drawVisibleEntitiesPanel(g, (boardSize + 2 * padding, yNext + padding), drawnEntities)
 
     val infos = "Last key pressed : " + ui.last +
       """|
