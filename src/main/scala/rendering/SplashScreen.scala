@@ -6,32 +6,54 @@ import java.awt.Color
 import input_handling._
 import scala.collection.mutable.ArrayBuffer
 
-abstract class Menu {
+class Menu {
+  val name = "Menu"
   val items = new mutable.ArrayBuffer[(String, String)]
   val hasImage: Boolean = false
   var cursorIndex: Int = 0
-  val 
+
+  def selectNext(): Unit =
+    if (items.size > 0)
+      cursorIndex = (cursorIndex + 1) % items.size
+    else
+      cursorIndex = 0
+
+  def selectPrev(): Unit =
+    if (items.size > 0)
+      cursorIndex = (cursorIndex - 1 + items.size) % items.size
+    else
+      cursorIndex = 0
+
+  def confirm(): Unit = ()
 }
 
-class SplashScreen(val menu: Menu, var color: Color = new Color(255, 168, 100)) {
+object SplashScreenRenderer {
   val selectedColor = new Color(255, 200, 200)
+  val backgroundColor = new Color(44, 95, 95)
+  val borderColor = new Color(30, 80, 80)
+  val padding = 10
 
-  def onPaint(
+  def drawMenu(
       g: Graphics2D,
       origin: (Int, Int),
       size: (Int, Int),
-      ui: UI
+      menu: Menu
   ) {
-    g.setColor(color)
+    g.setColor(backgroundColor)
     g.fillRect(origin._1, origin._2, size._1, size._2)
-    var yNext = origin._2
+    g.setColor(borderColor)
+    g.drawRect(origin._1, origin._2, size._1, size._2)
+    var yNext = origin._2 + 2 * padding
     var currentIndex = 0
+    yNext = StringRenderer.drawString(g, menu.name + "\n", (origin._1 + (size._1 - menu.name.size * 5) / 2, yNext))
+    yNext += padding
     menu.items.foreach(s =>
       if (yNext < origin._2 + size._2) {
         if (currentIndex == menu.cursorIndex)
-          yNext = StringRenderer.drawString(g, ">> " + s._1 + "\n", (origin._1, yNext), selectedColor)
+          yNext = StringRenderer.drawString(g, ">> " + s._1 + "\n", (origin._1 + padding, yNext), selectedColor)
         else
-          yNext = StringRenderer.drawString(g, s._1 + "\n", (origin._1, yNext))
+          yNext = StringRenderer.drawString(g, s._1 + "\n", (origin._1 + padding, yNext))
+        currentIndex += 1
       }
     )
   }

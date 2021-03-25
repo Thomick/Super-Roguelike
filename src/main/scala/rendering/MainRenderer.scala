@@ -61,5 +61,8 @@ object Renderer {
       logger.getLogs,
       (padding, boardSize + 3 * padding)
     )
+
+    if (!ui.menuStack.isEmpty)
+      SplashScreenRenderer.drawMenu(g, (padding, padding), (boardSize / 2, boardSize / 2), ui.menuStack.top)
   }
 }
