@@ -17,7 +17,8 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
   override def action(c: Character): Unit = {
     if (c.isInstanceOf[Enemy]) {
       attack(c)
-    }
+    }else
+      c.interact(this)
   }
 
   override def die(): Unit = {

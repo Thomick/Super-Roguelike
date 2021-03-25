@@ -14,7 +14,7 @@ object GameMode extends Enumeration {
   val Normal, Cursor, Throw, Shoot, Shop = Value
 }
 
-class UI {
+object UI {
   var mode: GameMode.Value = GameMode.Normal
   var lastKey: Key.Value = Up
   var lastIsMove: Boolean = false

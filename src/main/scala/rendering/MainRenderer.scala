@@ -24,7 +24,6 @@ object Renderer {
       board: GameBoard,
       screenSize: Dimension,
       fovmap: FovMap,
-      ui: UI,
       logger: Logger
   ) {
     fovmap.compute_fov(board.playerEntity.pos._1, board.playerEntity.pos._2)
@@ -38,11 +37,11 @@ object Renderer {
 
     val drawnEntities = BoardRenderer.drawBoard(g, (padding, padding), board, fovmap, (0, 0), boardSize, 30)
 
-    var yNext = SideMenuRenderer.drawPlayerInfo(g, (boardSize + 2 * padding, 2 * padding), board.playerEntity, ui)
+    var yNext = SideMenuRenderer.drawPlayerInfo(g, (boardSize + 2 * padding, 2 * padding), board.playerEntity)
 
     yNext = SideMenuRenderer.drawVisibleEntitiesPanel(g, (boardSize + 2 * padding, yNext + padding), drawnEntities)
 
-    val infos = "Last key pressed : " + ui.last +
+    val infos = "Last key pressed : " + UI.last +
       """|
          |Additional commands :
          |- Move with Arrow keys or HJKL and YUBN for the diagonals
@@ -62,7 +61,7 @@ object Renderer {
       (padding, boardSize + 3 * padding)
     )
 
-    if (!ui.menuStack.isEmpty)
-      SplashScreenRenderer.drawMenu(g, (padding, padding), (boardSize / 2, boardSize / 2), ui.menuStack.top)
+    if (!UI.menuStack.isEmpty)
+      SplashScreenRenderer.drawMenu(g, (padding, padding), (boardSize / 2, boardSize / 2), UI.menuStack.top)
   }
 }
