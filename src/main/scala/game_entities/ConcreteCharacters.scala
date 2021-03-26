@@ -14,10 +14,10 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
   var money: Int = 0
 
   // Player action when encountering another character
-  override def action(c: Character): Unit = {
+  override def action(c: GameEntity): Unit = {
     if (c.isInstanceOf[Enemy]) {
-      attack(c)
-    }else
+      attack(c.asInstanceOf[Enemy])
+    } else
       c.interact(this)
   }
 

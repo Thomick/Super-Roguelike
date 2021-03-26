@@ -47,12 +47,12 @@ trait HasInventory extends Character {
     return true
   }
 
-  def canThrowItem(itemSlot : Int) : Boolean = (!isSlotEmpty(itemSlot) && inventory(itemSlot).isInstanceOf[Throwable])
+  def canThrowItem(itemSlot: Int): Boolean = (!isSlotEmpty(itemSlot) && inventory(itemSlot).isInstanceOf[Throwable])
 
   // Throw an item if the item is throwable, the effect depends on the item
-  def throwItem(itemSlot: Int, pos : (Int,Int)): Unit = {
+  def throwItem(itemSlot: Int, pos: (Int, Int)): Unit = {
     val item = inventory(itemSlot)
-    item.asInstanceOf[Throwable].throwItem(board,pos)
+    item.asInstanceOf[Throwable].throwItem(board, pos)
     inventory.remove(itemSlot)
     //writeLog(item.name + " can't be thrown")
   }
@@ -70,6 +70,14 @@ trait HasInventory extends Character {
       writeLog(item.name + " can't be consumed")
     }
     return false
+  }
+
+  // Returns the item in the slot [itemSlot] if there is one, else returns None
+  def getItem(itemSlot: Int): Option[AbstractItem] = {
+    println("cc")
+    if (isSlotEmpty(itemSlot))
+      return None
+    return Some(inventory(itemSlot))
   }
 }
 

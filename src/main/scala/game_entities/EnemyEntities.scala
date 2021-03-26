@@ -1,9 +1,9 @@
 package game_entities
 
 trait Enemy extends Character with AIControlled {
-  def action(c: Character): Unit =
+  def action(c: GameEntity): Unit =
     if (c.isInstanceOf[Player])
-      attack(c)
+      attack(c.asInstanceOf[Player])
 }
 
 // Melee enemy behaviour : walk toward the player and tries to hit it

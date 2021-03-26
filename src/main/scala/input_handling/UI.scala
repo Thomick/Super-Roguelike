@@ -9,6 +9,7 @@ import fov_functions._
 import scala.math.max
 import scala.collection._
 import rendering.Menu
+import items._
 
 object GameMode extends Enumeration {
   val Normal, Cursor, Throw, Shoot, Shop = Value
@@ -186,5 +187,11 @@ object UI {
       selectedItem,
       max(1, player.inventory.length + player.equipedItems.length)
     )
+  }
+
+  def getSelectedItem(player: Player): Option[AbstractItem] = {
+    if (selectedItem >= player.equipedItems.length)
+      return player.getItem(selectedItem - player.equipedItems.length)
+    return None
   }
 }

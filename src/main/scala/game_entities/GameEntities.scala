@@ -16,4 +16,6 @@ abstract class GameEntity(init_pos: (Int, Int), b: GameBoard, val hasLogs: Boole
     if (hasLogs)
       board.logger.writeLog(message)
   }
+
+  def interact(c: Character): Boolean = false
 }
