@@ -18,10 +18,10 @@ trait MeleeEnemy extends Character with Enemy {
   }
 
   override def act(): Unit = {
+    updateStatus()
     nextCell match {
       case None       => ()
       case Some(cell) => move(cell)
     }
-    updateStatus()
   }
 }

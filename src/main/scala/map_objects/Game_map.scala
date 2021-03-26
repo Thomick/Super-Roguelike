@@ -59,8 +59,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
     playerEntity.pos = map._2(0)
     otherCharacters = new mutable.HashMap[(Int, Int), Character]
     itemEntities = new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
-    otherCharacters += (map._2(0) -> new Shopkeeper(map._2(0), this))
-
+    playerEntity.statusList += new StunnedStatus(10)
     // Setup of some entities in order to test the features
     val rnd = new Random
     for { x <- 1 to map._2.size - 1 } {

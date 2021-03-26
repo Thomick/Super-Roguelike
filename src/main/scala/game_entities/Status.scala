@@ -25,7 +25,6 @@ abstract class Status(duration: Int) {
   def applyEffect(results: StatusResults): Unit = {
     if (remainingTime > 0)
       remainingTime -= 1
-    println(remainingTime)
   }
 }
 

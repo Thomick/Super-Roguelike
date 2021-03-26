@@ -92,6 +92,7 @@ object UI {
       }
     } else if (lastIsMove) {
       if (isNormalMode()) {
+        player.updateStatus()
         player.moveDir(lastDir)
         doUpdate = true
       }
@@ -100,26 +101,33 @@ object UI {
       if (isNormalMode()) {
         doUpdate = true
         lastKey match {
-          case E =>
+          case E => {
+            player.updateStatus()
             player.pickUpItem()
-          case D =>
+          }
+          case D => {
+            player.updateStatus()
             if (!isSelectedItemEquiped) player.dropItem(currentIndex)
-          case C =>
+          }
+          case C => {
+            player.updateStatus()
             if (!isSelectedItemEquiped) player.consumeItem(currentIndex)
-          case T =>
+          }
+          case T => {
             if (!isSelectedItemEquiped) {
               if (player.canThrowItem(currentIndex)) {
                 mode = GameMode.Throw
                 cursor.makeVisible
                 cursor.backToPlayer
-                doUpdate = false
               }
             }
-          case R =>
+            doUpdate = false
+          }
+          case R => {
+            player.updateStatus()
             if (isSelectedItemEquiped) player.unequipItem(currentIndex)
             else player.equipItem(currentIndex)
-          case F =>
-            if (isSelectedItemEquiped) player.unequipItem(currentIndex)
+          }
           // Unused
           /*case I =>
             inInventory = !inInventory
@@ -152,6 +160,7 @@ object UI {
           case T =>
             if (lightMap.is_light(cursor.xpos, cursor.ypos)) {
               if (!board.grid(cursor.xpos)(cursor.ypos).blocking) {
+                player.updateStatus()
                 player.throwItem(currentIndex, cursor.pos)
                 mode = GameMode.Normal
                 cursor.makeInvisible
@@ -171,7 +180,6 @@ object UI {
       }
     }
     if (doUpdate) {
-      player.updateStatus()
       board.update(lightMap)
     }
     selectedItem = Math.floorMod(
