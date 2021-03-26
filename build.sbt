@@ -3,5 +3,6 @@ lazy val root = (project in file(".")).
 
 settings(
     name := "Rogue project",
-    libraryDependencies += swing
+    libraryDependencies += swing,
+    fork in run := true
 )
