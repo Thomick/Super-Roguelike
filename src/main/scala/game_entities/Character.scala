@@ -90,6 +90,8 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
 
   // Remove the status that verify the predicate p
   def removeStatus(p: Status => Boolean): Unit = statusList.retain(s => !p(s))
+
+  def interact(c: Character): Unit = ()
 }
 
 // Shared trait for npc

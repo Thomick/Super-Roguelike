@@ -109,7 +109,6 @@ object BoardRenderer {
       }
     }
 
-
     drawGrid()
     drawEntities()
     drawCursor()

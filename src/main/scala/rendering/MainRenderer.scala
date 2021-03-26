@@ -22,10 +22,8 @@ object Renderer {
   def onPaint(
       g: Graphics2D,
       board: GameBoard,
-      lastkey: String,
       screenSize: Dimension,
       fovmap: FovMap,
-      ui: UI,
       logger: Logger
   ) {
     fovmap.compute_fov(board.playerEntity.pos._1, board.playerEntity.pos._2)
@@ -34,38 +32,16 @@ object Renderer {
 
     val drawingAreaWidth = screenSize.width - 2 * padding
     val drawingAreaHeight = screenSize.height - 2 * padding
-    val boardSize = max(
-      0,
-      min(
-        drawingAreaWidth - rightPanelWidth - padding,
-        drawingAreaHeight - bottomPanelHeight - padding
-      )
-    )
+    val boardSize =
+      max(0, min(drawingAreaWidth - rightPanelWidth - padding, drawingAreaHeight - bottomPanelHeight - padding))
 
-    val drawnEntities = BoardRenderer.drawBoard(
-      g,
-      (padding, padding),
-      board,
-      fovmap,
-      (0, 0),
-      boardSize,
-      30
-    )
+    val drawnEntities = BoardRenderer.drawBoard(g, (padding, padding), board, fovmap, (0, 0), boardSize, 30)
 
-    var yNext = SideMenuRenderer.drawPlayerInfo(
-      g,
-      (boardSize + 2 * padding, 2 * padding),
-      board.playerEntity,
-      ui
-    )
+    var yNext = SideMenuRenderer.drawPlayerInfo(g, (boardSize + 2 * padding, 2 * padding), board.playerEntity)
 
-    yNext = SideMenuRenderer.drawVisibleEntitiesPanel(
-      g,
-      (boardSize + 2 * padding, yNext + padding),
-      drawnEntities
-    )
+    yNext = SideMenuRenderer.drawVisibleEntitiesPanel(g, (boardSize + 2 * padding, yNext + padding), drawnEntities)
 
-    val infos = "Last key pressed : " + ui.last +
+    val infos = "Last key pressed : " + UI.last +
       """|
          |Additional commands :
          |- Move with Arrow keys or HJKL and YUBN for the diagonals
@@ -84,5 +60,8 @@ object Renderer {
       logger.getLogs,
       (padding, boardSize + 3 * padding)
     )
+
+    if (!UI.menuStack.isEmpty)
+      SplashScreenRenderer.drawMenu(g, (padding, padding), (boardSize / 2, boardSize / 2), UI.menuStack.top)
   }
 }

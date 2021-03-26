@@ -59,22 +59,20 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
     playerEntity.pos = map._2(0)
     otherCharacters = new mutable.HashMap[(Int, Int), Character]
     itemEntities = new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
+    otherCharacters += (map._2(0) -> new Shopkeeper(map._2(0), this))
 
     // Setup of some entities in order to test the features
     val rnd = new Random
     for { x <- 1 to map._2.size - 1 } {
-      rnd.nextInt(3) match {
-        case 0 =>
-          otherCharacters += ((map._2(x)._1, map._2(x)._2) -> new Robot(
-            (map._2(x)._1, map._2(x)._2),
+      rnd.nextInt(4) match {
+        case 0 => otherCharacters += (map._2(x) -> new Robot(map._2(x), this))
+        case 1 => otherCharacters += (map._2(x) -> new Dog(map._2(x), this))
+        case 2 =>
+          otherCharacters += ((map._2(x)._1, map._2(x)._2 - 1) -> new Shopkeeper(
+            (map._2(x)._1, map._2(x)._2 + 1),
             this
           ))
-        case 1 =>
-          otherCharacters += ((map._2(x)._1, map._2(x)._2) -> new Dog(
-            (map._2(x)._1, map._2(x)._2),
-            this
-          ))
-        case 2 => ()
+        case 3 => ()
       }
       rnd.nextInt(5) match {
         case 0 =>
@@ -100,7 +98,6 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
   def hasCharacter(pos: (Int, Int)): Boolean =
     inGrid(pos) && (otherCharacters.contains(pos) || playerEntity.pos == pos)
 
-  // TODO pass the previous position as parameter
   def entityMoved(e: Character, newPos: (Int, Int)): Unit = {
     e match {
       case `playerEntity` => ()

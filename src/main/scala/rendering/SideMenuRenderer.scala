@@ -50,8 +50,7 @@ object SideMenuRenderer {
   def drawPlayerInfo(
       g: Graphics2D,
       origin: (Int, Int),
-      player: Player,
-      ui: UI
+      player: Player
   ): Int = {
     val equiped = player.getEquipedItems()
     val inventory = player.getInventoryItems()
@@ -62,14 +61,15 @@ object SideMenuRenderer {
 
     menuBuffer ++= "HP : " + player.currentHP.toString + "/" + player.getMaxHP.toString + "\n"
     menuBuffer ++= "Attack power : " + player.getAtt.toString + "\n"
-    menuBuffer ++= "Defense : " + player.getDef.toString + "\n\n"
+    menuBuffer ++= "Defense : " + player.getDef.toString + "\n"
+    menuBuffer ++= "Money : " + player.money.toString + "\n\n"
 
     // Appends an item to the menu (with correct information and color)
     def addToMenu(index: Int, item: AbstractItem): Unit = {
       val printedIndex =
-        if (ui.inInventory) (index + 'a').toChar.toString
+        if (UI.inInventory) (index + 'a').toChar.toString
         else "" // Information for direct item selection
-      if (ui.selectedItem == index) {
+      if (UI.selectedItem == index) {
         yNext = StringRenderer.drawString(
           g,
           menuBuffer.toString,
