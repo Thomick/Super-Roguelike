@@ -5,14 +5,22 @@ import scala.math.{pow, sqrt}
 import map_objects._
 
 class FovMap(board: Array[Array[GameTile]]) {
-  val resistance_map = board.map(_.map(_.blocking_sight)) //Apply a mask on the board to keep only the boolean blocking_sight
+  var resistance_map = board.map(_.map(_.blocking_sight)) //Apply a mask on the board to keep only the boolean blocking_sight
   var light_map = resistance_map.map(_.map(x => false))
-  val width = resistance_map.size
-  val height = resistance_map(0).size
+  var width = resistance_map.size
+  var height = resistance_map(0).size
   val radius = 10
 
   def norm(x: Double, y: Double) = sqrt(pow(x, 2) + pow(y, 2))
   def is_light(x: Int, y: Int) = light_map(x)(y)
+
+  def update(newGrid: Array[Array[GameTile]]): Unit = {
+    resistance_map = newGrid.map(_.map(_.blocking_sight)) //Apply a mask on the board to keep only the boolean blocking_sight
+    light_map = resistance_map.map(_.map(x => false))
+    width = resistance_map.size
+    height = resistance_map(0).size
+  }
+
 
   def compute_fov(startx: Int, starty: Int) = {
     light_map = resistance_map.map(_.map(x => false))
