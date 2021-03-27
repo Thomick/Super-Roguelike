@@ -59,7 +59,6 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
     playerEntity.pos = map._2(0)
     otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
     itemEntities = new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
-    otherEntities += (map._2(0) -> new Computer(map._2(0), this))
 
     // Setup of some entities in order to test the features
     val rnd = new Random
@@ -80,7 +79,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
             ))
         case 3 => ()
       }
-      rnd.nextInt(5) match {
+      rnd.nextInt(6) match {
         case 0 =>
           addItem(new ItemEntity(map._2(x), this, new Morphin), map._2(x))
         case 1 =>
@@ -89,7 +88,9 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
           addItem(new ItemEntity(map._2(x), this, new LaserChainsaw), map._2(x))
         case 3 =>
           addItem(new ItemEntity(map._2(x), this, new Bandage), map._2(x))
-        case 4 => ()
+        case 4 =>
+          addItem(new ItemEntity(map._2(x), this, new ArmCannon), map._2(x))
+        case 5 => ()
       }
     }
     // End of test
@@ -101,8 +102,10 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
   def isFree(pos: (Int, Int)): Boolean =
     inGrid(pos) && (!(grid(pos._1)(pos._2).blocking || otherEntities.contains(pos) || playerEntity.pos == pos))
 
-  def hasCharacter(pos: (Int, Int)): Boolean =
+  def hasEntity(pos: (Int, Int)): Boolean =
     inGrid(pos) && (otherEntities.contains(pos) || playerEntity.pos == pos)
+
+  def hasCharacter(pos: (Int, Int)): Boolean = hasEntity(pos) && getEntity(pos).isInstanceOf[Character]
 
   def entityMoved(e: GameEntity, newPos: (Int, Int)): Unit = {
     e match {
@@ -114,7 +117,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
     }
   }
 
-  def removeCharacter(pos: (Int, Int)): Unit = {
+  def removeEntity(pos: (Int, Int)): Unit = {
     otherEntities -= pos
   }
 
@@ -136,13 +139,15 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
     ) ++= otherEntities.values += playerEntity).toList
   }
 
-  def getCharacter(pos: (Int, Int)): GameEntity = {
+  def getEntity(pos: (Int, Int)): GameEntity = {
     if (playerEntity.pos == pos) {
       playerEntity
     } else {
       otherEntities(pos)
     }
   }
+
+  def getCharacter(pos: (Int, Int)): Character = getEntity(pos).asInstanceOf[Character]
 
   def pickUpItem(pos: (Int, Int), itemIndex: Int): Option[AbstractItem] = {
     if (itemEntities.contains(pos)) {

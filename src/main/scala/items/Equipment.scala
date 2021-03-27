@@ -1,5 +1,9 @@
 package items
 
+import map_objects._
+import scala.util.Random
+import scala.math.{min, max}
+
 abstract class Armor() extends AbstractItem with Equipable {
   val bonusAtt: Int = 0
   val bonusHP: Int = 0
@@ -11,8 +15,26 @@ abstract class Weapon() extends AbstractItem with Equipable {
   val bonusHP: Int = 0
 }
 
-abstract class DistanceWeapon() extends Weapon {
+abstract class RangedWeapon() extends Weapon {
   val range: Int = 10
+  val att: Int
+  def shoot(shooter: game_entities.CanEquip, board: GameBoard, pos: (Int, Int)): Unit = {
+    if (board.hasCharacter(pos)) {
+      val target = board.getCharacter(pos)
+      val rnd = new Random
+      val damage = max(0, (att * (1 + 3 * rnd.nextGaussian())).toInt)
+      shooter.giveDamage(damage, target)
+    }
+  }
+}
+
+class ArmCannon() extends RangedWeapon {
+  val name: String = "Arm-cannon"
+  val description: String = "It is an arm-cannon. Wow, just like in Megaman."
+  val weight = 1500
+  val bonusAtt = 0
+  val att = 5
+  override val image = "src/main/resources/armcannon.png"
 }
 
 class IronHelmet() extends Armor {

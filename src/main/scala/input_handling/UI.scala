@@ -12,11 +12,12 @@ import rendering.Menu
 import items._
 
 object GameMode extends Enumeration {
-  val Normal, Cursor, Throw, Shoot, Shop = Value
+  val Normal, Cursor, Throw, Fire, Shop = Value
 }
 
 object UI {
   var mode: GameMode.Value = GameMode.Normal
+  var mainWeapon: Boolean = false
   var lastKey: Key.Value = Up
   var lastIsMove: Boolean = false
   var lastDir: Direction.Value = Direction.Nop
@@ -27,7 +28,7 @@ object UI {
   def isNormalMode(): Boolean = (mode == GameMode.Normal)
   def isCursorMode(): Boolean = (mode == GameMode.Cursor)
   def isThrowMode(): Boolean = (mode == GameMode.Throw)
-  def isFireMode(): Boolean = (mode == GameMode.Shoot)
+  def isFireMode(): Boolean = (mode == GameMode.Fire)
   def newKeyPressed(keyCode: Key.Value) = {
     keyCode match {
       case Up | K => {
@@ -111,8 +112,10 @@ object UI {
             if (!isSelectedItemEquiped) player.dropItem(currentIndex)
           }
           case C => {
-            player.updateStatus()
-            if (!isSelectedItemEquiped) player.consumeItem(currentIndex)
+            if (!isSelectedItemEquiped) {
+              player.updateStatus()
+              player.consumeItem(currentIndex)
+            } else doUpdate = false
           }
           case T => {
             if (!isSelectedItemEquiped) {
@@ -124,6 +127,22 @@ object UI {
             }
             doUpdate = false
           }
+          case F =>
+            if (isSelectedItemEquiped && player.canFireItem(currentIndex)) { // By default, fire with selected weapon
+              mode = GameMode.Fire
+              mainWeapon = false
+              cursor.makeVisible
+              cursor.activateHighlight(player.itemRange(currentIndex))
+              cursor.backToPlayer
+            } else if (player.equipedRangedWeapons != Nil) { // If not possible, fire with main weapon
+              mode = GameMode.Fire
+              mainWeapon = true
+              cursor.makeVisible
+              cursor.activateHighlight(player.equipedRangedWeapons(0).range)
+              cursor.backToPlayer
+            }
+            doUpdate = false
+
           case R => {
             player.updateStatus()
             if (isSelectedItemEquiped) player.unequipItem(currentIndex)
@@ -176,6 +195,15 @@ object UI {
           case Escape =>
             mode = GameMode.Normal
             cursor.makeInvisible
+            cursor.deactivateHighlight
+          case F =>
+            if (cursor.highlightedCells._2 && lightMap.is_light(cursor.xpos, cursor.ypos)) {
+              player.fire(mainWeapon, currentIndex, cursor.pos)
+              mode = GameMode.Normal
+              cursor.makeInvisible
+              cursor.deactivateHighlight
+              doUpdate = true
+            }
           case _ => ()
         }
       }

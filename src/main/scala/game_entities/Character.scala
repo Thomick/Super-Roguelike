@@ -38,8 +38,8 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
       if (board.isFree(nextPos)) {
         board.entityMoved(this, nextPos)
         pos = nextPos
-      } else if (board.hasCharacter(nextPos)) {
-        action(board.getCharacter(nextPos))
+      } else if (board.hasEntity(nextPos)) {
+        action(board.getEntity(nextPos))
       }
   }
 
@@ -54,6 +54,10 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   def attack(c: Character): Unit = {
     val rnd = new Random
     val damage = max(0, (getAtt() * (1 + 3 * rnd.nextGaussian())).toInt)
+    giveDamage(damage, c)
+  }
+
+  def giveDamage(damage: Int, c: Character): Unit = {
     val (effectiveDamage, died) = c.takeDamage(this, damage)
     writeLog(name + " deals " + effectiveDamage.toString + " damage to " + c.name)
     if (died) {
@@ -78,7 +82,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   // Called when a character dies
   def die(): Unit = {
     writeLog(name + " dies. Goodbye cruel world !")
-    board.removeCharacter(pos)
+    board.removeEntity(pos)
   }
 
   def updateStatus(): Unit = {
