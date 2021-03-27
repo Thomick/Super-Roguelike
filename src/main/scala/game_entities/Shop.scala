@@ -19,7 +19,7 @@ class Shopkeeper(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos,
     }
   }
   forSale += ((new LaserChainsaw, 10), (new IronHelmet, 1), (new Morphin, 3), (new Bandage, 5))
-  forSale += ((new HackingTools, 0))
+  forSale += ((new HackingTools, 5))
   updateMenu()
 
   def sell(itemIndex: Int): Unit = {

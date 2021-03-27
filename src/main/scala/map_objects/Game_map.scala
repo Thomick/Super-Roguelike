@@ -68,10 +68,16 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
         case 0 => otherEntities += (map._2(x) -> new Robot(map._2(x), this))
         case 1 => otherEntities += (map._2(x) -> new Dog(map._2(x), this))
         case 2 =>
-          otherEntities += ((map._2(x)._1, map._2(x)._2 - 1) -> new Shopkeeper(
-            (map._2(x)._1, map._2(x)._2 + 1),
-            this
-          ))
+          if (rnd.nextInt(2) == 1)
+            otherEntities += ((map._2(x)._1, map._2(x)._2 + 1) -> new Shopkeeper(
+              (map._2(x)._1, map._2(x)._2 + 1),
+              this
+            ))
+          else
+            otherEntities += ((map._2(x)._1, map._2(x)._2 + 1) -> new Computer(
+              (map._2(x)._1, map._2(x)._2 + 1),
+              this
+            ))
         case 3 => ()
       }
       rnd.nextInt(5) match {
