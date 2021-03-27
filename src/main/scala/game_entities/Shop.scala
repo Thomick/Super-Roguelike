@@ -5,6 +5,7 @@ import scala.collection._
 import rendering.Menu
 import input_handling._
 import items._
+import javax.swing.text.html.parser.Entity
 
 class Shopkeeper(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with AIControlled {
   val name = "Shopkeeper"
@@ -17,7 +18,8 @@ class Shopkeeper(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos,
       sell(cursorIndex)
     }
   }
-  forSale += ((new LaserChainsaw, 10), (new IronHelmet, 1), (new Morphin, 3), (new Bandage, 5)) // Test
+  forSale += ((new LaserChainsaw, 10), (new IronHelmet, 1), (new Morphin, 3), (new Bandage, 5))
+  forSale += ((new HackingTools, 5))
   updateMenu()
 
   def sell(itemIndex: Int): Unit = {
@@ -43,11 +45,14 @@ class Shopkeeper(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos,
     forSale.foreach(a => menu.items += ((a._1.name + " (" + a._2.toString() + "U)", "")))
   }
 
-  def action(c: Character) = ()
+  def action(c: GameEntity) = ()
 
-  override def interact(c: Character): Unit =
+  override def interact(c: Character): Boolean = {
     if (c.isInstanceOf[Player]) {
       UI.menuStack.push(menu)
       lastPlayerMet = Some(c.asInstanceOf[Player])
+      return true
     }
+    return false
+  }
 }

@@ -74,24 +74,26 @@ object BoardRenderer {
 
     // Draw an entity on the board (if visible)
     def drawEntity(e: GameEntity) = {
-      if (fovmap.is_light(e.pos._1, e.pos._2)) {
-        drawnEntities += e
-        val img = Toolkit.getDefaultToolkit().getImage(e.image)
-        g.drawImage(
-          img,
-          e.pos._1 * (tilePadding + tileSize) + gridOrigin._1,
-          e.pos._2 * (tilePadding + tileSize) + gridOrigin._2,
-          tileSize,
-          tileSize,
-          null
-        )
-        g.finalize()
-      }
+      val img = Toolkit.getDefaultToolkit().getImage(e.image)
+      g.drawImage(
+        img,
+        e.pos._1 * (tilePadding + tileSize) + gridOrigin._1,
+        e.pos._2 * (tilePadding + tileSize) + gridOrigin._2,
+        tileSize,
+        tileSize,
+        null
+      )
+      g.finalize()
     }
 
     def drawEntities() = {
       val entities = board.getEntities()
-      entities.foreach(e => drawEntity(e))
+      entities.foreach(e => {
+        if (fovmap.is_light(e.pos._1, e.pos._2)) {
+          drawnEntities += e
+          drawEntity(e)
+        }
+      })
     }
 
     def drawCursor(): Unit = {

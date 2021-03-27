@@ -48,7 +48,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
 
   // Action of the current character on another character
   // (Usually triggered during collisions)
-  def action(c: Character): Unit
+  def action(c: GameEntity): Unit
 
   // Hand to hand attack based on the character stats
   def attack(c: Character): Unit = {
@@ -58,7 +58,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
     writeLog(name + " deals " + effectiveDamage.toString + " damage to " + c.name)
     if (died) {
       writeLog(name + " kills " + c.name)
-      if (board.otherCharacters.isEmpty)
+      if (board.otherEntities.find(_._2.isInstanceOf[Enemy]) == None)
         writeLog("### All enemies have been destroyed ###")
     }
   }
@@ -91,7 +91,6 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   // Remove the status that verify the predicate p
   def removeStatus(p: Status => Boolean): Unit = statusList.retain(s => !p(s))
 
-  def interact(c: Character): Unit = ()
 }
 
 // Shared trait for npc

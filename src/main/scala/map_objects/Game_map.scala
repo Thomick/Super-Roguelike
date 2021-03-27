@@ -36,7 +36,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
   val cursor = new Cursor(this)
   var itemEntities =
     new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
-  var otherCharacters = new mutable.HashMap[(Int, Int), Character]
+  var otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
   var grid = MapGenerator.make_empty(size_x, size_y)
 
   def newMap(
@@ -57,20 +57,27 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
     size_x = map_width
     size_y = map_height
     playerEntity.pos = map._2(0)
-    otherCharacters = new mutable.HashMap[(Int, Int), Character]
+    otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
     itemEntities = new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
-    playerEntity.statusList += new StunnedStatus(10)
+    otherEntities += (map._2(0) -> new Computer(map._2(0), this))
+
     // Setup of some entities in order to test the features
     val rnd = new Random
     for { x <- 1 to map._2.size - 1 } {
       rnd.nextInt(4) match {
-        case 0 => otherCharacters += (map._2(x) -> new Robot(map._2(x), this))
-        case 1 => otherCharacters += (map._2(x) -> new Dog(map._2(x), this))
+        case 0 => otherEntities += (map._2(x) -> new Robot(map._2(x), this))
+        case 1 => otherEntities += (map._2(x) -> new Dog(map._2(x), this))
         case 2 =>
-          otherCharacters += ((map._2(x)._1, map._2(x)._2 - 1) -> new Shopkeeper(
-            (map._2(x)._1, map._2(x)._2 + 1),
-            this
-          ))
+          if (rnd.nextInt(2) == 1)
+            otherEntities += ((map._2(x)._1, map._2(x)._2 + 1) -> new Shopkeeper(
+              (map._2(x)._1, map._2(x)._2 + 1),
+              this
+            ))
+          else
+            otherEntities += ((map._2(x)._1, map._2(x)._2 + 1) -> new Computer(
+              (map._2(x)._1, map._2(x)._2 + 1),
+              this
+            ))
         case 3 => ()
       }
       rnd.nextInt(5) match {
@@ -92,23 +99,23 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
     pos._1 >= 0 && pos._1 < size_x && pos._2 >= 0 && pos._2 < size_y
 
   def isFree(pos: (Int, Int)): Boolean =
-    inGrid(pos) && (!(grid(pos._1)(pos._2).blocking || otherCharacters.contains(pos) || playerEntity.pos == pos))
+    inGrid(pos) && (!(grid(pos._1)(pos._2).blocking || otherEntities.contains(pos) || playerEntity.pos == pos))
 
   def hasCharacter(pos: (Int, Int)): Boolean =
-    inGrid(pos) && (otherCharacters.contains(pos) || playerEntity.pos == pos)
+    inGrid(pos) && (otherEntities.contains(pos) || playerEntity.pos == pos)
 
-  def entityMoved(e: Character, newPos: (Int, Int)): Unit = {
+  def entityMoved(e: GameEntity, newPos: (Int, Int)): Unit = {
     e match {
       case `playerEntity` => ()
       case entity => {
-        otherCharacters -= entity.pos
-        otherCharacters += (newPos -> entity)
+        otherEntities -= entity.pos
+        otherEntities += (newPos -> entity)
       }
     }
   }
 
   def removeCharacter(pos: (Int, Int)): Unit = {
-    otherCharacters -= pos
+    otherEntities -= pos
   }
 
   def addItem(entity: ItemEntity, pos: (Int, Int)): Boolean = {
@@ -126,14 +133,14 @@ class GameBoard(n: Int, m: Int, val logger: Logger) {
           buf: mutable.MutableList[GameEntity],
           keyAndValue: ((Int, Int), mutable.ArrayBuffer[ItemEntity])
       ) => buf ++= keyAndValue._2
-    ) ++= otherCharacters.values += playerEntity).toList
+    ) ++= otherEntities.values += playerEntity).toList
   }
 
-  def getCharacter(pos: (Int, Int)): Character = {
+  def getCharacter(pos: (Int, Int)): GameEntity = {
     if (playerEntity.pos == pos) {
       playerEntity
     } else {
-      otherCharacters(pos)
+      otherEntities(pos)
     }
   }
 
