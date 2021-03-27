@@ -18,22 +18,23 @@ abstract class Weapon() extends AbstractItem with Equipable {
 abstract class RangedWeapon() extends Weapon {
   val range: Int = 10
   val att: Int
-  def shoot(shooter: game_entities.CanEquip, board: GameBoard, pos: (Int,Int)) : Unit = {
+  def shoot(shooter: game_entities.CanEquip, board: GameBoard, pos: (Int, Int)): Unit = {
     if (board.hasCharacter(pos)) {
       val target = board.getCharacter(pos)
       val rnd = new Random
       val damage = max(0, (att * (1 + 3 * rnd.nextGaussian())).toInt)
-      shooter.giveDamage(damage,target)
+      shooter.giveDamage(damage, target)
     }
   }
 }
 
 class ArmCannon() extends RangedWeapon {
   val name: String = "Arm-cannon"
-  val description: String = "It is a arm-cannon. Wow, just like in Megaman."
+  val description: String = "It is an arm-cannon. Wow, just like in Megaman."
   val weight = 1500
   val bonusAtt = 0
   val att = 5
+  override val image = "src/main/resources/armcannon.png"
 }
 
 class IronHelmet() extends Armor {
