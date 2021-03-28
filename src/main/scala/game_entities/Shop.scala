@@ -8,8 +8,8 @@ import items._
 import javax.swing.text.html.parser.Entity
 
 class Shopkeeper(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with AIControlled {
-  val name = "Shopkeeper"
-  val description = "He sells low quality goods at a high price"
+  val name = "Vending machine"
+  val description = "It sells low quality goods at a high price"
   override val image: String = "src/main/resources/vendingmachine.png"
   val forSale = new mutable.ArrayBuffer[(AbstractItem, Int)]
   var lastPlayerMet: Option[Player] = None
