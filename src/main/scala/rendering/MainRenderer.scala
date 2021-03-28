@@ -64,7 +64,7 @@ object Renderer {
 
     if (!UI.menuStack.isEmpty)
       if (UI.menuStack.top.isInstanceOf[MainMenu])
-        SplashScreenRenderer.drawMenu(g, (0, 0), (screenSize.width, screenSize.height), UI.menuStack.top)
+        SplashScreenRenderer.drawMenu(g, (0, 0), (screenSize.width, screenSize.height), UI.menuStack.top, true)
       else
         SplashScreenRenderer.drawMenu(g, (padding, padding), (boardSize / 2, boardSize / 2), UI.menuStack.top)
   }

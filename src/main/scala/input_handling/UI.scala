@@ -83,9 +83,9 @@ object UI {
       else selectedItem - player.equipedItems.length
     if (!menuStack.isEmpty) {
       lastKey match {
-        case O =>
+        case O | Down | J =>
           menuStack.top.selectNext()
-        case I =>
+        case I | Up | K =>
           menuStack.top.selectPrev()
         case Enter =>
           menuStack.top.confirm()

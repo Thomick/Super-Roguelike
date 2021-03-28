@@ -16,7 +16,8 @@ object SplashScreenRenderer {
       g: Graphics2D,
       origin: (Int, Int),
       size: (Int, Int),
-      menu: Menu
+      menu: Menu,
+      centered: Boolean = false
   ) {
     g.setColor(backgroundColor)
     g.fillRect(origin._1, origin._2, size._1, size._2)
@@ -24,14 +25,22 @@ object SplashScreenRenderer {
     g.drawRect(origin._1, origin._2, size._1, size._2)
     var yNext = origin._2 + 2 * padding
     var currentIndex = 0
-    yNext = StringRenderer.drawString(g, menu.name + "\n", (origin._1 + (size._1 - menu.name.size * 5) / 2, yNext))
+
+    def xPos(str: String, center: Boolean): Int =
+      if (center)
+        return origin._1 + (size._1 - str.size * 5) / 2
+      else
+        return origin._1 + padding
+
+    yNext = StringRenderer.drawString(g, menu.name + "\n", (xPos(menu.name, true), yNext))
     yNext += padding
     menu.items.foreach(s =>
       if (yNext < origin._2 + size._2) {
         if (currentIndex == menu.cursorIndex)
-          yNext = StringRenderer.drawString(g, ">> " + s._1 + "\n", (origin._1 + padding, yNext), selectedColor)
+          yNext =
+            StringRenderer.drawString(g, ">> " + s._1 + "\n", (xPos(">> " + s._1, centered), yNext), selectedColor)
         else
-          yNext = StringRenderer.drawString(g, s._1 + "\n", (origin._1 + padding, yNext))
+          yNext = StringRenderer.drawString(g, s._1 + "\n", (xPos(s._1, centered), yNext))
         currentIndex += 1
       }
     )
