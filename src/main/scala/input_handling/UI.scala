@@ -8,8 +8,8 @@ import map_objects.GameBoard
 import fov_functions._
 import scala.math.max
 import scala.collection._
-import rendering.Menu
 import items._
+import game._
 
 object GameMode extends Enumeration {
   val Normal, Cursor, Throw, Fire, Shop = Value
@@ -72,7 +72,8 @@ object UI {
 
   def last: String = lastKey.toString
 
-  def applyCommand(board: GameBoard, lightMap: FovMap) {
+  def applyCommand(game: Game, lightMap: FovMap) {
+    val board = game.currentLevel
     val player = board.playerEntity
     val cursor = board.cursor
     var doUpdate = false
@@ -142,7 +143,6 @@ object UI {
               cursor.backToPlayer
             }
             doUpdate = false
-
           case R => {
             player.updateStatus()
             if (isSelectedItemEquiped) player.unequipItem(currentIndex)
@@ -162,6 +162,9 @@ object UI {
             mode = GameMode.Cursor
             cursor.makeVisible
             cursor.backToPlayer
+            doUpdate = false
+          case Escape =>
+            menuStack.push(new MainMenu)
             doUpdate = false
           case _ => doUpdate = false
         }

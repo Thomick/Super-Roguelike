@@ -6,27 +6,6 @@ import java.awt.Color
 import input_handling._
 import scala.collection.mutable.ArrayBuffer
 
-class Menu {
-  val name = "Menu"
-  val items = new mutable.ArrayBuffer[(String, String)]
-  val hasImage: Boolean = false
-  var cursorIndex: Int = 0
-
-  def selectNext(): Unit =
-    if (items.size > 0)
-      cursorIndex = (cursorIndex + 1) % items.size
-    else
-      cursorIndex = 0
-
-  def selectPrev(): Unit =
-    if (items.size > 0)
-      cursorIndex = (cursorIndex - 1 + items.size) % items.size
-    else
-      cursorIndex = 0
-
-  def confirm(): Unit = ()
-}
-
 object SplashScreenRenderer {
   val selectedColor = new Color(255, 200, 200)
   val backgroundColor = new Color(44, 95, 95)

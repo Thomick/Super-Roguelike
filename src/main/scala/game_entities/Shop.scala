@@ -2,12 +2,15 @@ package game_entities
 
 import map_objects._
 import scala.collection._
-import rendering.Menu
 import input_handling._
 import items._
 import javax.swing.text.html.parser.Entity
 
-class Shopkeeper(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with AIControlled {
+@SerialVersionUID(150L)
+class Shopkeeper(init_pos: (Int, Int), b: GameBoard)
+    extends Character(init_pos, b)
+    with AIControlled
+    with Serializable {
   val name = "Vending machine"
   val description = "It sells low quality goods at a high price"
   override val image: String = "src/main/resources/vendingmachine.png"
