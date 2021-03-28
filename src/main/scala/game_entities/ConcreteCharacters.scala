@@ -1,6 +1,7 @@
 package game_entities
 
 import map_objects._
+import items._
 
 // Character controlled by the player
 @SerialVersionUID(100L)
@@ -11,17 +12,33 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
   currentHP = 100
   override val image = "src/main/resources/hero.png"
 
+  var money: Int = 15
+
   // Player action when encountering another character
-  override def action(c: Character): Unit = {
+  override def action(c: GameEntity): Unit = {
     if (c.isInstanceOf[Enemy]) {
-      attack(c)
-    }
+      attack(c.asInstanceOf[Enemy])
+    } else
+      c.interact(this)
   }
 
   override def die(): Unit = {
     writeLog(
       "### Your body can not endure damage anymore. However your robot parts allow you to keep on exploring and fighting. ###"
     )
+  }
+
+  override def pickUpItem(): Option[AbstractItem] = {
+    val it = super.pickUpItem()
+    it match {
+      case Some(item) =>
+        if (item.isInstanceOf[Money]) {
+          money += item.asInstanceOf[Money].value
+          inventory -= item
+        }
+      case None => ()
+    }
+    return it
   }
 }
 

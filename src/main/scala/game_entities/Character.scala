@@ -38,8 +38,8 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
       if (board.isFree(nextPos)) {
         board.entityMoved(this, nextPos)
         pos = nextPos
-      } else if (board.hasCharacter(nextPos)) {
-        action(board.getCharacter(nextPos))
+      } else if (board.hasEntity(nextPos)) {
+        action(board.getEntity(nextPos))
       }
   }
 
@@ -48,13 +48,13 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
 
   // Action of the current character on another character
   // (Usually triggered during collisions)
-  def action(c: Character): Unit
+  def action(c: GameEntity): Unit
 
   // Hand to hand attack based on the character stats
   def attack(c: Character): Unit = {
     val rnd = new Random
     val damage = max(0, (getAtt() * (1 + 3 * rnd.nextGaussian())).toInt)
-    giveDamage(damage,c)
+    giveDamage(damage, c)
   }
 
   def giveDamage(damage: Int, c: Character): Unit = {
@@ -62,11 +62,10 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
     writeLog(name + " deals " + effectiveDamage.toString + " damage to " + c.name)
     if (died) {
       writeLog(name + " kills " + c.name)
-      if (board.otherCharacters.isEmpty)
+      if (board.otherEntities.find(_._2.isInstanceOf[Enemy]) == None)
         writeLog("### All enemies have been destroyed ###")
     }
   }
-    
 
   // Compute effective damage based on defense stat and apply them to this character
   // Called by the opponent in order to effectively apply damages to its target
@@ -83,7 +82,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   // Called when a character dies
   def die(): Unit = {
     writeLog(name + " dies. Goodbye cruel world !")
-    board.removeCharacter(pos)
+    board.removeEntity(pos)
   }
 
   def updateStatus(): Unit = {
@@ -95,6 +94,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
 
   // Remove the status that verify the predicate p
   def removeStatus(p: Status => Boolean): Unit = statusList.retain(s => !p(s))
+
 }
 
 // Shared trait for npc

@@ -7,12 +7,15 @@ import game_entities._
 import map_objects.GameBoard
 import fov_functions._
 import scala.math.max
+import scala.collection._
+import rendering.Menu
+import items._
 
 object GameMode extends Enumeration {
   val Normal, Cursor, Throw, Fire, Shop = Value
 }
 
-class UI {
+object UI {
   var mode: GameMode.Value = GameMode.Normal
   var mainWeapon: Boolean = false
   var lastKey: Key.Value = Up
@@ -20,6 +23,8 @@ class UI {
   var lastDir: Direction.Value = Direction.Nop
   var inInventory: Boolean = false
   var selectedItem: Int = 0
+  val menuStack = new mutable.Stack[Menu]
+
   def isNormalMode(): Boolean = (mode == GameMode.Normal)
   def isCursorMode(): Boolean = (mode == GameMode.Cursor)
   def isThrowMode(): Boolean = (mode == GameMode.Throw)
@@ -75,8 +80,21 @@ class UI {
     val currentIndex =
       if (isSelectedItemEquiped) selectedItem
       else selectedItem - player.equipedItems.length
-    if (lastIsMove) {
+    if (!menuStack.isEmpty) {
+      lastKey match {
+        case O =>
+          menuStack.top.selectNext()
+        case I =>
+          menuStack.top.selectPrev()
+        case Enter =>
+          menuStack.top.confirm()
+        case Escape =>
+          menuStack.pop()
+        case _ => ()
+      }
+    } else if (lastIsMove) {
       if (isNormalMode()) {
+        player.updateStatus()
         player.moveDir(lastDir)
         doUpdate = true
       }
@@ -85,15 +103,21 @@ class UI {
       if (isNormalMode()) {
         doUpdate = true
         lastKey match {
-          case E =>
+          case E => {
+            player.updateStatus()
             player.pickUpItem()
-          case D =>
+          }
+          case D => {
+            player.updateStatus()
             if (!isSelectedItemEquiped) player.dropItem(currentIndex)
-            else doUpdate = false
-          case C =>
-            if (!isSelectedItemEquiped) player.consumeItem(currentIndex)
-            else doUpdate = false
-          case T =>
+          }
+          case C => {
+            if (!isSelectedItemEquiped) {
+              player.updateStatus()
+              player.consumeItem(currentIndex)
+            } else doUpdate = false
+          }
+          case T => {
             if (!isSelectedItemEquiped) {
               if (player.canThrowItem(currentIndex)) {
                 mode = GameMode.Throw
@@ -102,6 +126,7 @@ class UI {
               }
             }
             doUpdate = false
+          }
           case F =>
             if (isSelectedItemEquiped && player.canFireItem(currentIndex)) { // By default, fire with selected weapon
               mode = GameMode.Fire
@@ -109,8 +134,7 @@ class UI {
               cursor.makeVisible
               cursor.activateHighlight(player.itemRange(currentIndex))
               cursor.backToPlayer
-            }
-            else if (player.equipedRangedWeapons != Nil) { // If not possible, fire with main weapon
+            } else if (player.equipedRangedWeapons != Nil) { // If not possible, fire with main weapon
               mode = GameMode.Fire
               mainWeapon = true
               cursor.makeVisible
@@ -119,12 +143,11 @@ class UI {
             }
             doUpdate = false
 
-              
-          case R =>
+          case R => {
+            player.updateStatus()
             if (isSelectedItemEquiped) player.unequipItem(currentIndex)
             else player.equipItem(currentIndex)
-          //case F =>
-           // if (isSelectedItemEquiped) player.unequipItem(currentIndex)
+          }
           // Unused
           /*case I =>
             inInventory = !inInventory
@@ -157,6 +180,7 @@ class UI {
           case T =>
             if (lightMap.is_light(cursor.xpos, cursor.ypos)) {
               if (!board.grid(cursor.xpos)(cursor.ypos).blocking) {
+                player.updateStatus()
                 player.throwItem(currentIndex, cursor.pos)
                 mode = GameMode.Normal
                 cursor.makeInvisible
@@ -185,12 +209,17 @@ class UI {
       }
     }
     if (doUpdate) {
-      player.updateStatus()
       board.update(lightMap)
     }
     selectedItem = Math.floorMod(
       selectedItem,
       max(1, player.inventory.length + player.equipedItems.length)
     )
+  }
+
+  def getSelectedItem(player: Player): Option[AbstractItem] = {
+    if (selectedItem >= player.equipedItems.length)
+      return player.getItem(selectedItem - player.equipedItems.length)
+    return None
   }
 }

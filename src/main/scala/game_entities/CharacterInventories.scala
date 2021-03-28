@@ -17,14 +17,13 @@ trait HasInventory extends Character {
 
   // pick up an item from the ground at current position (if any)
   // returns true if an item has been picked up, else false
-  def pickUpItem(): Boolean = {
-    board.pickUpItem(pos, 0) match {
-      case Some(item) => {
-        obtainItem(item)
-        true
-      }
-      case None => false
+  def pickUpItem(): Option[AbstractItem] = {
+    val it = board.pickUpItem(pos, 0)
+    it match {
+      case Some(item) => obtainItem(item)
+      case None       => ()
     }
+    return it
   }
 
   // Drop the item of index (itemSlot) on the ground (if possible)
@@ -48,16 +47,16 @@ trait HasInventory extends Character {
     return true
   }
 
-  def canThrowItem(itemSlot : Int) : Boolean = (!isSlotEmpty(itemSlot) && inventory(itemSlot).isInstanceOf[Throwable])
+  def canThrowItem(itemSlot: Int): Boolean = (!isSlotEmpty(itemSlot) && inventory(itemSlot).isInstanceOf[Throwable])
 
   def canFireItem(itemSlot : Int) : Boolean = (!isSlotEmpty(itemSlot) && inventory(itemSlot).isInstanceOf[RangedWeapon])
 
   def itemRange(itemSlot : Int) : Int = inventory(itemSlot).asInstanceOf[RangedWeapon].range
 
   // Throw an item if the item is throwable, the effect depends on the item
-  def throwItem(itemSlot: Int, pos : (Int,Int)): Unit = {
+  def throwItem(itemSlot: Int, pos: (Int, Int)): Unit = {
     val item = inventory(itemSlot)
-    item.asInstanceOf[Throwable].throwItem(board,pos)
+    item.asInstanceOf[Throwable].throwItem(board, pos)
     inventory.remove(itemSlot)
     //writeLog(item.name + " can't be thrown")
   }
@@ -75,6 +74,14 @@ trait HasInventory extends Character {
       writeLog(item.name + " can't be consumed")
     }
     return false
+  }
+
+  // Returns the item in the slot [itemSlot] if there is one, else returns None
+  def getItem(itemSlot: Int): Option[AbstractItem] = {
+    println("cc")
+    if (isSlotEmpty(itemSlot))
+      return None
+    return Some(inventory(itemSlot))
   }
 }
 

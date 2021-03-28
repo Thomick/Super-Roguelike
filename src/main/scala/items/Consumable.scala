@@ -15,16 +15,17 @@ abstract class Food extends AbstractItem with Consumable with Throwable {
   availableActions -= "C - Consume"
   availableActions += "C - Eat"
   val consumedWhenThrown = false
-  def effectWhenThrown(board : GameBoard, pos : (Int,Int)): Unit = ()
+  def effectWhenThrown(board: GameBoard, pos: (Int, Int)): Unit = ()
 }
 
 class Morphin extends AbstractItem with Consumable with Throwable {
   val name = "Morphin"
   val description = "A cute little needle to feel a little better"
   val weight = 50
+  override val image: String = "src/main/resources/morphin.png"
   val consumptionMessage = "It stings. You feel a little better."
   val consumedWhenThrown = false
-  def effectWhenThrown(board : GameBoard, pos : (Int,Int)): Unit = {
+  def effectWhenThrown(board: GameBoard, pos: (Int, Int)): Unit = {
     if (board.hasCharacter(pos)) {
       val target = board.getCharacter(pos)
       target.statusList += new StunnedStatus(1)
@@ -43,6 +44,7 @@ class Syringe extends AbstractItem {
   val name = "Empty syringe"
   val description = "An empty syringe. Fill it or drop it"
   val weight = 30
+  override val image: String = "src/main/resources/emptysyringe.png"
 }
 
 class Bandage() extends AbstractItem with Consumable {

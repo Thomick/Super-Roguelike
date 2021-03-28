@@ -13,7 +13,6 @@ import logger._
 import game._
 
 object Main extends SimpleSwingApplication {
-  val ui = new UI
   val logger = new Logger
   var game = new Game(logger)
 
@@ -28,7 +27,7 @@ object Main extends SimpleSwingApplication {
 
   val newGameB = new Button("New Game")
   val loadGameB = new Button("Load Game")
-  val gridPanel = new GridPanel(1,2) {
+  val gridPanel = new GridPanel(1, 2) {
     contents += newGameB
     contents += loadGameB
   }
@@ -53,12 +52,12 @@ object Main extends SimpleSwingApplication {
     focusable = true
     listenTo(keys)
     reactions += { case KeyPressed(_, key, _, _) =>
-      ui.newKeyPressed(key)
-      ui.applyCommand(game.currentLevel, fovmap)
+      UI.newKeyPressed(key)
+      UI.applyCommand(game.currentLevel, fovmap)
       repaint
     }
     override def paint(g: Graphics2D) {
-      Renderer.onPaint(g, game.currentLevel, ui.last, size, fovmap, ui, logger)
+      Renderer.onPaint(g, game.currentLevel, size, fovmap, logger)
     }
   }
 }

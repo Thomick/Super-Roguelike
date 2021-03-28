@@ -11,12 +11,12 @@ abstract class AbstractItem() extends Serializable {
   val weight: Int
   val image: String = "src/main/resources/placeholder.png"
   val availableActions: ArrayBuffer[String] = new ArrayBuffer[String]
-  availableActions += "D - Drop" //+= "U - Use (not implemented)"
+  availableActions += "D - Drop" //+= "U - Use (unused for now)"
 
   // Activate the special ability of an item
   def use(character: Character, board: GameBoard, pos: (Int, Int)): Boolean = {
     println("It does nothing")
-    true
+    false
   }
 }
 
