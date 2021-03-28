@@ -225,4 +225,15 @@ object UI {
       return player.getItem(selectedItem - player.equipedItems.length)
     return None
   }
+
+  def reset(): Unit = {
+    mode = GameMode.Normal
+    mainWeapon = false
+    lastKey = Up
+    lastIsMove = false
+    lastDir = Direction.Nop
+    inInventory = false
+    selectedItem = 0
+    menuStack.clear()
+  }
 }

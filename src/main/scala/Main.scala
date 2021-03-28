@@ -18,11 +18,13 @@ object Main extends SimpleSwingApplication {
   var logger = new Logger
   var game = new Game(logger)
   var fovmap = new FovMap(game.currentLevel.grid)
+  UI.menuStack.push(new MainMenu { items -= (("Save Game", "")) })
 
   def newGame: Unit = {
     logger = new Logger
     game = new Game(logger)
     fovmap = new FovMap(game.currentLevel.grid)
+    UI.reset
   }
 
   def loadGame: Unit = {
@@ -31,6 +33,7 @@ object Main extends SimpleSwingApplication {
     ois.close
     logger = game.logger
     fovmap = new FovMap(game.currentLevel.grid)
+    UI.reset
   }
 
   def saveGame: Unit = {
