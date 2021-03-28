@@ -23,16 +23,16 @@ object Main extends SimpleSwingApplication {
   def newGame: Unit = {
     logger = new Logger
     game = new Game(logger)
-    fovmap = new FovMap(game.currentLevel.grid)
+    fovmap.update(game.currentLevel.grid)
     UI.reset
   }
 
   def loadGame: Unit = {
     val ois = new ObjectInputStream(new FileInputStream("src/main/resources/save.ser"))
-    val game = ois.readObject.asInstanceOf[Game]
+    game = ois.readObject.asInstanceOf[Game]
     ois.close
     logger = game.logger
-    fovmap = new FovMap(game.currentLevel.grid)
+    fovmap.update(game.currentLevel.grid)
     UI.reset
   }
 
