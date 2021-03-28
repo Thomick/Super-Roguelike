@@ -29,6 +29,7 @@ trait Hackable extends GameEntity {
 class Computer(init_pos: (Int, Int), b: GameBoard) extends GameEntity(init_pos, b) with Hackable {
   val name = "Computer"
   val description = "A computer. It seems connected to the internal network."
+  override val image: String = "src/main/resources/computer.png"
 
   override def interact(c: Character): Boolean = {
     if (!super[Hackable].interact(c)) {
