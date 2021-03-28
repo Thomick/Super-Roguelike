@@ -13,7 +13,8 @@ import scala.collection.mutable.PriorityQueue
 import scala.util.Random
 import java.io._
 
-abstract class GameTile() {
+@SerialVersionUID(10123L)
+abstract class GameTile() extends Serializable {
   def blocking: Boolean
   def blocking_sight: Boolean
   var explored = false
