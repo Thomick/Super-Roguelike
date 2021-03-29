@@ -92,7 +92,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
         case 3 =>
           addItem(new ItemEntity(map._2(x), this, new Bandage), map._2(x))
         case 4 =>
-          addItem(new ItemEntity(map._2(x), this, new ArmCannon), map._2(x))
+          addItem(new ItemEntity(map._2(x), this, new ArmCannon { upgrade() }), map._2(x))
         case 5 => ()
       }
     }
