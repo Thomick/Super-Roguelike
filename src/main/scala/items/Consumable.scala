@@ -4,7 +4,7 @@ import game_entities._
 import map_objects._
 
 trait Consumable extends AbstractItem {
-  availableActions += "C - Consume"
+  availableActions += "Z - Use"
   val consumptionMessage: String
 
   // Apply consumption effect to the character and return action description (for the logs)
@@ -12,8 +12,8 @@ trait Consumable extends AbstractItem {
 }
 
 abstract class Food extends AbstractItem with Consumable with Throwable {
-  availableActions -= "C - Consume"
-  availableActions += "C - Eat"
+  availableActions -= "Z - Use"
+  availableActions += "Z - Eat"
   val consumedWhenThrown = false
   def effectWhenThrown(board: GameBoard, pos: (Int, Int)): Unit = ()
 }

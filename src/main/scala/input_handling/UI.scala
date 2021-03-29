@@ -112,7 +112,7 @@ object UI {
             player.updateStatus()
             if (!isSelectedItemEquiped) player.dropItem(currentIndex)
           }
-          case C => {
+          case Z => {
             if (!isSelectedItemEquiped) {
               player.updateStatus()
               player.consumeItem(currentIndex)
