@@ -11,8 +11,10 @@ import scala.collection._
 import scala.math.{pow, sqrt}
 import scala.collection.mutable.PriorityQueue
 import scala.util.Random
+import java.io._
 
-abstract class GameTile() {
+@SerialVersionUID(10123L)
+abstract class GameTile() extends Serializable {
   def blocking: Boolean
   def blocking_sight: Boolean
   var explored = false
@@ -29,7 +31,8 @@ case class WallTile() extends GameTile {
   def blocking_sight = true
 }
 
-class GameBoard(n: Int, m: Int, val logger: Logger) {
+@SerialVersionUID(123L)
+class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
   var size_x = n
   var size_y = m
   val playerEntity = new Player((0, 0), this)

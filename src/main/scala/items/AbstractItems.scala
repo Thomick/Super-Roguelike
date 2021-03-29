@@ -4,7 +4,8 @@ import map_objects._
 import game_entities._
 import scala.collection.mutable.ArrayBuffer
 
-abstract class AbstractItem() {
+@SerialVersionUID(105L)
+abstract class AbstractItem() extends Serializable {
   val name: String
   val description: String
   val weight: Int
