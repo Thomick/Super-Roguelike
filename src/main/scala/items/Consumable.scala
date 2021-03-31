@@ -4,7 +4,7 @@ import game_entities._
 import map_objects._
 
 trait Consumable extends AbstractItem {
-  availableActions += "C - Consume"
+  availableActions += "Z - Use"
   val consumptionMessage: String
 
   // Apply consumption effect to the character and return action description (for the logs)
@@ -12,14 +12,14 @@ trait Consumable extends AbstractItem {
 }
 
 abstract class Food extends AbstractItem with Consumable with Throwable {
-  availableActions -= "C - Consume"
-  availableActions += "C - Eat"
+  availableActions -= "Z - Use"
+  availableActions += "Z - Eat"
   val consumedWhenThrown = false
   def effectWhenThrown(board: GameBoard, pos: (Int, Int)): Unit = ()
 }
 
 class Morphin extends AbstractItem with Consumable with Throwable {
-  val name = "Morphin"
+  var name = "Morphin"
   val description = "A cute little needle to feel a little better"
   val weight = 50
   override val image: String = "src/main/resources/morphin.png"
@@ -41,14 +41,14 @@ class Morphin extends AbstractItem with Consumable with Throwable {
 }
 
 class Syringe extends AbstractItem {
-  val name = "Empty syringe"
+  var name = "Empty syringe"
   val description = "An empty syringe. Fill it or drop it"
   val weight = 30
   override val image: String = "src/main/resources/emptysyringe.png"
 }
 
 class Bandage() extends AbstractItem with Consumable {
-  val name = "Bandage"
+  var name = "Bandage"
   val description = "A cute little needle to feel a little better"
   val weight = 50
   val consumptionMessage = "It hurts but at least you stop bleeding"

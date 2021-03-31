@@ -62,6 +62,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
     playerEntity.pos = map._2(0)
     otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
     itemEntities = new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
+    addItem(new ItemEntity(map._2(0), this, new ElectronicComponents), map._2(0))
 
     // Setup of some entities in order to test the features
     val rnd = new Random
@@ -92,7 +93,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
         case 3 =>
           addItem(new ItemEntity(map._2(x), this, new Bandage), map._2(x))
         case 4 =>
-          addItem(new ItemEntity(map._2(x), this, new ArmCannon), map._2(x))
+          addItem(new ItemEntity(map._2(x), this, new ArmCannon { upgrade() }), map._2(x))
         case 5 => ()
       }
     }
