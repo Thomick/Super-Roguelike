@@ -14,22 +14,6 @@ abstract class AbstractItem() extends Serializable {
   availableActions += "D - Drop"
 }
 
-trait Throwable extends AbstractItem {
-  val consumedWhenThrown: Boolean
-  availableActions += "T - Throw"
-
-  def effectWhenThrown(board: GameBoard, pos: (Int, Int)): Unit
-  def throwItem(
-      board: GameBoard,
-      throwPos: (Int, Int)
-  ): Unit = {
-    effectWhenThrown(board, throwPos)
-    if (!consumedWhenThrown) {
-      board.addItem(new ItemEntity(throwPos, board, this), throwPos)
-    }
-  }
-}
-
 // Enumeration of bodyparts used for equipment restrictions
 object BodyPart extends Enumeration {
   val Head, Arm, Legs, Torso, Feet, Hand, Other = Value

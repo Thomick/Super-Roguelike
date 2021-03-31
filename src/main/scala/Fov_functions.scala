@@ -1,11 +1,11 @@
 package fov_functions
 
-import util.control.Breaks._
 import scala.math.{pow, sqrt}
 import map_objects._
 
 class FovMap(board: Array[Array[GameTile]]) {
-  var resistance_map = board.map(_.map(_.blocking_sight)) //Apply a mask on the board to keep only the boolean blocking_sight
+  var resistance_map =
+    board.map(_.map(_.blocking_sight)) //Apply a mask on the board to keep only the boolean blocking_sight
   var light_map = resistance_map.map(_.map(x => false))
   var width = resistance_map.size
   var height = resistance_map(0).size
@@ -15,17 +15,17 @@ class FovMap(board: Array[Array[GameTile]]) {
   def is_light(x: Int, y: Int) = light_map(x)(y)
 
   def update(newGrid: Array[Array[GameTile]]): Unit = {
-    resistance_map = newGrid.map(_.map(_.blocking_sight)) //Apply a mask on the board to keep only the boolean blocking_sight
+    resistance_map =
+      newGrid.map(_.map(_.blocking_sight)) //Apply a mask on the board to keep only the boolean blocking_sight
     light_map = resistance_map.map(_.map(x => false))
     width = resistance_map.size
     height = resistance_map(0).size
   }
 
-
   def compute_fov(startx: Int, starty: Int) = {
     light_map = resistance_map.map(_.map(x => false))
     light_map(startx)(starty) = true
-    for { x <- 0 to 1; y <- 0 to 1 } {//Launch the algorithm on each octant
+    for { x <- 0 to 1; y <- 0 to 1 } { //Launch the algorithm on each octant
       castLight(1, 1.0, 0.0, 0, (2 * x) - 1, (2 * y) - 1, 0, startx, starty)
       castLight(1, 1.0, 0.0, (2 * x) - 1, 0, 0, (2 * y) - 1, startx, starty)
     }
@@ -54,7 +54,9 @@ class FovMap(board: Array[Array[GameTile]]) {
           } else {
             if (norm(deltaX, deltaY) <= radius) {
               if (
-                resistance_map(currentX)(currentY) || ((centerSlope <= startvar) && (centerSlope >= end)) // The cell is visible only if it's a wall or the center of the cell is visible
+                resistance_map(currentX)(
+                  currentY
+                ) || ((centerSlope <= startvar) && (centerSlope >= end)) // The cell is visible only if it's a wall or the center of the cell is visible
               ) {
                 light_map(currentX)(currentY) = true
               }

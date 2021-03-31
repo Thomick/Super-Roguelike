@@ -63,6 +63,8 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
     otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
     itemEntities = new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
     addItem(new ItemEntity(map._2(0), this, new ElectronicComponents), map._2(0))
+    addItem(new ItemEntity(map._2(0), this, new EMPGrenade), map._2(0))
+    addItem(new ItemEntity(map._2(0), this, new Grenade), map._2(0))
 
     // Setup of some entities in order to test the features
     val rnd = new Random
