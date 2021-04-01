@@ -6,9 +6,10 @@ import map_objects._
 import input_handling._
 
 class Money(val value: Int) extends AbstractItem {
-  var name = "Coins"
+  var name = "Money"
   val description = "You are rich !"
   val weight = value * 5
+  override val image: String = "src/main/resources/money.png"
 }
 
 class HackingTools extends AbstractItem {
@@ -21,6 +22,7 @@ class ElectronicComponents extends AbstractItem with Consumable {
   var name = "Electronic components"
   val description = "Can be used to upgrade some equipment"
   val weight = 100
+  override val image: String = "src/main/resources/circuitboard.png"
 
   val consumptionMessage = "You can choose an item to upgrade"
 
