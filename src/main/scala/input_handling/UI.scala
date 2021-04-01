@@ -120,10 +120,17 @@ object UI {
           }
           case T => {
             if (!isSelectedItemEquiped) {
-              if (player.canThrowItem(currentIndex)) {
-                mode = GameMode.Throw
-                cursor.makeVisible
-                cursor.backToPlayer
+              getSelectedItem(player) match {
+                case None => ()
+                case Some(item) =>
+                  if (item.isInstanceOf[Throwable]) {
+                    val titem = item.asInstanceOf[Throwable]
+                    mode = GameMode.Throw
+                    cursor.areaOfEffect = titem.hasAoE
+                    cursor.rangeOfEffect = titem.effectRadius
+                    cursor.makeVisible
+                    cursor.backToPlayer
+                  }
               }
             }
             doUpdate = false
@@ -180,16 +187,22 @@ object UI {
           case Escape =>
             mode = GameMode.Normal
             cursor.makeInvisible
+            cursor.areaOfEffect = false
           case T =>
+            var didThrow = false
             if (lightMap.is_light(cursor.xpos, cursor.ypos)) {
               if (!board.grid(cursor.xpos)(cursor.ypos).blocking) {
                 player.updateStatus()
                 player.throwItem(currentIndex, cursor.pos)
                 mode = GameMode.Normal
                 cursor.makeInvisible
+                cursor.areaOfEffect = false
                 doUpdate = true
+                didThrow = true
               }
             }
+            if (!didThrow)
+              player.writeLog("You can not throw an item there.")
 
           case _ => ()
         }

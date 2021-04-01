@@ -70,7 +70,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   // Compute effective damage based on defense stat and apply them to this character
   // Called by the opponent in order to effectively apply damages to its target
   // Return effective damage and if the character died or not
-  def takeDamage(from: Character, dam: Int): (Int, Boolean) = {
+  def takeDamage(from: GameEntity, dam: Int): (Int, Boolean) = {
     if (currentHP == 0)
       return (0, false) // This character is already dead
     val effectiveDamage = max(0, dam - getDef())

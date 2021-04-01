@@ -1,7 +1,7 @@
 package rendering
 
 import java.awt.{Color, Graphics2D, Rectangle, Toolkit}
-import scala.math.min
+import scala.math.{pow, sqrt, min}
 import map_objects._
 import game_entities._
 import fov_functions._
@@ -72,13 +72,12 @@ object BoardRenderer {
       }
     }
 
-    // Draw an entity on the board (if visible)
-    def drawEntity(e: GameEntity) = {
-      val img = Toolkit.getDefaultToolkit().getImage(e.image)
+    def drawImageOnBoard(imgName: String, pos: (Int, Int)): Unit = {
+      val img = Toolkit.getDefaultToolkit().getImage(imgName)
       g.drawImage(
         img,
-        e.pos._1 * (tilePadding + tileSize) + gridOrigin._1,
-        e.pos._2 * (tilePadding + tileSize) + gridOrigin._2,
+        pos._1 * (tilePadding + tileSize) + gridOrigin._1,
+        pos._2 * (tilePadding + tileSize) + gridOrigin._2,
         tileSize,
         tileSize,
         null
@@ -91,38 +90,32 @@ object BoardRenderer {
       entities.foreach(e => {
         if (fovmap.is_light(e.pos._1, e.pos._2)) {
           drawnEntities += e
-          drawEntity(e)
+          drawImageOnBoard(e.image, e.pos)
         }
       })
     }
 
     def drawCursor(): Unit = {
-      if (board.cursor.visible) {
-        val img = Toolkit.getDefaultToolkit().getImage(board.cursor.image)
-        g.drawImage(
-          img,
-          board.cursor.xpos * (tilePadding + tileSize) + gridOrigin._1,
-          board.cursor.ypos * (tilePadding + tileSize) + gridOrigin._2,
-          tileSize,
-          tileSize,
-          null
-        )
-        g.finalize()
+      val c = board.cursor
+      if (c.visible) {
+        for {
+          i <- c.xpos - c.rangeOfEffect to c.xpos + c.rangeOfEffect;
+          j <- c.ypos - c.rangeOfEffect to c.ypos + c.rangeOfEffect
+        } {
+          if (sqrt(pow(c.xpos - i, 2) + pow(c.ypos - j, 2)) <= c.rangeOfEffect) {
+            if (i == c.xpos && j == c.ypos)
+              drawImageOnBoard(c.image, (i, j))
+            else
+              drawImageOnBoard(c.imageAoE, (i, j))
+          }
+        }
       }
-      if (board.cursor.highlightPath && board.cursor.highlightedCells._2) {
-        val imgH = Toolkit.getDefaultToolkit().getImage(board.cursor.highlightImage)
-        val path = board.cursor.highlightedCells._1
+      if (c.highlightPath && c.highlightedCells._2) {
+        val imgH = Toolkit.getDefaultToolkit().getImage(c.highlightImage)
+        val path = c.highlightedCells._1
         for (cell <- path) {
           if (fovmap.is_light(cell._1, cell._2)) {
-            g.drawImage(
-              imgH,
-              cell._1 * (tilePadding + tileSize) + gridOrigin._1,
-              cell._2 * (tilePadding + tileSize) + gridOrigin._2,
-              tileSize,
-              tileSize,
-              null
-            )
-            g.finalize()
+            drawImageOnBoard(c.highlightImage, cell)
           }
         }
       }
