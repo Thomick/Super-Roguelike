@@ -70,10 +70,10 @@ class ArmCannon() extends RangedWeapon {
   val description: String = "It is an arm-cannon. Wow, just like in Megaman."
   val weight = 1500
   var bonusAtt = 0
-  var att = 5
+  var att = 1
   override val image = "src/main/resources/armcannon.png"
 
-  val upgradeValue = 3
+  val upgradeValue = 1
 }
 
 class IronHelmet() extends Armor {

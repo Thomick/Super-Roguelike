@@ -7,10 +7,15 @@ import items._
 
 class ShopMenu(shop: Shopkeeper, player: Player) extends Menu {
   override val name = "Shop"
-  override def confirm(): Unit = {
-    shop.sell(cursorIndex, player)
+  updateItems
+
+  def updateItems(): Unit = {
     items.clear()
     shop.forSale.foreach(a => items += ((a._1.name + " (" + a._2.toString() + "U)", "")))
+  }
+  override def confirm(): Unit = {
+    shop.sell(cursorIndex, player)
+    updateItems
   }
 }
 
@@ -24,8 +29,8 @@ class Shopkeeper(init_pos: (Int, Int), b: GameBoard)
   override val image: String = "src/main/resources/vendingmachine.png"
   val forSale = new mutable.ArrayBuffer[(AbstractItem, Int)]
   var lastPlayerMet: Option[Player] = None
-  forSale += ((new LaserChainsaw, 10), (new IronHelmet, 1), (new Morphin, 3), (new Bandage, 5))
-  forSale += ((new HackingTools, 5))
+  forSale += ((new LaserChainsaw, 10), (new IronHelmet, 3), (new Morphin, 1), (new Bandage, 3))
+  forSale += ((new HackingTools, 10), (new ElectronicComponents, 5), (new Grenade, 3), (new EMPGrenade, 3))
 
   def sell(itemIndex: Int, player: Player): Unit = {
     if (forSale.length > itemIndex && itemIndex >= 0)

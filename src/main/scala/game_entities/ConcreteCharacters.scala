@@ -10,7 +10,7 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
   val description = "It's you !"
   override val baseMaxHP: Int = 100
   currentHP = 100
-  override val image = "src/main/resources/hero.png"
+  override val image = "src/main/resources/robot.png"
 
   var money: Int = 15
 

@@ -53,6 +53,7 @@ class Bandage() extends AbstractItem with Consumable {
   var name = "Bandage"
   val description = "A cute little needle to feel a little better"
   val weight = 50
+  override val image: String = "src/main/resources/bandage.png"
   val consumptionMessage = "It hurts but at least you stop bleeding"
 
   override def consume(character: Character): String = {
