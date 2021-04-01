@@ -14,7 +14,7 @@ abstract class GameEntity(init_pos: (Int, Int), b: GameBoard, val hasLogs: Boole
 
   // Write the input message to the gameboard logger
   def writeLog(message: String): Unit = {
-    if (hasLogs)
+    if (hasLogs && message != "")
       board.logger.writeLog(message)
   }
 
