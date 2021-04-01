@@ -189,6 +189,7 @@ object UI {
             cursor.makeInvisible
             cursor.areaOfEffect = false
           case T =>
+            var didThrow = false
             if (lightMap.is_light(cursor.xpos, cursor.ypos)) {
               if (!board.grid(cursor.xpos)(cursor.ypos).blocking) {
                 player.updateStatus()
@@ -197,8 +198,11 @@ object UI {
                 cursor.makeInvisible
                 cursor.areaOfEffect = false
                 doUpdate = true
+                didThrow = true
               }
             }
+            if (!didThrow)
+              player.writeLog("You can not throw an item there.")
 
           case _ => ()
         }

@@ -49,16 +49,16 @@ trait HasInventory extends Character {
 
   def canThrowItem(itemSlot: Int): Boolean = (!isSlotEmpty(itemSlot) && inventory(itemSlot).isInstanceOf[Throwable])
 
-  def canFireItem(itemSlot : Int) : Boolean = (!isSlotEmpty(itemSlot) && inventory(itemSlot).isInstanceOf[RangedWeapon])
+  def canFireItem(itemSlot: Int): Boolean = (!isSlotEmpty(itemSlot) && inventory(itemSlot).isInstanceOf[RangedWeapon])
 
-  def itemRange(itemSlot : Int) : Int = inventory(itemSlot).asInstanceOf[RangedWeapon].range
+  def itemRange(itemSlot: Int): Int = inventory(itemSlot).asInstanceOf[RangedWeapon].range
 
   // Throw an item if the item is throwable, the effect depends on the item
   def throwItem(itemSlot: Int, pos: (Int, Int)): Unit = {
     val item = inventory(itemSlot)
-    item.asInstanceOf[Throwable].throwItem(board, pos)
+    val effect = item.asInstanceOf[Throwable].throwItem(board, pos)
     inventory.remove(itemSlot)
-    //writeLog(item.name + " can't be thrown")
+    writeLog(effect)
   }
 
   // Consume an item if the item is consumable, effect depends on the item
@@ -100,16 +100,14 @@ trait CanEquip extends Character with HasInventory {
   override def getMaxHP(): Int =
     baseMaxHP + equipedItems.foldLeft[Int](0)((s, item) => s + item.bonusHP)
 
-  def fire(mainWeapon: Boolean, itemSlot: Int, pos : (Int,Int)): Unit = {
+  def fire(mainWeapon: Boolean, itemSlot: Int, pos: (Int, Int)): Unit = {
     if (mainWeapon) {
-      equipedRangedWeapons(0).shoot(this,board,pos)
-    }
-    else {
-      inventory(itemSlot).asInstanceOf[RangedWeapon].shoot(this,board,pos)
+      equipedRangedWeapons(0).shoot(this, board, pos)
+    } else {
+      inventory(itemSlot).asInstanceOf[RangedWeapon].shoot(this, board, pos)
     }
     //writeLog(item.name + " can't be thrown")
   }
-
 
   def equipItem(itemSlot: Int): Boolean = {
     if (!isSlotEmpty(itemSlot)) {
