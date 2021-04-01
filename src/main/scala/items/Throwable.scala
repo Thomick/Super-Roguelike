@@ -6,6 +6,8 @@ import game_entities._
 
 trait Throwable extends AbstractItem {
   val consumedWhenThrown: Boolean
+  val hasAoE: Boolean = false
+  val effectRadius: Int = 0
   availableActions += "T - Throw"
 
   def effectWhenThrown(board: GameBoard, pos: (Int, Int)): Unit
@@ -18,14 +20,15 @@ trait Throwable extends AbstractItem {
 }
 
 trait ThrowableWithAoE extends Throwable {
-  val effectRadius: Int
+  override val hasAoE: Boolean = true
+  override val effectRadius: Int = 2
 
   override def throwItem(board: GameBoard, throwPos: (Int, Int)): Unit = {
     for {
       i <- throwPos._1 - effectRadius to throwPos._1 + effectRadius;
       j <- throwPos._2 - effectRadius to throwPos._2 + effectRadius
     } {
-      if (sqrt(pow(throwPos._1 - i, 2) + pow(throwPos._2 - j, 2)) < effectRadius)
+      if (sqrt(pow(throwPos._1 - i, 2) + pow(throwPos._2 - j, 2)) <= effectRadius)
         effectWhenThrown(board, (i, j))
     }
     if (!consumedWhenThrown) {
@@ -38,7 +41,6 @@ class Grenade extends ThrowableWithAoE {
   var name: String = "Grenade"
   val description: String = "Kaboom !"
   val weight: Int = 300
-  val effectRadius: Int = 3
   val consumedWhenThrown: Boolean = true
   def effectWhenThrown(board: GameBoard, pos: (Int, Int)): Unit = {
     if (board.hasCharacter(pos)) {
@@ -51,7 +53,6 @@ class EMPGrenade extends ThrowableWithAoE {
   var name = "EMP Grenade"
   val description = "This grenade is able to release electro magnetic pulses and stun enemies"
   val weight: Int = 300
-  val effectRadius: Int = 3
   val consumedWhenThrown: Boolean = true
   def effectWhenThrown(board: GameBoard, pos: (Int, Int)): Unit = {
     if (board.hasCharacter(pos)) {
