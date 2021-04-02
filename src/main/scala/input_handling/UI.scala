@@ -156,10 +156,6 @@ object UI {
             if (isSelectedItemEquiped) player.unequipItem(currentIndex)
             else player.equipItem(currentIndex)
           }
-          // Unused
-          /*case I =>
-            inInventory = !inInventory
-            doUpdate = false*/
           case O =>
             selectedItem -= 1
             doUpdate = false

@@ -19,34 +19,38 @@ abstract class Food extends AbstractItem with Consumable with Throwable {
   def effectWhenThrown(board: GameBoard, pos: (Int, Int)): String = ""
 }
 
+// Parent class for syringe. Throwable, stun on hit, destroyed when thrown
+abstract class Syringe extends AbstractItem with Throwable {
+  val consumedWhenThrown = false
+  def effectWhenThrown(board: GameBoard, pos: (Int, Int)): String = {
+    if (board.hasCharacter(pos)) {
+      val target = board.getCharacter(pos)
+      target.statusList += new StunnedStatus(3)
+      return "The needle hit " + target.name + " and stun it for a short time."
+    }
+    return ""
+  }
+}
+
 // Healing item, stuns a character for 1 turn when thrown
-class Morphin extends AbstractItem with Consumable with Throwable {
+class Morphin extends Syringe with Consumable {
   var name = "Morphin"
   val description = "A cute little needle to feel a little better"
   val weight = 50
   override val image: String = "src/main/resources/morphin.png"
   val consumptionMessage = "It stings. You feel a little better."
-  val consumedWhenThrown = false
-  def effectWhenThrown(board: GameBoard, pos: (Int, Int)): String = {
-    if (board.hasCharacter(pos)) {
-      val target = board.getCharacter(pos)
-      target.statusList += new StunnedStatus(1)
-      return "The needle hit " + target.name + " and stun it for a short time."
-    }
-    return ""
-  }
 
   override def consume(character: Character): String = {
     character.addToHP(5)
     if (character.isInstanceOf[HasInventory])
-      character.asInstanceOf[HasInventory].obtainItem(new Syringe)
+      character.asInstanceOf[HasInventory].obtainItem(new EmptySyringe)
     super.consume(character)
   }
 }
 
 // Item obtained after having used a full syringe (eg. Morphin)
 // Don't have any use for now
-class Syringe extends AbstractItem {
+class EmptySyringe extends Syringe {
   var name = "Empty syringe"
   val description = "An empty syringe. Fill it or drop it"
   val weight = 30

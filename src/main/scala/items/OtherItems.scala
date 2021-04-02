@@ -81,6 +81,7 @@ class Screwdriver extends AbstractItem with Consumable {
   var name = "Screwdriver"
   val description = "Can be used to disassemble equipment and get electronic components"
   val weight = 100
+  override val image: String = "src/main/resources/screwdriver.png"
 
   val consumptionMessage = "You can choose an item to disassemble"
 
