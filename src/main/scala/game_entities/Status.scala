@@ -22,8 +22,10 @@ abstract class Status(duration: Int) {
   def remainingTimeString(): String =
     if (remainingTime < 0)
       return "Forever"
+    else if (remainingTime == 1)
+      return remainingTime.toString() + " turn"
     else
-      return remainingTime.toString()
+      return remainingTime.toString() + " turns"
 
   def applyEffect(results: StatusResults): Unit = {
     if (remainingTime > 0)

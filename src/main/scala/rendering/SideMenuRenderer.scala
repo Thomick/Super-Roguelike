@@ -22,7 +22,10 @@ object SideMenuRenderer {
     def getAdditionalInfo(e: GameEntity): String = {
       if (e.isInstanceOf[Character]) {
         val c = e.asInstanceOf[Character]
-        return " (" + c.currentHP + "/" + c.getMaxHP() + ")"
+        val infos = new StringBuilder
+        infos ++= " (" + c.currentHP + "/" + c.getMaxHP() + ")"
+        c.statusList.foreach(s => infos ++= " (" + s.name + ":" + s.remainingTimeString() + ")")
+        return infos.toString()
       }
       return ""
     }
@@ -62,7 +65,10 @@ object SideMenuRenderer {
     menuBuffer ++= "HP : " + player.currentHP.toString + "/" + player.getMaxHP.toString + "\n"
     menuBuffer ++= "Attack power : " + player.getAtt.toString + "\n"
     menuBuffer ++= "Defense : " + player.getDef.toString + "\n"
-    menuBuffer ++= "Money : " + player.money.toString + "\n\n"
+    menuBuffer ++= "Money : " + player.money.toString + "\n"
+    menuBuffer ++= "Status : \n"
+    player.statusList.foreach(s => menuBuffer ++= " - " + s.name + " : " + s.remainingTimeString() + "\n")
+    menuBuffer ++= "\n"
 
     // Appends an item to the menu (with correct information and color)
     def addToMenu(index: Int, item: AbstractItem): Unit = {
