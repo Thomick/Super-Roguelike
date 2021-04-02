@@ -5,20 +5,24 @@ import scala.collection._
 import input_handling._
 import items._
 
+// Menu instantiated when a player interact with a shop
 class ShopMenu(shop: Shopkeeper, player: Player) extends Menu {
   override val name = "Shop"
   updateItems
 
+  // Updates the item list with items available in the shop
   def updateItems(): Unit = {
     items.clear()
     shop.forSale.foreach(a => items += ((a._1.name + " (" + a._2.toString() + "U)", "")))
   }
+
   override def confirm(): Unit = {
     shop.sell(cursorIndex, player)
     updateItems
   }
 }
 
+// Character who can sell items
 @SerialVersionUID(150L)
 class Shopkeeper(init_pos: (Int, Int), b: GameBoard)
     extends Character(init_pos, b)

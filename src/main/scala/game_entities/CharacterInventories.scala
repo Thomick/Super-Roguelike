@@ -47,6 +47,7 @@ trait HasInventory extends Character {
     return true
   }
 
+  // Provides informations about the selected item
   def canThrowItem(itemSlot: Int): Boolean = (!isSlotEmpty(itemSlot) && inventory(itemSlot).isInstanceOf[Throwable])
 
   def canFireItem(itemSlot: Int): Boolean = (!isSlotEmpty(itemSlot) && inventory(itemSlot).isInstanceOf[RangedWeapon])
@@ -109,6 +110,7 @@ trait CanEquip extends Character with HasInventory {
     //writeLog(item.name + " can't be thrown")
   }
 
+  // Equip an item from the inventory
   def equipItem(itemSlot: Int): Boolean = {
     if (!isSlotEmpty(itemSlot)) {
       if (inventory(itemSlot).isInstanceOf[Equipable]) {
@@ -131,6 +133,7 @@ trait CanEquip extends Character with HasInventory {
     return false
   }
 
+  // Unequip an item from the equipedItems inventory
   def unequipItem(itemSlot: Int): Boolean = {
     if (!isSlotEmpty(itemSlot, equipedItems)) {
       val item = equipedItems(itemSlot)

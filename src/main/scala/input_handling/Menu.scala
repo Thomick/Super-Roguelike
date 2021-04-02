@@ -3,8 +3,11 @@ package input_handling
 import scala.collection._
 import main._
 
+// Parent class for a menu, handles cursor movement, [confirm] needs to be overwritten to add an effect when the player select an item
+// Should be added on top of UI.menuStack in order to be drawn on the screen
 class Menu {
   val name = "Menu"
+  // [items] stores the couple (name,imageName)
   val items = new mutable.ArrayBuffer[(String, String)]
   val hasImage: Boolean = false
   var cursorIndex: Int = 0

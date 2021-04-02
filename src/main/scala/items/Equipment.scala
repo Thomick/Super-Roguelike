@@ -14,21 +14,28 @@ trait Equipable extends AbstractItem {
   var bonusHP: Int
 }
 
+// Makes a piece of equipment upgradable
 trait Upgradable extends Equipable {
   var level: Int = 0
+  // Upgrade value is used when computing the new stats of an item
   val upgradeValue: Int
   var baseName = ""
 
+  //Upgrades by 1 level and update item name
   def upgrade(): Unit = {
     if (level == 0)
       baseName = name
     level += 1
     updateName()
   }
+
+  // Upgrades the item by [n] levels
   def upgrade(n: Int): Unit = {
     for (i <- 1 to n)
       upgrade()
   }
+
+  // Appends (+level) at the end of the item name
   def updateName(): Unit =
     if (level != 0)
       name = baseName + " (+" + level + ")"
@@ -59,6 +66,7 @@ abstract class RangedWeapon() extends Weapon with Upgradable {
     }
   }
 
+  // Upgrade by giving a flat boost to [att] stat
   override def upgrade(): Unit = {
     super.upgrade()
     att += upgradeValue

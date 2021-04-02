@@ -5,13 +5,18 @@ import map_objects._
 import game_entities._
 import scala.collection._
 
+// Base trait for throwable items
 trait Throwable extends AbstractItem {
   val consumedWhenThrown: Boolean
   val hasAoE: Boolean = false
   val effectRadius: Int = 0
   availableActions += "T - Throw"
 
+  // Defines the effect of the item on the board at position [pos]
   def effectWhenThrown(board: GameBoard, pos: (Int, Int)): String
+
+  // Called when the item is thrown
+  // Returns a string describing the effect (for logging)
   def throwItem(board: GameBoard, throwPos: (Int, Int)): String = {
     val effect: String = effectWhenThrown(board, throwPos)
     if (!consumedWhenThrown) {
@@ -25,6 +30,7 @@ trait ThrowableWithAoE extends Throwable {
   override val hasAoE: Boolean = true
   override val effectRadius: Int = 2
 
+  // Apply the item effect on a circular area of radius [effectRadius]
   override def throwItem(board: GameBoard, throwPos: (Int, Int)): String = {
     val targets = new mutable.ArrayBuffer[String]
     for {
@@ -32,6 +38,7 @@ trait ThrowableWithAoE extends Throwable {
       j <- throwPos._2 - effectRadius to throwPos._2 + effectRadius
     } {
       if (sqrt(pow(throwPos._1 - i, 2) + pow(throwPos._2 - j, 2)) <= effectRadius) {
+        // effectWhenThrown must only return the names of the objects affected
         val effect = effectWhenThrown(board, (i, j))
         if (effect != "")
           targets += effect
@@ -40,6 +47,7 @@ trait ThrowableWithAoE extends Throwable {
     if (!consumedWhenThrown) {
       board.addItem(new ItemEntity(throwPos, board, this), throwPos)
     }
+    // Assembles the names of the objects affected to describe the effect
     if (targets.length == 0)
       return ""
     if (targets.length == 1)
@@ -55,6 +63,7 @@ trait ThrowableWithAoE extends Throwable {
   }
 }
 
+// Deals damage in an area around the position where it is thrown
 class Grenade extends ThrowableWithAoE {
   var name: String = "Grenade"
   val description: String = "Kaboom !"
@@ -71,6 +80,7 @@ class Grenade extends ThrowableWithAoE {
   }
 }
 
+// Stun grenade (Electro magnetic pulse grenade)
 class EMPGrenade extends ThrowableWithAoE {
   var name = "EMP Grenade"
   val description = "This grenade is able to release electro magnetic pulses and stun enemies"

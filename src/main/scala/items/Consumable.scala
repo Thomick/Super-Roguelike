@@ -11,6 +11,7 @@ trait Consumable extends AbstractItem {
   def consume(character: Character): String = return consumptionMessage
 }
 
+// Parent class for food
 abstract class Food extends AbstractItem with Consumable with Throwable {
   availableActions -= "Z - Use"
   availableActions += "Z - Eat"
@@ -18,6 +19,7 @@ abstract class Food extends AbstractItem with Consumable with Throwable {
   def effectWhenThrown(board: GameBoard, pos: (Int, Int)): String = ""
 }
 
+// Healing item, stuns a character for 1 turn when thrown
 class Morphin extends AbstractItem with Consumable with Throwable {
   var name = "Morphin"
   val description = "A cute little needle to feel a little better"
@@ -42,6 +44,8 @@ class Morphin extends AbstractItem with Consumable with Throwable {
   }
 }
 
+// Item obtained after having used a full syringe (eg. Morphin)
+// Don't have any use for now
 class Syringe extends AbstractItem {
   var name = "Empty syringe"
   val description = "An empty syringe. Fill it or drop it"
@@ -49,6 +53,7 @@ class Syringe extends AbstractItem {
   override val image: String = "src/main/resources/emptysyringe.png"
 }
 
+// Consumable item that can remove bleeding effect
 class Bandage() extends AbstractItem with Consumable {
   var name = "Bandage"
   val description = "A cute little needle to feel a little better"

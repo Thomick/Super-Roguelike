@@ -24,10 +24,12 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
 
   override def die(): Unit = {
     writeLog(
-      "### Your body can not endure damage anymore. However your robot parts allow you to keep on exploring and fighting. ###"
+      "### Your body can not endure damage anymore. However your robot parts allow you to keep on exploring and fighting. ### (and test the game)"
     )
+
   }
 
+  // Automatically add money picked up to the money stat of the player
   override def pickUpItem(): Option[AbstractItem] = {
     val it = super.pickUpItem()
     it match {

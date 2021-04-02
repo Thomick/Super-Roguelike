@@ -1,5 +1,6 @@
 package game_entities
 
+// Class used to store the effects of the current status effects on a character
 @SerialVersionUID(106L)
 class StatusResults extends Serializable {
   var canMove: Boolean = true
@@ -11,6 +12,7 @@ class StatusResults extends Serializable {
   }
 }
 
+// Parent class for status, handles the remaining time of a status
 abstract class Status(duration: Int) {
   val name: String
   val effectDescription: String
@@ -29,6 +31,7 @@ abstract class Status(duration: Int) {
   }
 }
 
+// Effect : Lose some health points each turn
 class BleedingStatus(duration: Int) extends Status(duration) {
   val name = "Bleeding"
   val effectDescription = "You lose health each turn"
@@ -39,6 +42,7 @@ class BleedingStatus(duration: Int) extends Status(duration) {
   }
 }
 
+// Effect : Gain some health points each turn
 class RegenerationStatus(duration: Int) extends Status(duration) {
   val name = "Regeneration"
   val effectDescription = "You gain health each turn"
@@ -49,6 +53,7 @@ class RegenerationStatus(duration: Int) extends Status(duration) {
   }
 }
 
+// Effect : The character can not move
 class StunnedStatus(duration: Int) extends Status(duration) {
   val name = "Stunned"
   val effectDescription = "You can't move for the duration of the status"

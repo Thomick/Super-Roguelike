@@ -57,6 +57,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
     giveDamage(damage, c)
   }
 
+  // Deals damage to another character (used to write logs about the attack and to test if there remains enemies after the attack)
   def giveDamage(damage: Int, c: Character): Unit = {
     val (effectiveDamage, died) = c.takeDamage(this, damage)
     writeLog(name + " deals " + effectiveDamage.toString + " damage to " + c.name)
@@ -85,6 +86,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
     board.removeEntity(pos)
   }
 
+  // Updates active effects for this turn and decreases the remaining time of each status
   def updateStatus(): Unit = {
     activeEffects.reset()
     statusList.foreach(status => status.applyEffect(activeEffects))
@@ -92,7 +94,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
     addToHP(activeEffects.healthModifier)
   }
 
-  // Remove the status that verify the predicate p
+  // Removes the status that verify the predicate p
   def removeStatus(p: Status => Boolean): Unit = statusList.retain(s => !p(s))
 
 }
