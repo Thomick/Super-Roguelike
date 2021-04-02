@@ -10,15 +10,31 @@ import input_handling._
 class Game(val logger: Logger) extends Serializable {
   var levels = Vector[GameBoard]()
   var actualLocation = 0
-  newLevel()
+  newLevel(false)
 
   def currentLevel(): GameBoard = {
     return levels(actualLocation)
   }
 
-  def newLevel(): Unit = {
+  def goUp(): Unit = {
+    currentLevel.saveLastPosition
+    levels(actualLocation-1).updatePlayer(currentLevel.playerEntity)
+    actualLocation -= 1
+  }
+
+  def goDown(): Unit = {
+    if (actualLocation == levels.size - 1) {
+      newLevel(currentLevel.activateElevator)
+    }
+    currentLevel.saveLastPosition
+    levels(actualLocation+1).updatePlayer(currentLevel.playerEntity)
+    actualLocation += 1
+  }
+
+
+  def newLevel(elevatorOnStartingPostition : Boolean): Unit = {
     val board = new GameBoard(30, 30, logger)
-    board.newMap(50, 5, 7, board.size_x, board.size_y)
+    board.newMap(50, 5, 7, board.size_x, board.size_y, elevatorOnStartingPostition)
     levels = levels :+ board
   }
 }

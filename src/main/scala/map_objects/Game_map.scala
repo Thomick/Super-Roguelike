@@ -31,23 +31,51 @@ case class WallTile() extends GameTile {
   def blocking_sight = true
 }
 
+case class UpElevator() extends GameTile {
+  def blocking = false
+  def blocking_sight = false
+}
+
+case class DownElevator() extends GameTile {
+  def blocking = false
+  def blocking_sight = false
+}
+
+case class BrokenElevator() extends GameTile {
+  def blocking = false
+  def blocking_sight = false
+}
+
 @SerialVersionUID(123L)
 class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
   var size_x = n
   var size_y = m
-  val playerEntity = new Player((0, 0), this)
+  var playerEntity = new Player((0, 0), this)
   val cursor = new Cursor(this)
   var itemEntities =
     new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
   var otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
   var grid = MapGenerator.make_empty(size_x, size_y)
+  var activateElevator = false
+  var lastPosition = (0,0)
+
+  def saveLastPosition(): Unit = {
+    lastPosition = playerEntity.pos
+  }
+
+  def updatePlayer(uPlayer : Player): Unit = {
+    playerEntity = uPlayer
+    playerEntity.board = this
+    playerEntity.pos = lastPosition
+  }
 
   def newMap(
       max_rooms: Int,
       room_min_size: Int,
       room_max_size: Int,
       map_width: Int,
-      map_height: Int
+      map_height: Int,
+      elevatorOnStartingPosition : Boolean
   ) {
     val map = MapGenerator.make_map(
       max_rooms,
@@ -59,41 +87,53 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
     grid = map._1
     size_x = map_width
     size_y = map_height
+    lastPosition = map._2(0)
     playerEntity.pos = map._2(0)
+    if(elevatorOnStartingPosition) {
+      grid(map._2(0)._1)(map._2(0)._2) = UpElevator()
+    } else {
+      grid(map._2(0)._1)(map._2(0)._2) = BrokenElevator()
+    }
     otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
     itemEntities = new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
 
     // Setup of some entities in order to test the features
     val rnd = new Random
+    val elevator = rnd.nextInt(map._2.size-1)+1
     for { x <- 1 to map._2.size - 1 } {
-      rnd.nextInt(4) match {
-        case 0 => otherEntities += (map._2(x) -> new Robot(map._2(x), this))
-        case 1 => otherEntities += (map._2(x) -> new Dog(map._2(x), this))
-        case 2 =>
-          if (rnd.nextInt(2) == 1)
-            otherEntities += ((map._2(x)._1, map._2(x)._2 + 1) -> new Shopkeeper(
-              (map._2(x)._1, map._2(x)._2 + 1),
-              this
-            ))
-          else
-            otherEntities += ((map._2(x)._1, map._2(x)._2 + 1) -> new Computer(
-              (map._2(x)._1, map._2(x)._2 + 1),
-              this
-            ))
-        case 3 => ()
-      }
-      rnd.nextInt(6) match {
-        case 0 =>
-          addItem(new ItemEntity(map._2(x), this, new Morphin), map._2(x))
-        case 1 =>
-          addItem(new ItemEntity(map._2(x), this, new IronHelmet), map._2(x))
-        case 2 =>
-          addItem(new ItemEntity(map._2(x), this, new LaserChainsaw), map._2(x))
-        case 3 =>
-          addItem(new ItemEntity(map._2(x), this, new Bandage), map._2(x))
-        case 4 =>
-          addItem(new ItemEntity(map._2(x), this, new ArmCannon), map._2(x))
-        case 5 => ()
+      if (x == elevator) {
+        grid(map._2(x)._1)(map._2(x)._2) = DownElevator()
+        otherEntities += (map._2(x) -> new Lock(map._2(x), this))
+      } else {
+        rnd.nextInt(4) match {
+          case 0 => otherEntities += (map._2(x) -> new Robot(map._2(x), this))
+          case 1 => otherEntities += (map._2(x) -> new Dog(map._2(x), this))
+          case 2 =>
+            if (rnd.nextInt(2) == 1)
+              otherEntities += ((map._2(x)._1, map._2(x)._2 + 1) -> new Shopkeeper(
+                (map._2(x)._1, map._2(x)._2 + 1),
+                this
+              ))
+            else
+              otherEntities += ((map._2(x)._1, map._2(x)._2 + 1) -> new Computer(
+                (map._2(x)._1, map._2(x)._2 + 1),
+                this
+              ))
+          case 3 => ()
+        }
+        rnd.nextInt(6) match {
+          case 0 =>
+            addItem(new ItemEntity(map._2(x), this, new Morphin), map._2(x))
+          case 1 =>
+            addItem(new ItemEntity(map._2(x), this, new IronHelmet), map._2(x))
+          case 2 =>
+            addItem(new ItemEntity(map._2(x), this, new LaserChainsaw), map._2(x))
+          case 3 =>
+            addItem(new ItemEntity(map._2(x), this, new Bandage), map._2(x))
+          case 4 =>
+            addItem(new ItemEntity(map._2(x), this, new ArmCannon), map._2(x))
+          case 5 => ()
+        }
       }
     }
     // End of test
@@ -110,13 +150,16 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
 
   def hasCharacter(pos: (Int, Int)): Boolean = hasEntity(pos) && getEntity(pos).isInstanceOf[Character]
 
+  def onUpElevator(pos: (Int,Int)): Boolean = grid(pos._1)(pos._2).isInstanceOf[UpElevator]
+
+  def onDownElevator(pos: (Int,Int)): Boolean = grid(pos._1)(pos._2).isInstanceOf[DownElevator]
+
+  def onBrokenElevator(pos: (Int,Int)): Boolean = grid(pos._1)(pos._2).isInstanceOf[BrokenElevator]
+
   def entityMoved(e: GameEntity, newPos: (Int, Int)): Unit = {
-    e match {
-      case `playerEntity` => ()
-      case entity => {
-        otherEntities -= entity.pos
-        otherEntities += (newPos -> entity)
-      }
+    if (!e.isInstanceOf[Player]) {
+      otherEntities -= e.pos
+      otherEntities += (newPos -> e)
     }
   }
 

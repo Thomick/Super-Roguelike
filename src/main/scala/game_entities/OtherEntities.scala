@@ -44,3 +44,25 @@ class Computer(init_pos: (Int, Int), b: GameBoard) extends GameEntity(init_pos, 
     p.writeLog("You access the computer and find a map of this floor.")
   }
 }
+
+class Lock(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with Hackable {
+  val name = "Lock"
+  val description = "A lock. It prevents you from using the elevator."
+  override val image: String = "src/main/resources/placeholder.png"
+
+  override def interact(c: Character): Boolean = {
+    if (!super[Hackable].interact(c)) {
+      c.writeLog("\"Access denied !\" : You should look for something that will help you unlock this lock.")
+      return false
+    }
+    return true
+  }
+
+  def action(c: GameEntity) = ()
+
+  def hack(p: Player) = {
+    b.activateElevator = true
+    die
+    p.writeLog("You unlock safely the lock.")
+  }
+}

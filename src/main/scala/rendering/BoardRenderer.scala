@@ -11,8 +11,14 @@ import scala.collection._
 object BoardRenderer {
   val lightfloorColor = new Color(99, 150, 150)
   val lightwallColor = new Color(168, 255, 255)
+  val lightupelevatorColor = new Color(100,222,30)
+  val lightdownelevatorColor = new Color(185,80,181)
+  val lightbrokenelevatorColor = new Color(135,67,8)
   val darkfloorColor = new Color(79, 119, 119)
   val darkwallColor = new Color(134, 204, 204)
+  val darkupelevatorColor = new Color(80,202,10)
+  val darkdownelevatorColor = new Color(165,60,161)
+  val darkbrokenelevatorColor = new Color(115,47,0)
   val errorColor = new Color(255, 0, 0)
   val tilePadding = 0
 
@@ -53,6 +59,12 @@ object BoardRenderer {
               case WallTile() => g.setColor(lightwallColor)
               case FloorTile() =>
                 g.setColor(lightfloorColor)
+              case UpElevator() =>
+                g.setColor(lightupelevatorColor)
+              case DownElevator() =>
+                g.setColor(lightdownelevatorColor)
+              case BrokenElevator() =>
+                g.setColor(lightbrokenelevatorColor)
               case _ =>
                 println("No match")
                 g.setColor(errorColor)
@@ -62,6 +74,12 @@ object BoardRenderer {
               case WallTile() => g.setColor(darkwallColor)
               case FloorTile() =>
                 g.setColor(darkfloorColor)
+              case UpElevator() =>
+                g.setColor(darkupelevatorColor)
+              case DownElevator() =>
+                g.setColor(darkdownelevatorColor)
+              case BrokenElevator() =>
+                g.setColor(darkbrokenelevatorColor)
               case _ =>
                 println("No match")
                 g.setColor(errorColor)
