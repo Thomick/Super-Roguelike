@@ -90,6 +90,7 @@ object UI {
         case Enter =>
           menuStack.top.confirm()
         case Escape =>
+          menuStack.top.onClosing()
           menuStack.pop()
         case _ => ()
       }

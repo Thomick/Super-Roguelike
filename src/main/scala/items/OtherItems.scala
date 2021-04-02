@@ -49,25 +49,28 @@ class ElectronicComponents extends AbstractItem with Consumable {
     // Menu used to show upgradable items in inventory
     val menu = new Menu {
       override val name = "Upgrade"
+      var used = false
+
       if (upgradableItems.isEmpty)
         items += (("You do not have any upgradable item", ""))
       else
         upgradableItems.foreach(item => items += ((item.name, "")))
 
       override def confirm(): Unit = {
-        var used = false
         if (cursorIndex < upgradableItems.size) {
           player.writeLog("You upgrade " + upgradableItems(cursorIndex).name)
           upgradableItems(cursorIndex).upgrade
           used = true
         }
-        if (UI.menuStack.top == this)
+        if (UI.menuStack.top == this) {
           UI.menuStack.pop
-        if (!used) {
-          player.inventory += new ElectronicComponents
-          println("remboursement")
+          onClosing()
         }
       }
+
+      override def onClosing(): Unit =
+        if (!used)
+          player.inventory += new ElectronicComponents
     }
     UI.menuStack.push(menu)
     super.consume(character)

@@ -25,6 +25,8 @@ class Menu {
       cursorIndex = 0
 
   def confirm(): Unit = ()
+
+  def onClosing(): Unit = ()
 }
 
 class MainMenu extends Menu {
