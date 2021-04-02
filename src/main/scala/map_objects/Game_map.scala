@@ -13,38 +13,7 @@ import scala.collection.mutable.PriorityQueue
 import scala.util.Random
 import java.io._
 
-@SerialVersionUID(10123L)
-abstract class GameTile() extends Serializable {
-  def blocking: Boolean
-  def blocking_sight: Boolean
-  var explored = false
-  val turnToCross = 1
-}
 
-case class FloorTile() extends GameTile {
-  def blocking = false
-  def blocking_sight = false
-}
-
-case class WallTile() extends GameTile {
-  def blocking = true
-  def blocking_sight = true
-}
-
-case class UpElevator() extends GameTile {
-  def blocking = false
-  def blocking_sight = false
-}
-
-case class DownElevator() extends GameTile {
-  def blocking = false
-  def blocking_sight = false
-}
-
-case class BrokenElevator() extends GameTile {
-  def blocking = false
-  def blocking_sight = false
-}
 
 @SerialVersionUID(123L)
 class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
