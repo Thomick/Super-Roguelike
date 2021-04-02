@@ -35,6 +35,7 @@ class Shopkeeper(init_pos: (Int, Int), b: GameBoard)
   var lastPlayerMet: Option[Player] = None
   forSale += ((new LaserChainsaw, 10), (new IronHelmet, 3), (new Morphin, 1), (new Bandage, 3))
   forSale += ((new HackingTools, 10), (new ElectronicComponents, 5), (new Grenade, 3), (new EMPGrenade, 3))
+  forSale += ((new Screwdriver, 10))
 
   def sell(itemIndex: Int, player: Player): Unit = {
     if (forSale.length > itemIndex && itemIndex >= 0)
