@@ -9,26 +9,26 @@ import input_handling._
 @SerialVersionUID(7L)
 class Game(val logger: Logger) extends Serializable {
   var levels = Vector[GameBoard]()
-  var actualLocation = 0
+  var currentLocation = 0
   newLevel(false)
 
   def currentLevel(): GameBoard = {
-    return levels(actualLocation)
+    return levels(currentLocation)
   }
 
   def goUp(): Unit = {
     currentLevel.saveLastPosition
-    levels(actualLocation-1).updatePlayer(currentLevel.playerEntity)
-    actualLocation -= 1
+    levels(currentLocation-1).updatePlayer(currentLevel.playerEntity)
+    currentLocation -= 1
   }
 
   def goDown(): Unit = {
-    if (actualLocation == levels.size - 1) {
+    if (currentLocation == levels.size - 1) { // The player is on the last generated level
       newLevel(currentLevel.activateElevator)
     }
     currentLevel.saveLastPosition
-    levels(actualLocation+1).updatePlayer(currentLevel.playerEntity)
-    actualLocation += 1
+    levels(currentLocation+1).updatePlayer(currentLevel.playerEntity)
+    currentLocation += 1
   }
 
 

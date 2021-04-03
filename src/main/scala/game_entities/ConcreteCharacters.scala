@@ -11,6 +11,7 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
   override val baseMaxHP: Int = 100
   currentHP = 100
   override val image = "src/main/resources/robot.png"
+  inventory += new ArmCannon
 
   var money: Int = 0
 

@@ -132,12 +132,7 @@ trait AIControlled extends Character {
 trait FleeingWhenDamaged extends Character with AIControlled {
   override def takeDamage(from: GameEntity, dam: Int): (Int, Boolean) = {
     activate
-    if (currentHP == 0)
-      return (0, false) // This character is already dead
-    val effectiveDamage = max(0, dam - getDef())
-    val died = addToHP(-effectiveDamage) // Decreases HP and keeps the value in
-    writeLog(name + " receives " + effectiveDamage.toString + " damage from " + from.name)
-    return (effectiveDamage, died)
+    return super.takeDamage(from,dam)
   }
 
   override def act(visible: Boolean): Unit = {

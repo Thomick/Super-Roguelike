@@ -6,6 +6,7 @@ object Direction extends Enumeration {
   val allDirections =
     List(Up, Down, Left, Right, UpLeft, UpRight, DownLeft, DownRight)
 
+  // Transforms a element of {-1,0,1}^2 into a direction
   def giveDirection(distance: (Int, Int)): Direction.Value = {
     distance match {
       case (-1,0) => Direction.Left

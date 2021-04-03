@@ -17,7 +17,7 @@ class Cursor(board: GameBoard) extends Serializable {
   var areaOfEffect = false
   var rangeOfEffect = 0
   def pos: (Int, Int) = (xpos, ypos)
-  def backToPlayer: Unit = {
+  def backToPlayer: Unit = { // Move the cursor at the position of the player
     xpos = board.playerEntity.pos._1
     ypos = board.playerEntity.pos._2
   }
@@ -27,7 +27,7 @@ class Cursor(board: GameBoard) extends Serializable {
   def makeInvisible: Unit = {
     visible = false
   }
-  def activateAOE(range: Int): Unit = {
+  def activateAOE(range: Int): Unit = { 
     areaOfEffect = true
     rangeOfEffect = range
   }
@@ -60,14 +60,14 @@ class Cursor(board: GameBoard) extends Serializable {
     }
   }
 
-  def highlightedCells: (Vector[(Int, Int)], Boolean) = {
+  def highlightedCells: (Vector[(Int, Int)], Boolean) = { // Return the list of cells on the path from the player to the cursor when using a ranged weapon
     var hCells = Vector[(Int, Int)]()
     val dx: Double = xpos - board.playerEntity.pos._1
     val dy: Double = ypos - board.playerEntity.pos._2
     var steps: Double = max(Math.abs(dx), Math.abs(dy))
     val xIncrement: Double = dx / steps
     val yIncrement: Double = dy / steps
-    var x: Double = 0
+    var x: Double = 0 // We use relative coordinates to be able to round the values correctly
     var y: Double = 0
     var finish = false
     var accessible = false
@@ -84,14 +84,14 @@ class Cursor(board: GameBoard) extends Serializable {
           || board.grid(board.playerEntity.pos._1 + round(x))(board.playerEntity.pos._2 + round(y)).blocking_sight
           || (board.distance((0, 0), (round(x), round(y))) > highlightLength)
         ) {
-          finish = true
+          finish = true // The cells is out of range or blocked
         } else {
           hCells = hCells :+ (board.playerEntity.pos._1 + round(x), board.playerEntity.pos._2 + round(y))
           i += 1
-          if (!board.isFree(board.playerEntity.pos._1 + round(x), board.playerEntity.pos._2 + round(y))) {
-            finish = true
-            if (i >= steps) {
-              accessible = true
+          if (!board.isFree(board.playerEntity.pos._1 + round(x), board.playerEntity.pos._2 + round(y))) { // When there is an enemy between the player and the cursor
+            finish = true 
+            if (i >= steps) { // When the enemy is on the cursor
+              accessible = true 
             }
           }
         }
