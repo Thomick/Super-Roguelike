@@ -107,5 +107,5 @@ trait AIControlled extends Character {
   def deactivate(): Unit = active = false
 
   // Called during board update
-  def act(): Unit = updateStatus()
+  def act(visible: Boolean): Unit = updateStatus()
 }

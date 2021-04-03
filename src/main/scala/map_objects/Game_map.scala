@@ -68,7 +68,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
     for { x <- 1 to map._2.size - 1 } {
       rnd.nextInt(4) match {
         case 0 => otherEntities += (map._2(x) -> new Robot(map._2(x), this))
-        case 1 => otherEntities += (map._2(x) -> new Dog(map._2(x), this))
+        case 1 => otherEntities += (map._2(x) -> new Turret(map._2(x), this))
         case 2 =>
           if (rnd.nextInt(2) == 1)
             otherEntities += ((map._2(x)._1, map._2(x)._2 + 1) -> new Shopkeeper(
@@ -227,7 +227,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
           e.asInstanceOf[AIControlled].activate()
         }
         if (e.asInstanceOf[AIControlled].active) {
-          e.asInstanceOf[AIControlled].act()
+          e.asInstanceOf[AIControlled].act(fovmap.is_light(e.pos._1, e.pos._2))
         }
       }
     }
