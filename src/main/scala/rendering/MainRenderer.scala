@@ -46,10 +46,12 @@ object Renderer {
       """|
          |Additional commands :
          |- Move with Arrow keys or HJKL and YUBN for the diagonals
+         |- When on elevators, move between floors with Q:↑ and W:↓
          |- Move item selector with I:↑ and O:↓
          |- Pick up an item under you with E
          |- Move toward objects/characters to interact with them
          |- Select an item if you want it to be used during an interaction
+         |- When equiped with a ranged weapon, shoot with F
          |""".stripMargin
 
     yNext = StringRenderer.drawString(

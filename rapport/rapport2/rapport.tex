@@ -1,0 +1,42 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tcolorbox}
+\usepackage{amsfonts}
+\usepackage{stmaryrd}
+\usepackage{xcolor}
+\usepackage{tikz-uml}
+\title{Projet Programmation 2 : Rapport Partie 2}
+\author{MANGEL Léo et MICHEL Thomas}
+\date{}
+\begin{document}
+\maketitle
+
+\section{Etat du projet}
+
+Nous avons implémenté les fonctionnalités suivantes :
+
+\subsection*{Affichage :}
+
+\begin{itemize}
+    \item Système de menu utilisé pour le menu principal, ainsi que pour le magasin.
+    \item Ajout d'un curseur utilisé pour tirer avec des armes à distance ainsi que pour lancer des objets.
+\end{itemize}
+
+\subsection*{Jeu :}
+
+\begin{itemize}
+    \item Génération aléatoire de la carte, ainsi que des ennemis et des objets sur cette carte.
+    \item Gestion des déplacement du joueur dans 8 directions.
+    \item Système d'objet et d'inventaire. Le joueur peut ramasser les objets au sol pour les mettre dans son inventaire. Il peut consommer, équiper(avec des contraintes sur le nombre d'objets sur une même partie du corps), jetter et déposer les objets de son inventaire.
+    \item Système d'ennemis et de combat. Les ennemis ne bougent pas avant d'être activés, ce qui se produit lorsqu'ils entrent dans le champ de vision du joueur. Lorsqu'ils sont activés, ils se déplacent vers le joueur et l'attaquent au corps à corps. Le joueur peut également attaquer au corps à corps en se déplaçant sur la case d'un ennemi. Il y a également des statistiques qui déterminent les dégats d'une attaque et reçus par l'adversaire. Ces statistiques peuvent être modifiées par les objets.
+\end{itemize}
+
+\section{Organisation du code}
+
+\end{document}
+
