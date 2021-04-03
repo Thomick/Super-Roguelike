@@ -248,6 +248,12 @@ object UI {
     return None
   }
 
+  def getSelectedItemIndex(player: Player): Int = {
+    if (selectedItem >= player.equipedItems.length)
+      return selectedItem - player.equipedItems.length
+    else return selectedItem
+  }
+
   def reset(): Unit = {
     mode = GameMode.Normal
     mainWeapon = false

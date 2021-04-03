@@ -8,12 +8,10 @@ import items._
 trait Hackable extends GameEntity {
   override def interact(c: Character): Boolean = {
     if (c.isInstanceOf[Player]) {
-      println("1")
       UI.getSelectedItem(c.asInstanceOf[Player]) match {
         case Some(item) => {
-          println("2")
           if (item.isInstanceOf[HackingTools]) {
-            println("3")
+            c.asInstanceOf[Player].inventory.remove(UI.getSelectedItemIndex(c.asInstanceOf[Player])) // We remove the hacking tools from the inventory
             hack(c.asInstanceOf[Player])
             return true
           }
