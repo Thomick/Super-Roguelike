@@ -63,8 +63,6 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
     writeLog(name + " deals " + effectiveDamage.toString + " damage to " + c.name)
     if (died) {
       writeLog(name + " kills " + c.name)
-      if (board.otherEntities.find(_._2.isInstanceOf[Enemy]) == None)
-        writeLog("### All enemies have been destroyed ###")
     }
   }
 
@@ -119,9 +117,9 @@ trait AIControlled extends Character {
   def nextCellAway(): Option[(Int, Int)] = {
     val sPath = board.shortestPath(pos, board.playerEntity.pos)
     sPath match {
-      case Some(path) => 
-        board.oppositeFreeCell(pos,path(1))
-      case None       => None
+      case Some(path) =>
+        board.oppositeFreeCell(pos, path(1))
+      case None => None
     }
   }
 
@@ -132,7 +130,7 @@ trait AIControlled extends Character {
 trait FleeingWhenDamaged extends Character with AIControlled {
   override def takeDamage(from: GameEntity, dam: Int): (Int, Boolean) = {
     activate
-    return super.takeDamage(from,dam)
+    return super.takeDamage(from, dam)
   }
 
   override def act(visible: Boolean): Unit = {
@@ -143,4 +141,3 @@ trait FleeingWhenDamaged extends Character with AIControlled {
     }
   }
 }
-
