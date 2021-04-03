@@ -86,7 +86,7 @@ object BoardRenderer {
           if (sqrt(pow(c.xpos - i, 2) + pow(c.ypos - j, 2)) <= c.rangeOfEffect) {
             if (i == c.xpos && j == c.ypos)
               drawImageOnBoard(c.image, (i, j))
-            else
+            else if (c.areaOfEffect)
               drawImageOnBoard(c.imageAoE, (i, j))
           }
         }

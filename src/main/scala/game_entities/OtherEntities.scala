@@ -11,7 +11,9 @@ trait Hackable extends GameEntity {
       UI.getSelectedItem(c.asInstanceOf[Player]) match {
         case Some(item) => {
           if (item.isInstanceOf[HackingTools]) {
-            c.asInstanceOf[Player].inventory.remove(UI.getSelectedItemIndex(c.asInstanceOf[Player])) // We remove the hacking tools from the inventory
+            c.asInstanceOf[Player]
+              .inventory
+              .remove(UI.getSelectedItemIndex(c.asInstanceOf[Player])) // We remove the hacking tools from the inventory
             hack(c.asInstanceOf[Player])
             return true
           }
@@ -50,7 +52,7 @@ class Computer(init_pos: (Int, Int), b: GameBoard) extends GameEntity(init_pos, 
 class Lock(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with Hackable {
   val name = "Lock"
   val description = "A lock. It prevents you from using the elevator."
-  override val image: String = "src/main/resources/placeholder.png"
+  override val image: String = "src/main/resources/lock.png"
 
   override def interact(c: Character): Boolean = {
     if (!super[Hackable].interact(c)) {
