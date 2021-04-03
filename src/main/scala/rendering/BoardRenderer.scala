@@ -9,10 +9,6 @@ import cursor._
 import scala.collection._
 
 object BoardRenderer {
-  val lightfloorColor = new Color(99, 150, 150)
-  val lightwallColor = new Color(168, 255, 255)
-  val darkfloorColor = new Color(79, 119, 119)
-  val darkwallColor = new Color(134, 204, 204)
   val errorColor = new Color(255, 0, 0)
   val tilePadding = 0
 
@@ -48,25 +44,10 @@ object BoardRenderer {
         if (fovmap.is_light(x, y))
           board.grid(x)(y).explored = true
         if (board.grid(x)(y).explored) {
-          if (fovmap.is_light(x, y)) {
-            board.grid(x)(y) match {
-              case WallTile() => g.setColor(lightwallColor)
-              case FloorTile() =>
-                g.setColor(lightfloorColor)
-              case _ =>
-                println("No match")
-                g.setColor(errorColor)
-            }
-          } else {
-            board.grid(x)(y) match {
-              case WallTile() => g.setColor(darkwallColor)
-              case FloorTile() =>
-                g.setColor(darkfloorColor)
-              case _ =>
-                println("No match")
-                g.setColor(errorColor)
-            }
-          }
+          if (fovmap.is_light(x, y))
+            g.setColor(board.grid(x)(y).lightColor)
+          else
+            g.setColor(board.grid(x)(y).darkColor)
           g.fill(buildRect(pos))
         }
       }

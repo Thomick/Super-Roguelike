@@ -162,6 +162,18 @@ object UI {
           case I =>
             selectedItem += 1
             doUpdate = false
+          case W =>
+            if(board.onDownElevator(player.pos)){
+              game.goDown
+              lightMap.update(game.currentLevel.grid)
+            }
+            doUpdate = false
+          case Q =>
+            if(board.onUpElevator(player.pos)){
+              game.goUp
+              lightMap.update(game.currentLevel.grid)
+            }
+            doUpdate = false
           case V =>
             mode = GameMode.Cursor
             cursor.makeVisible

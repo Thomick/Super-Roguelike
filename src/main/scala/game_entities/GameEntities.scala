@@ -9,7 +9,7 @@ abstract class GameEntity(init_pos: (Int, Int), b: GameBoard, val hasLogs: Boole
   val name: String
   val description: String
   var pos: (Int, Int) = init_pos
-  val board: GameBoard = b
+  var board: GameBoard = b
   val image: String = "src/main/resources/placeholder.png"
 
   // Write the input message to the gameboard logger
