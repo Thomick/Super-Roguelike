@@ -106,6 +106,46 @@ trait AIControlled extends Character {
   def activate(): Unit = active = true
   def deactivate(): Unit = active = false
 
+  // Get the next move toward the player
+  def nextCellTowards(): Option[(Int, Int)] = {
+    val sPath = board.shortestPath(pos, board.playerEntity.pos)
+    sPath match {
+      case Some(path) => Some(path(1))
+      case None       => None
+    }
+  }
+
+  // Get the next move away from the player
+  def nextCellAway(): Option[(Int, Int)] = {
+    val sPath = board.shortestPath(pos, board.playerEntity.pos)
+    sPath match {
+      case Some(path) => 
+        board.oppositeFreeCell(pos,path(1))
+      case None       => None
+    }
+  }
+
   // Called during board update
   def act(visible: Boolean): Unit = updateStatus()
 }
+
+trait FleeingWhenDamaged extends Character with AIControlled {
+  override def takeDamage(from: GameEntity, dam: Int): (Int, Boolean) = {
+    activate
+    if (currentHP == 0)
+      return (0, false) // This character is already dead
+    val effectiveDamage = max(0, dam - getDef())
+    val died = addToHP(-effectiveDamage) // Decreases HP and keeps the value in
+    writeLog(name + " receives " + effectiveDamage.toString + " damage from " + from.name)
+    return (effectiveDamage, died)
+  }
+
+  override def act(visible: Boolean): Unit = {
+    updateStatus()
+    nextCellAway match {
+      case None       => ()
+      case Some(cell) => move(cell)
+    }
+  }
+}
+

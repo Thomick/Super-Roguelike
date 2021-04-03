@@ -18,18 +18,10 @@ trait Enemy extends Character with AIControlled {
 
 // Melee enemy behaviour : walk toward the player and tries to hit it
 trait MeleeEnemy extends Character with Enemy {
-  // Get the next move toward the player
-  def nextCell(): Option[(Int, Int)] = {
-    val sPath = board.shortestPath(pos, board.playerEntity.pos)
-    sPath match {
-      case Some(path) => Some(path(1))
-      case None       => None
-    }
-  }
 
   override def act(visible: Boolean): Unit = {
     updateStatus()
-    nextCell match {
+    nextCellTowards match {
       case None       => ()
       case Some(cell) => move(cell)
     }

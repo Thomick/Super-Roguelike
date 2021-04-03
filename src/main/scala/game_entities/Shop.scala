@@ -27,7 +27,7 @@ class ShopMenu(shop: Shopkeeper, player: Player) extends Menu {
 @SerialVersionUID(150L)
 class Shopkeeper(init_pos: (Int, Int), b: GameBoard)
     extends Character(init_pos, b)
-    with AIControlled
+    with FleeingWhenDamaged
     with Serializable {
   val name = "Vending machine"
   val description = "It sells low quality goods at a high price"
@@ -52,7 +52,7 @@ class Shopkeeper(init_pos: (Int, Int), b: GameBoard)
   def action(c: GameEntity) = ()
 
   override def interact(c: Character): Boolean = {
-    if (c.isInstanceOf[Player]) {
+    if (c.isInstanceOf[Player] && !active) {
       UI.menuStack.push(new ShopMenu(this, c.asInstanceOf[Player]))
       lastPlayerMet = Some(c.asInstanceOf[Player])
       return true

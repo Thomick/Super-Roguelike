@@ -231,11 +231,29 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
     None
   }
 
+  def oppositeFreeCell(pos1: (Int,Int), pos2: (Int,Int)): Option[(Int,Int)] = {
+    val opposite = (pos1._1 - pos2._1,pos1._2 - pos2._2)
+    var clockwise = Direction.giveDirection(opposite)
+    var counterClockwise = Direction.giveDirection(opposite)
+    for (i <- 0 to 2) {
+      if (isFree(Direction.nextPos(pos1,clockwise))) {
+        return Some(Direction.nextPos(pos1,clockwise))
+      }
+      if (isFree(Direction.nextPos(pos1,counterClockwise))) {
+        return Some(Direction.nextPos(pos1,counterClockwise))
+      }
+      clockwise = Direction.turnClockwise(clockwise)
+      counterClockwise = Direction.turnCounterClockwise(counterClockwise)
+    }
+    return None
+  }
+    
+
   def update(fovmap: FovMap) {
     val entities = getEntities()
     for (e <- entities) {
       if (e.isInstanceOf[AIControlled]) {
-        if (fovmap.is_light(e.pos._1, e.pos._2)) {
+        if (fovmap.is_light(e.pos._1, e.pos._2) && e.isInstanceOf[Enemy]) {
           e.asInstanceOf[AIControlled].activate()
         }
         if (e.asInstanceOf[AIControlled].active) {
