@@ -4,6 +4,7 @@ import map_objects._
 import scala.collection._
 import input_handling._
 import items._
+import scala.util.Random
 
 // Menu instantiated when a player interact with a shop
 class ShopMenu(shop: Shopkeeper, player: Player) extends Menu {
@@ -57,5 +58,10 @@ class Shopkeeper(init_pos: (Int, Int), b: GameBoard)
       return true
     }
     return false
+  }
+
+  override def die: Unit = {
+    super.die()
+    board.addItem(new ItemEntity(pos, board, new Money((new Random).nextInt(5) + 5)), pos)
   }
 }

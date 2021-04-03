@@ -12,7 +12,7 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
   currentHP = 100
   override val image = "src/main/resources/robot.png"
 
-  var money: Int = 15
+  var money: Int = 0
 
   // Player action when encountering another character
   override def action(c: GameEntity): Unit = {
