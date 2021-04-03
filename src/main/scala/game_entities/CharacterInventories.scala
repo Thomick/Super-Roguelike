@@ -79,7 +79,6 @@ trait HasInventory extends Character {
 
   // Returns the item in the slot [itemSlot] if there is one, else returns None
   def getItem(itemSlot: Int): Option[AbstractItem] = {
-    println("cc")
     if (isSlotEmpty(itemSlot))
       return None
     return Some(inventory(itemSlot))
