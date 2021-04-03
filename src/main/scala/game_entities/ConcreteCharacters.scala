@@ -12,6 +12,7 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
   currentHP = 100
   override val image = "src/main/resources/robot.png"
   inventory += new ArmCannon
+  var alive: Boolean = true
 
   var money: Int = 0
 
@@ -24,9 +25,12 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
   }
 
   override def die(): Unit = {
-    writeLog(
-      "### Your body can not endure damage anymore. However your robot parts allow you to keep on exploring and fighting. ### (and test the game)"
-    )
+    if (alive) {
+      writeLog(
+        "### Your body can not endure damage anymore. However your robot parts allow you to keep on exploring and fighting. ### (and test the game)"
+      )
+      alive = false
+    }
 
   }
 
@@ -44,4 +48,3 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
     return it
   }
 }
-

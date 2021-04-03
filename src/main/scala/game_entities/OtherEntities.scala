@@ -4,22 +4,33 @@ import map_objects._
 import input_handling._
 import items._
 
-// Adds an interaction with the item "Hacking tools"
-trait Hackable extends GameEntity {
+trait InteractWithItem extends GameEntity {
   override def interact(c: Character): Boolean = {
     if (c.isInstanceOf[Player]) {
       UI.getSelectedItem(c.asInstanceOf[Player]) match {
         case Some(item) => {
-          if (item.isInstanceOf[HackingTools]) {
-            c.asInstanceOf[Player]
-              .inventory
-              .remove(UI.getSelectedItemIndex(c.asInstanceOf[Player])) // We remove the hacking tools from the inventory
-            hack(c.asInstanceOf[Player])
+          val consumed = itemInteraction(item, c.asInstanceOf[Player])
+          if (consumed) {
+            //Remove the consumed item from inventory
+            c.asInstanceOf[Player].inventory.remove(UI.getSelectedItemIndex(c.asInstanceOf[Player]))
             return true
           }
         }
         case None => ()
       }
+    }
+    return false
+  }
+
+  def itemInteraction(item: AbstractItem, player: Player): Boolean = false
+}
+
+// Adds an interaction with the item "Hacking tools"
+trait Hackable extends GameEntity with InteractWithItem {
+  override def itemInteraction(item: AbstractItem, player: Player): Boolean = {
+    if (item.isInstanceOf[HackingTools]) {
+      hack(player)
+      return true
     }
     return false
   }
