@@ -9,34 +9,30 @@
 \usepackage{amsfonts}
 \usepackage{stmaryrd}
 \usepackage{xcolor}
-\usepackage{tikz-uml}
 \title{Projet Programmation 2 : Rapport Partie 2}
 \author{MANGEL Léo et MICHEL Thomas}
 \date{}
 \begin{document}
 \maketitle
 
-\section{Etat du projet}
+\section{Fonctionnalités ajoutés}
 
-Nous avons implémenté les fonctionnalités suivantes :
+\subsection{Curseur, armes à distance et objets lançable}
 
-\subsection*{Affichage :}
+Afin de pouvoir viser de manière précise, nous avons ajouté un curseur qui devient visible lorsqu'on tire avec une arme ou lorsqu'on lance un objet. 
 
-\begin{itemize}
-    \item Système de menu utilisé pour le menu principal, ainsi que pour le magasin.
-    \item Ajout d'un curseur utilisé pour tirer avec des armes à distance ainsi que pour lancer des objets.
-\end{itemize}
+\subsection{Sauvegarde}
 
-\subsection*{Jeu :}
+Pour sauvegarder les informations du jeu en cours, nous utilisons la sérialisation native de Scala. Cela nous permet de rendre chaque classe sauvegardable dans un fichier en ajoutant le trait \texttt{Serializable}. Ainsi, lorsqu'on sauvegarde, on enregistre dans un fichier un objet de la classe \texttt{Game} qui contient toutes les informations sur la partie en cours. De même, lorsqu'on charge, on désérialise le contenu du fichier pour obtenir l'objet de la classe \texttt{Game} initial.\\
+Pour sauvegarder et charger une partie, il y a un menu principal, auquel on a accès en début de jeu, ainsi qu'à n'importe quel moment de la partie en appuyant sur Echap. Nous avons choisi d'avoir une seule sauvegarde possible, afin de ne pas avoir besoin d'implémenter un système pour sélectionner une sauvegarde.\\
 
-\begin{itemize}
-    \item Génération aléatoire de la carte, ainsi que des ennemis et des objets sur cette carte.
-    \item Gestion des déplacement du joueur dans 8 directions.
-    \item Système d'objet et d'inventaire. Le joueur peut ramasser les objets au sol pour les mettre dans son inventaire. Il peut consommer, équiper(avec des contraintes sur le nombre d'objets sur une même partie du corps), jetter et déposer les objets de son inventaire.
-    \item Système d'ennemis et de combat. Les ennemis ne bougent pas avant d'être activés, ce qui se produit lorsqu'ils entrent dans le champ de vision du joueur. Lorsqu'ils sont activés, ils se déplacent vers le joueur et l'attaquent au corps à corps. Le joueur peut également attaquer au corps à corps en se déplaçant sur la case d'un ennemi. Il y a également des statistiques qui déterminent les dégats d'une attaque et reçus par l'adversaire. Ces statistiques peuvent être modifiées par les objets.
-\end{itemize}
+\subsection{Niveaux et objectifs}
 
-\section{Organisation du code}
+\section{Difficultés rencontrées}
+
+Malgré sa grande simplicité de mise en place dans le code, nous avons eu des difficultés à faire fonctionner correctement la sérialisation. En effet, sbt empêche initialement au programme de faire des forks, ce qui est utilisé par Scala pour la désérialisation. Pour régler le problème, il faut changer le fichier \texttt{build.sbt}. Nous avons pensé un peu de temps à comprendre d'ou venait le problème et à le résoudre.\\
+
+
 
 \end{document}
 
