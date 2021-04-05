@@ -4,7 +4,7 @@ import map_objects._
 import input_handling._
 import items._
 
-trait InteractWithItem extends GameEntity {
+trait InteractWithItems extends GameEntity {
   override def interact(c: Character): Boolean = {
     if (c.isInstanceOf[Player]) {
       UI.getSelectedItem(c.asInstanceOf[Player]) match {
@@ -26,7 +26,7 @@ trait InteractWithItem extends GameEntity {
 }
 
 // Adds an interaction with the item "Hacking tools"
-trait Hackable extends GameEntity with InteractWithItem {
+trait Hackable extends GameEntity with InteractWithItems {
   override def itemInteraction(item: AbstractItem, player: Player): Boolean = {
     if (item.isInstanceOf[HackingTools]) {
       hack(player)

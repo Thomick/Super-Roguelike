@@ -17,13 +17,29 @@
 
 \section{Fonctionnalités ajoutés}
 
+\subsection{Personnages et entités}
+\subsubsection{Nouveaux traits}
+\begin{itemize}
+    \item Le trait InteractWithItems : Si le joueur interagit avec une entité ayant ce trait, la méthode itemInteraction est appelée avec en paramètre l'objet actuellement sélectionné par le joueur. Cela permet d'intégrer de nouvelles interactions en fonction des objets possédés par le joueur.
+    \item Le trait Hackable : Dérive de InteractWithItems et ajoute un appel à la méthode hack lorsque l'objet sélectionné est "Hacking Tools".
+    \item Le trait FleeingWhenDamaged : LEO
+    \item Le trait RangedEnemy : Implémente un nouveau comportement pour les ennemis. Pas de déplacement, attaque lorsque le joueur est à portée de tir. Pour savoir s'il est possible de toucher le joueur (si la ligne de visée n'est pas obstruée), nous avons choisi de nous basé sur l'algorithme calculant les cases visibles par le joueur implémenté durant la partie 1 du projet. Nous faisons l'hypothèse que si le joueur peut voir un ennemi alors celui-ci peut aussi voir le joueur. Nous nous étions en effet efforcé de rendre l'algorithme symétrique lorsque nous l'avions implémenté. De cette façon, il n'est pas nécessaire de calculer les cases visibles par chaque ennemi mais seulement celles visibles par le joueur puis d'autoriser les tirs ennemis si ceux-ci sont visibles sur la carte et la distance séparant le joueur de l'ennemi est inférieures à la portée de ce dernier.
+\end{itemize}
+
+\subsubsection{Une boutique}
+Afin de diversifier les personnages non-joueurs, nous avons décidé de mettre en place une boutique accessible par l'intermédiaire d'un marchand ainsi qu'une monnaie permettant d'acheter des objets dans la boutique. La classe Shopkeeper dérive de la classe Character et possède le trait FleeingWhenDamaged. L'interaction par défaut est remplacée par l'ouverture d'un menu (classe ShopMenu) affichant les objets disponibles à la vente et se mettant à jour à chaque nouvel achat du joueur. De plus, bien qu'il ne soit pas possible d'attaquer le marchand par une attaque au corps à corps, il est tout de même possible de lui infliger des dégâts auquel cas celui-ci se met à fuir le joueur.
+
 \subsection{Curseur, armes à distance et objets lançable}
 
+<<<<<<< HEAD
 Afin de pouvoir viser de manière précise, nous avons ajouté un curseur. Il devient visible et control\^able par le joueur lorsqu'on tire avec une arme ou lorsqu'on lance un objet.\\
 Pour cela, nous avons ajouté des modes de contr\^ole inspiré par l'éditeur de texte vim. Il y a pour l'instant 5 modes, dont 3 qui utilisent le curseur. Il s'agit des modes \texttt{Cursor}, \texttt{Throw} et \texttt{Fire}.\\
 Le mode \texttt{Cursor} n'est pour l'instant pas utile et permet simplement de déplacer le curseur. Nous n'avons pas eu le temps de nous concentrer sur ce mode, mais l'objectif de ce mode serait de permettre d'inspecter les cases autour du joueur et d'afficher une description des ennemis.\\
 Le mode \texttt{Throw} permet de lancer certains objets. Pour entrer dans ce mode, il faut sélectionner l'objet à lancer et appuyer sur T. Ensuite, on peut déplacer le curseur vers la case sur lequel on veut envoyer l'objet, puis appuyer à nouveau sur T. On ne peut pas lancer d'objet sur une case qu'on ne voit pas, ni sur un mur. Certains objets sont consommés lorsqu'ils sont lancés, comme les grenades.\\
 Le mode \texttt{Fire} fonctionne de la même manière que le mode \texttt{Throw} mais permet lui de tirer avec des armes à distance. Pour y entrer, il faut avoir une arme à distance équipée et appuyer sur F. Si on a plusieurs armes à feu équipés, on peut soit sélectionner une de ses armes pour tirer avec, soit tirer avec l'arme principale, qui est la première arme à distance équipée, lorsque l'objet selectionné n'est pas une arme à distance équipée. Les mêmes restrictions qu'on avait pour les objets à lancer s'appliquent aussi pour les armes à distance, mais en plus, il faut qu'il n'y ai pas un autre personnage entre le joueur et la case visée. Pour visualiser ces conditions, on affiche un halo jaune sur les cases entre le joueur et la case visée. Pour calculer les cases concernées, on a préféré utilisé un algorithme naïf plut\^ot qu'un algorithme plus optimisé comme celui de Bresenham. En effet, vu qu'on ne calcule les cases qu'un seul segment par tour, la complexité n'a pas beaucoup d'influence.\\
+=======
+Afin de pouvoir viser de manière précise, nous avons ajouté un curseur qui devient visible lorsqu'on tire avec une arme ou lorsqu'on lance un objet.
+>>>>>>> 0784d65bf23477bb39aa5feede1412d99d5963c1
 
 \subsection{Sauvegarde}
 
