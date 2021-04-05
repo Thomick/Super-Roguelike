@@ -74,10 +74,11 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
         grid(map._2(x)._1)(map._2(x)._2) = DownElevator()
         otherEntities += (map._2(x) -> new Lock(map._2(x), this))
       } else {
-        rnd.nextInt(4) match {
+        rnd.nextInt(5) match {
           case 0 => otherEntities += (map._2(x) -> new Robot(map._2(x), this))
           case 1 => otherEntities += (map._2(x) -> new Dog(map._2(x), this))
-          case 2 =>
+          case 2 => otherEntities += (map._2(x) -> new Turret(map._2(x), this))
+          case 3 =>
             if (rnd.nextInt(2) == 1)
               otherEntities += ((map._2(x)._1, map._2(x)._2 + 1) -> new Shopkeeper(
                 (map._2(x)._1, map._2(x)._2 + 1),
@@ -88,9 +89,9 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
                 (map._2(x)._1, map._2(x)._2 + 1),
                 this
               ))
-          case 3 => ()
+          case 4 => ()
         }
-        rnd.nextInt(6) match {
+        rnd.nextInt(10) match {
           case 0 =>
             addItem(new ItemEntity(map._2(x), this, new Morphin), map._2(x))
           case 1 =>
@@ -101,7 +102,15 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
             addItem(new ItemEntity(map._2(x), this, new Bandage), map._2(x))
           case 4 =>
             addItem(new ItemEntity(map._2(x), this, new ArmCannon), map._2(x))
-          case 5 => ()
+          case 5 =>
+            addItem(new ItemEntity(map._2(x), this, new CowboyHat), map._2(x))
+          case 6 =>
+            addItem(new ItemEntity(map._2(x), this, new HeavyJacket), map._2(x))
+          case 7 =>
+            addItem(new ItemEntity(map._2(x), this, new Knuckles), map._2(x))
+          case 8 =>
+            addItem(new ItemEntity(map._2(x), this, new PoweredHammer), map._2(x))
+          case 9 => ()
         }
       }
     }
