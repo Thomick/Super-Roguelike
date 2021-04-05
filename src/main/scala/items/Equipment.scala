@@ -126,7 +126,7 @@ class CowboyHat extends Armor {
 }
 
 class HeavyJacket extends Armor {
-  val part: BodyPart.Value = BodyPart.Head
+  val part: BodyPart.Value = BodyPart.Torso
   var name: String = "Heavy Jacket"
   val description: String = ""
   override val image = "src/main/resources/jacket.png"

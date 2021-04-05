@@ -13,8 +13,6 @@ import scala.collection.mutable.PriorityQueue
 import scala.util.Random
 import java.io._
 
-
-
 @SerialVersionUID(123L)
 class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
   var size_x = n
@@ -26,13 +24,13 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
   var otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
   var grid = MapGenerator.make_empty(size_x, size_y)
   var activateElevator = false
-  var lastPosition = (0,0)
+  var lastPosition = (0, 0)
 
   def saveLastPosition(): Unit = {
     lastPosition = playerEntity.pos
   }
 
-  def updatePlayer(uPlayer : Player): Unit = {
+  def updatePlayer(uPlayer: Player): Unit = {
     playerEntity = uPlayer
     playerEntity.board = this
     playerEntity.pos = lastPosition
@@ -44,7 +42,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
       room_max_size: Int,
       map_width: Int,
       map_height: Int,
-      elevatorOnStartingPosition : Boolean
+      elevatorOnStartingPosition: Boolean
   ) {
     val map = MapGenerator.make_map(
       max_rooms,
@@ -58,7 +56,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
     size_y = map_height
     lastPosition = map._2(0)
     playerEntity.pos = map._2(0)
-    if(elevatorOnStartingPosition) {
+    if (elevatorOnStartingPosition) {
       grid(map._2(0)._1)(map._2(0)._2) = UpElevator()
     } else {
       grid(map._2(0)._1)(map._2(0)._2) = BrokenElevator()
@@ -68,7 +66,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
 
     // Setup of some entities in order to test the features
     val rnd = new Random
-    val elevator = rnd.nextInt(map._2.size-1)+1
+    val elevator = rnd.nextInt(map._2.size - 1) + 1
     for { x <- 1 to map._2.size - 1 } {
       if (x == elevator) {
         grid(map._2(x)._1)(map._2(x)._2) = DownElevator()
@@ -128,11 +126,11 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
 
   def hasCharacter(pos: (Int, Int)): Boolean = hasEntity(pos) && getEntity(pos).isInstanceOf[Character]
 
-  def onUpElevator(pos: (Int,Int)): Boolean = grid(pos._1)(pos._2).isInstanceOf[UpElevator]
+  def onUpElevator(pos: (Int, Int)): Boolean = grid(pos._1)(pos._2).isInstanceOf[UpElevator]
 
-  def onDownElevator(pos: (Int,Int)): Boolean = grid(pos._1)(pos._2).isInstanceOf[DownElevator]
+  def onDownElevator(pos: (Int, Int)): Boolean = grid(pos._1)(pos._2).isInstanceOf[DownElevator]
 
-  def onBrokenElevator(pos: (Int,Int)): Boolean = grid(pos._1)(pos._2).isInstanceOf[BrokenElevator]
+  def onBrokenElevator(pos: (Int, Int)): Boolean = grid(pos._1)(pos._2).isInstanceOf[BrokenElevator]
 
   def entityMoved(e: GameEntity, newPos: (Int, Int)): Unit = {
     if (!e.isInstanceOf[Player]) {
@@ -186,7 +184,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
         return None
       }
     } else {
-      println("No item here")
+      //println("No item here")
       return None
     }
   }
@@ -240,23 +238,22 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
     None
   }
 
-  def oppositeFreeCell(pos1: (Int,Int), pos2: (Int,Int)): Option[(Int,Int)] = {
-    val opposite = (pos1._1 - pos2._1,pos1._2 - pos2._2)
+  def oppositeFreeCell(pos1: (Int, Int), pos2: (Int, Int)): Option[(Int, Int)] = {
+    val opposite = (pos1._1 - pos2._1, pos1._2 - pos2._2)
     var clockwise = Direction.giveDirection(opposite)
     var counterClockwise = Direction.giveDirection(opposite)
     for (i <- 0 to 2) {
-      if (isFree(Direction.nextPos(pos1,clockwise))) {
-        return Some(Direction.nextPos(pos1,clockwise))
+      if (isFree(Direction.nextPos(pos1, clockwise))) {
+        return Some(Direction.nextPos(pos1, clockwise))
       }
-      if (isFree(Direction.nextPos(pos1,counterClockwise))) {
-        return Some(Direction.nextPos(pos1,counterClockwise))
+      if (isFree(Direction.nextPos(pos1, counterClockwise))) {
+        return Some(Direction.nextPos(pos1, counterClockwise))
       }
       clockwise = Direction.turnClockwise(clockwise)
       counterClockwise = Direction.turnCounterClockwise(counterClockwise)
     }
     return None
   }
-    
 
   def update(fovmap: FovMap) {
     val entities = getEntities()

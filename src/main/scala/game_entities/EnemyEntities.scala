@@ -55,4 +55,5 @@ class Turret(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) 
   val name = "Turret"
   val description = ""
   val range = 5
+  override val image = "src/main/resources/turret.png"
 }

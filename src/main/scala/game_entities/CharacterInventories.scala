@@ -43,7 +43,7 @@ trait HasInventory extends Character {
   def isSlotEmpty(itemSlot: Int, container: Seq[AbstractItem] = inventory): Boolean = {
     if (itemSlot < container.length)
       return false
-    println("There is no item in this slot")
+    //println("There is no item in this slot")
     return true
   }
 
