@@ -20,14 +20,51 @@
 \subsection{Personnages et entités}
 \subsubsection{Nouveaux traits}
 \begin{itemize}
-	\item Le trait \texttt{InteractWithItems}: Si le joueur interagit avec une entité ayant ce trait, la méthode \texttt{itemInteraction} est appelée avec en paramètre l'objet actuellement sélectionné par le joueur. Cela permet d'intégrer de nouvelles interactions en fonction des objets possédés par le joueur.
-	\item Le trait \texttt{Hackable} : Dérive de \texttt{InteractWithItems} et ajoute un appel à la méthode hack lorsque l'objet sélectionné est "Hacking Tools".
-	\item Le trait \texttt{FleeingWhenDamaged} : Dérive de \texttt{AIControlled}. Si le personnage reçoit des dommages, il se met à fuire. Pour déterminer sur quelle case le personnage fuit, on utilise le même algorithme pour calculer le plus court chemin entre le joueur et le personnage, mais on prend la case opposée à la place. Si la case opposée est occupée, par un mur ou un autre personnage, on regarde les cases adjacentes, dans le sens horaire puis trigonométrique, jusqu'à en trouver une libre.
-	\item Le trait \texttt{RangedEnemy} : Implémente un nouveau comportement pour les ennemis. Pas de déplacement, attaque lorsque le joueur est à portée de tir. Pour savoir s'il est possible de toucher le joueur (si la ligne de visée n'est pas obstruée), nous avons choisi de nous basé sur l'algorithme calculant les cases visibles par le joueur implémenté durant la partie 1 du projet. Nous faisons l'hypothèse que si le joueur peut voir un ennemi alors celui-ci peut aussi voir le joueur. Nous nous étions en effet efforcé de rendre l'algorithme symétrique lorsque nous l'avions implémenté. De cette façon, il n'est pas nécessaire de calculer les cases visibles par chaque ennemi mais seulement celles visibles par le joueur puis d'autoriser les tirs ennemis si ceux-ci sont visibles sur la carte et la distance séparant le joueur de l'ennemi est inférieures à la portée de ce dernier.
+    \item Le trait \texttt{InteractWithItems}: Si le joueur interagit avec une entité ayant ce trait, la méthode itemInteraction est appelée avec en paramètre l'objet actuellement sélectionné par le joueur. Cela permet d'intégrer de nouvelles interactions en fonction des objets possédés par le joueur.
+    \item Le trait \texttt{Hackable} : Dérive de \texttt{InteractWithItems} et ajoute un appel à la méthode hack lorsque l'objet sélectionné est "Hacking Tools".
+    \item Le trait \texttt{FleeingWhenDamaged} : Dérive de \texttt{AIControlled}. Si le personnage reçoit des dommages, il se met à fuire. Pour déterminer vers quelle case le personnage fuit, on utilise le même algorithme pour calculer le plus court chemin entre le joueur et le personnage, mais on prend la case opposée à la place. Si la case opposée est occupée, par un mur ou un autre personnage, on regarde les cases adjacentes, dans le sens horaire puis trigonométrique, jusqu'à en trouver une libre.
+    \item Le trait \texttt{RangedEnemy} : Implémente un nouveau comportement pour les ennemis. Le personnage ne se déplace pas et attaque lorsque le joueur est à portée de tir. Pour savoir s'il est possible de toucher le joueur (si la ligne de visée n'est pas obstruée), nous avons choisi de nous basé sur l'algorithme calculant les cases visibles par le joueur implémenté durant la partie 1 du projet. Nous faisons l'hypothèse que si le joueur peut voir un ennemi alors celui-ci peut aussi voir le joueur. Nous nous étions en effet efforcé de rendre l'algorithme symétrique lorsque nous l'avions implémenté. De cette façon, il n'est pas nécessaire de calculer les cases visibles par chaque ennemi mais seulement celles visibles par le joueur puis d'autoriser les tirs ennemis si ceux-ci sont visibles sur la carte et la distance séparant le joueur de l'ennemi est inférieures à la portée de ce dernier.
 \end{itemize}
 
-\subsubsection{Une boutique}
-Afin de diversifier les personnages non-joueurs, nous avons décidé de mettre en place une boutique accessible par l'intermédiaire d'un marchand ainsi qu'une monnaie permettant d'acheter des objets dans la boutique. La classe \texttt{Shopkeeper} dérive de la classe \texttt{Character} et possède le trait \texttt{FleeingWhenDamaged}. L'interaction par défaut est remplacée par l'ouverture d'un menu (classe \texttt{ShopMenu}) affichant les objets disponibles à la vente et se mettant à jour à chaque nouvel achat du joueur. De plus, bien qu'il ne soit pas possible d'attaquer le marchand par une attaque au corps à corps, il est tout de même possible de lui infliger des dégâts auquel cas celui-ci se met à fuir le joueur.
+\subsubsection{Système de statuts}
+Les personnages possèdent maintenant une liste de statuts actifs. Les statuts sont des classe héritant de la classe de base \texttt{Statut} qui gère la durée restante du statut. Si la durée restante est nulle alors le statut est supprimé. Au début du tour de chaque personnage, la méthode \texttt{updateStatus} rassemble les effets des différents statuts dans une instance de la classe \texttt{StatusResult}. Cet objet va être conservé durant le tour et va influencer les actions que le personnage pourra entreprendre.
+
+Il y a pour l'instant trois statuts implémentés : l'étourdissement empêche le personnage de bouger durant ce tour, le saignement lui fait perdre des points de vie et la régénération lui rend des points de vie.
+
+\subsubsection{Nouvelles entités et nouveaux personnages}
+\begin{itemize}
+    \item \emph{Boutique} : Afin de diversifier les personnages non-joueurs, nous avons décidé de mettre en place des boutiques accessibles par l'intermédiaire de marchands ainsi qu'une monnaie permettant d'acheter des objets dans les boutiques. La classe \texttt{Shopkeeper} dérive de la classe \texttt{Character} et possède le trait \texttt{FleeingWhenDamaged}. L'interaction par défaut est remplacée par l'ouverture d'un menu (classe \texttt{ShopMenu}) affichant les objets disponibles à la vente et se mettant à jour à chaque nouvel achat du joueur. De plus, bien qu'il ne soit pas possible d'attaquer le marchand par une attaque au corps à corps, il est tout de même possible de lui infliger des dégâts auquel cas celui-ci se met à fuir le joueur.
+    \item \emph{Ordinateur} : Entité héritant du trait \texttt{Hackable}. Cette entité révèle la carte du niveau actuel lorsqu'il est piraté par le joueur.
+    \item \emph{Cadenas} : Entité héritant du trait \texttt{Hackable}. Cette entité bloque l'accès à l'ascenseur permettant de passer d'un niveau à l'autre.
+    \item \emph{Tourelle} : Ennemi héritant du trait \texttt{RangedEnemy} qui tire sur le joueur dès qu'il est à portée.
+\end{itemize}
+
+\subsection{Objets et équipement}
+\subsubsection{Nouveaux traits}
+\begin{itemize}
+    \item Le trait \texttt{Upgradable}: Attribut un niveau à chaque objet possédant ce trait. La méthode upgrade qui peut être redéfinit par chaque classe héritant du trait. Un annotation est ajoutée à côté du nom d'un objet amélioré afin d'indiquer son niveau.
+    \item Le trait \texttt{RangedWeapon}: Ce trait définit la méthode shoot qui permet d'attaquer des ennemis à distance ainsi qu'une nouvelle statistique d'attaque spécifique aux armes à distance influençant les dégâts infligés aux adversaires.
+    \item Le trait \texttt{Throwable}: Trait modifié par rapport à la partie 1 de façon à utiliser le curseur. Il s'agit le trait de base pour les objets pouvant être lancés.
+    \item Le trait \texttt{ThrowableWithAoE}: Redéfinit la méthode \texttt{throwItem} du trait \texttt{Throwable} afin d'appliquer l'effet de l'objet sur chacune des cases d'une certaine zone.
+\end{itemize}
+
+\subsubsection{Nouveaux objets}
+\begin{itemize}
+    \item \emph{Tournevis} : Objet pouvant être utilisé pour démonter une pièce d'équipement améliorable. Ouvre un menu affichant les objets que l'on peut démonter. Chaque objet démonté permet d'obtenir un objet \emph{Composants électroniques}
+    \item \emph{Composants électroniques} : Objet consommable permettant d'améliorer les objets qui peuvent l'être. Ouvre un menu permettant de sélectionner l'objet à améliorer.
+    \item \emph{Argent} : Lorsque cet objet est ramassé par le joueur. Le montant d'argent représenté par l'objet est directement ajouté à la statistique \emph{Argent} du joueur. Une quantité aléatoire de cet objet apparaît à la mort d'un ennemi.
+    \item \emph{Outils de piratage} : Objet consommé lors de l'interaction entre le joueur et une entité héritant du trait \texttt{Hackable}. L'effet de l'interaction dépend de l'entité avec laquelle le joueur interagit.
+    \item \emph{Bandage} : Consommable soignant le statut \emph{Saignement}.
+    \item \emph{Seringues} : Les seringues héritent d'une classe de base \texttt{Syringe}. Une seringue pleine est un objet consommable se transformant en seringue vide lors de la consommation. Les seringues héritent du trait \texttt{Throwable} et infligent un statut d'étourdissement si elles sont lancées sur un personnage. La seringue de morphine permet de récupérer quelques points de vie.
+    \item \emph{Yeux laser, bras canon} : Armes à distance s'équipant sur différentes parties du corps.
+    \item \emph{Chapeau de Cowboy, veste épaisse, casque} : Classes héritant de la classe Armor, équipables sur différentes parties du corps et avec différentes statistiques.
+    \item \emph{Point américain} : Arme au corps à corps héritant du trait \texttt{Weapon}.
+    \item \emph{Grenade, Grenade EMP} : Armes de lancé appliquant un effet sur une zone héritant de \texttt{ThrowableWithAoE}. La première fait des dégats et la seconde étourdit les personnages.
+\end{itemize}
+
+\subsection{Menus}
+Nous avons ajouté une nouvelle classe de base pour les menus ainsi qu'une façon de les afficher grâce à l'objet \texttt{SplashScreenRenderer}. Cette classe définit les différentes méthodes permettant la navigation dans le menu et le joueur peut interagir avec au moyen de l'objet \texttt{UI}. Les menus sont gérés au moyen d'une pile et seul le menu au dessus de la pile reçoit des commandes. La création de menus est ainsi facilitée, il suffit de remplir la liste des options sélectionnables du menu et de redéfinir la méthode \texttt{confirm} qui est appelée lorsque le joueur valide son choix.
+Certains menus particuliers dérivent de la classe de base tels que le menu principal ou encore le menu de la boutique.
 
 \subsection{Curseur, armes à distance et objets lançable}
 
