@@ -240,18 +240,21 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
 
   def oppositeFreeCell(pos1: (Int, Int), pos2: (Int, Int)): Option[(Int, Int)] = {
     val opposite = (pos1._1 - pos2._1, pos1._2 - pos2._2)
+    if (isFree(Direction.nextPos(pos1, Direction.giveDirection(opposite)))) { // If the opposite cells is free, we returns it
+      return Some(Direction.nextPos(pos1, Direction.giveDirection(opposite)))
+    }
     var clockwise = Direction.giveDirection(opposite)
     var counterClockwise = Direction.giveDirection(opposite)
-    for (i <- 0 to 2) {
+    for (i <- 0 to 1) { // Else, we try to find the most close cell free
+      clockwise = Direction.turnClockwise(clockwise)
+      counterClockwise = Direction.turnCounterClockwise(counterClockwise)
       if (isFree(Direction.nextPos(pos1, clockwise))) {
         return Some(Direction.nextPos(pos1, clockwise))
       }
       if (isFree(Direction.nextPos(pos1, counterClockwise))) {
         return Some(Direction.nextPos(pos1, counterClockwise))
       }
-      clockwise = Direction.turnClockwise(clockwise)
-      counterClockwise = Direction.turnCounterClockwise(counterClockwise)
-    }
+    } // If there is no adjacent free cell, or if it's near the original cell, we dont return anything
     return None
   }
 

@@ -22,7 +22,7 @@
 \begin{itemize}
     \item Le trait \texttt{InteractWithItems}: Si le joueur interagit avec une entité ayant ce trait, la méthode itemInteraction est appelée avec en paramètre l'objet actuellement sélectionné par le joueur. Cela permet d'intégrer de nouvelles interactions en fonction des objets possédés par le joueur.
     \item Le trait \texttt{Hackable} : Dérive de \texttt{InteractWithItems} et ajoute un appel à la méthode hack lorsque l'objet sélectionné est "Hacking Tools".
-    \item Le trait \texttt{FleeingWhenDamaged} : Dérive de \texttt{AIControlled}. Si le personnage reçoit des dommages, il se met à fuire. Pour déterminer vers quelle case le personnage fuit, on utilise le même algorithme pour calculer le plus court chemin entre le joueur et le personnage, mais on prend la case opposée à la place. Si la case opposée est occupée, par un mur ou un autre personnage, on regarde les cases adjacentes, dans le sens horaire puis trigonométrique, jusqu'à en trouver une libre.
+    \item Le trait \texttt{FleeingWhenDamaged} : Dérive de \texttt{AIControlled}. Si le personnage reçoit des dommages, il se met à fuire. Pour déterminer vers quelle case le personnage fuit, on utilise le même algorithme que pour calculer la première case du plus court chemin entre le joueur et le personnage, mais on prend la case opposée à la place. Si la case opposée est occupée, par un mur ou un autre personnage, on regarde les cases adjacentes jusqu'à en trouver une libre.
     \item Le trait \texttt{RangedEnemy} : Implémente un nouveau comportement pour les ennemis. Le personnage ne se déplace pas et attaque lorsque le joueur est à portée de tir. Pour savoir s'il est possible de toucher le joueur (si la ligne de visée n'est pas obstruée), nous avons choisi de nous basé sur l'algorithme calculant les cases visibles par le joueur implémenté durant la partie 1 du projet. Nous faisons l'hypothèse que si le joueur peut voir un ennemi alors celui-ci peut aussi voir le joueur. Nous nous étions en effet efforcé de rendre l'algorithme symétrique lorsque nous l'avions implémenté. De cette façon, il n'est pas nécessaire de calculer les cases visibles par chaque ennemi mais seulement celles visibles par le joueur puis d'autoriser les tirs ennemis si ceux-ci sont visibles sur la carte et la distance séparant le joueur de l'ennemi est inférieures à la portée de ce dernier.
 \end{itemize}
 
@@ -87,7 +87,7 @@ Pour la suite, nous aimerions augmenter la difficulté progressivement lorsqu'on
 
 \section{Difficultés rencontrées}
 
-Malgré sa relative simplicité de mise en place dans le code, nous avons eu des difficultés à faire fonctionner correctement la sérialisation. En effet, sbt empêche initialement au programme de faire des forks qui utilisés par Scala pour la désérialisation. Pour régler le problème, il faut changer le fichier \texttt{build.sbt}. Nous avons pensé un peu de temps à comprendre d'ou venait le problème et à le résoudre.\\
+Malgré sa relative simplicité de mise en place dans le code, nous avons eu des difficultés à faire fonctionner correctement la sérialisation. En effet, sbt empêche initialement au programme de faire des forks qui sont utilisés par Scala pour la désérialisation. Pour régler le problème, il faut changer le fichier \texttt{build.sbt}. Nous avons pensé un peu de temps à comprendre d'ou venait le problème et à le résoudre.\\
 
 
 
