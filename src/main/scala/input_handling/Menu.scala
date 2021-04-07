@@ -31,13 +31,16 @@ class Menu {
 
 class MainMenu extends Menu {
   override val name = "Main Menu"
-  items += (("New Game", ""), ("Load Game", ""), ("Save Game", ""))
+  items += (("New Game", ""), ("Load Game", ""), ("Demonstration of the shop", ""), ("Demonstration of the lock", ""), ("Demonstration of the computer", ""), ("Save Game", ""))
 
   override def confirm(): Unit = {
     cursorIndex match {
       case 0 => Main.newGame
       case 1 => Main.loadGame
-      case 2 => Main.saveGame
+      case 2 => Main.loadDemo1
+      case 3 => Main.loadDemo2
+      case 4 => Main.loadDemo3
+      case 5 => Main.saveGame
       case _ => ()
     }
   }

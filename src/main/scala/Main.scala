@@ -39,6 +39,33 @@ object Main extends SimpleSwingApplication {
     }
   }
 
+  def loadDemo1: Unit = {
+    val ois = new ObjectInputStream(new FileInputStream("src/main/resources/demo1.ser"))
+    game = ois.readObject.asInstanceOf[Game]
+    ois.close
+    logger = game.logger
+    fovmap.update(game.currentLevel.grid)
+    UI.reset
+  }
+
+  def loadDemo2: Unit = {
+    val ois = new ObjectInputStream(new FileInputStream("src/main/resources/demo2.ser"))
+    game = ois.readObject.asInstanceOf[Game]
+    ois.close
+    logger = game.logger
+    fovmap.update(game.currentLevel.grid)
+    UI.reset
+  }
+
+  def loadDemo3: Unit = {
+    val ois = new ObjectInputStream(new FileInputStream("src/main/resources/demo3.ser"))
+    game = ois.readObject.asInstanceOf[Game]
+    ois.close
+    logger = game.logger
+    fovmap.update(game.currentLevel.grid)
+    UI.reset
+  }
+
   def saveGame: Unit = {
     val oos = new ObjectOutputStream(new FileOutputStream("src/main/resources/save.ser"))
     oos.writeObject(game)
