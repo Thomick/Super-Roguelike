@@ -13,6 +13,14 @@ object SplashScreenRenderer {
   val borderColor = new Color(30, 80, 80)
   val padding = 10
 
+  def drawFrame(g: Graphics2D, origin: (Int, Int), size: (Int, Int)) {
+    g.setColor(backgroundColor)
+    g.fillRect(origin._1, origin._2, size._1, size._2)
+    g.setColor(borderColor)
+    g.drawRect(origin._1, origin._2, size._1, size._2)
+
+  }
+
   def drawMenu(
       g: Graphics2D,
       origin: (Int, Int),
@@ -21,10 +29,7 @@ object SplashScreenRenderer {
       centered: Boolean = false
   ) {
     // Draws menu window
-    g.setColor(backgroundColor)
-    g.fillRect(origin._1, origin._2, size._1, size._2)
-    g.setColor(borderColor)
-    g.drawRect(origin._1, origin._2, size._1, size._2)
+    drawFrame(g, origin, size)
 
     var yNext = origin._2 + 2 * padding
     var currentIndex = 0

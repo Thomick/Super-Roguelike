@@ -60,6 +60,20 @@ object Renderer {
       (boardSize + 2 * padding, yNext + padding)
     )
 
+    //Draw minimap
+    val minimapSize =
+      min(min(screenSize.height - (2 * padding + yNext), screenSize.width - (boardSize + 3 * padding)), 250)
+    val minimapOrigin = (boardSize + 4 * padding, screenSize.height - (minimapSize + padding))
+    SplashScreenRenderer.drawFrame(g, minimapOrigin, (minimapSize, minimapSize))
+    BoardRenderer.drawBoard(
+      g,
+      (minimapOrigin._1 + padding, minimapOrigin._2 + padding),
+      board,
+      fovmap,
+      minimapSize - 2 * padding,
+      max(board.size_x, board.size_y)
+    )
+
     StringRenderer.drawIterable(
       g,
       logger.getLogs,
