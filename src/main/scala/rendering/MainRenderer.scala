@@ -36,7 +36,7 @@ object Renderer {
     val boardSize =
       max(0, min(drawingAreaWidth - rightPanelWidth - padding, drawingAreaHeight - bottomPanelHeight - padding))
 
-    val drawnEntities = BoardRenderer.drawBoard(g, (padding, padding), board, fovmap, (0, 0), boardSize, 30)
+    val drawnEntities = BoardRenderer.drawBoard(g, (padding, padding), board, fovmap, boardSize, 20)
 
     var yNext = SideMenuRenderer.drawPlayerInfo(g, (boardSize + 2 * padding, 2 * padding), board.playerEntity)
 

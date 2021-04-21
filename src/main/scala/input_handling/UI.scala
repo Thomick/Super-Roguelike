@@ -12,7 +12,7 @@ import items._
 import game._
 
 object GameMode extends Enumeration {
-  val Normal, Cursor, Throw, Fire, Shop = Value
+  val Normal, Cursor, Throw, Fire = Value
 }
 
 object UI {

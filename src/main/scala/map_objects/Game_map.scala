@@ -89,7 +89,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
               ))
           case 4 => ()
         }
-        rnd.nextInt(10) match {
+        rnd.nextInt(12) match {
           case 0 =>
             addItem(new ItemEntity(map._2(x), this, new Morphin), map._2(x))
           case 1 =>
@@ -107,8 +107,12 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
           case 7 =>
             addItem(new ItemEntity(map._2(x), this, new Knuckles), map._2(x))
           case 8 =>
-            addItem(new ItemEntity(map._2(x), this, new PoweredHammer), map._2(x))
-          case 9 => ()
+            addItem(new ItemEntity(map._2(x), this, new LaserEyes), map._2(x))
+          case 9 =>
+            addItem(new ItemEntity(map._2(x), this, new Grenade), map._2(x))
+          case 10 =>
+            addItem(new ItemEntity(map._2(x), this, new EMPGrenade), map._2(x))
+          case 11 => ()
         }
       }
     }
