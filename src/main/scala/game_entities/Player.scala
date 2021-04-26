@@ -2,13 +2,14 @@ package game_entities
 
 import map_objects._
 import items._
+import scala.math.min
 
 // Character controlled by the player
 @SerialVersionUID(100L)
 class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, true) with Humanoid with Serializable {
   val name = "Player"
   val description = "It's you !"
-  override val baseMaxHP: Int = 100
+  baseMaxHP = 100
   currentHP = 100
   override val image = "src/main/resources/robot.png"
   inventory += new ArmCannon
@@ -47,4 +48,5 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
     }
     return it
   }
+
 }

@@ -11,12 +11,15 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
     extends GameEntity(init_pos, b, hasLogs) {
 
   // Stats (must be positive)
-  val baseMaxHP: Int = 10
-  val baseDef: Int = 0
-  val baseAtt: Int = 1
+  var baseMaxHP: Int = 10
+  var baseDef: Int = 0
+  var baseAtt: Int = 1
   var currentHP: Int = 10
   var statusList = new mutable.HashSet[Status]
   val activeEffects = new StatusResults
+  var level = 1
+  var xp: Int = 0
+  var nextLevelCap: Int = 10
 
   def getDef(): Int = baseDef
   def getAtt(): Int = baseAtt
@@ -29,6 +32,31 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
     if (currentHP == 0)
       die()
     return currentHP == 0
+  }
+
+  def levelUp(): Unit = {
+    baseAtt = ((baseAtt) * 1.2).toInt + 1
+    baseDef = ((baseDef) * 1.2).toInt + 1
+    baseMaxHP = ((baseMaxHP) * 1.2).toInt + 1
+    level = level + 1
+    xp = 0
+    nextLevelCap = (nextLevelCap * 1.5).toInt
+  }
+
+  def levelUp(n: Int): Unit = {
+    for (i <- 1 to n)
+      levelUp()
+  }
+
+  def getXp(n: Int): Unit = {
+    var toAdd = n
+    while (toAdd > 0) {
+      val m = min(n, nextLevelCap - xp)
+      toAdd = toAdd - m
+      xp = xp + m
+      if (xp == nextLevelCap)
+        levelUp()
+    }
   }
 
   // Move the character(C1) to a new position on the board
@@ -63,6 +91,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
     writeLog(name + " deals " + effectiveDamage.toString + " damage to " + c.name)
     if (died) {
       writeLog(name + " kills " + c.name)
+      getXp(c.level)
     }
   }
 

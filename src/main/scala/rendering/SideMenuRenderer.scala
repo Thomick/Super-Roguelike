@@ -25,6 +25,7 @@ object SideMenuRenderer {
         val infos = new StringBuilder
         infos ++= " (" + c.currentHP + "/" + c.getMaxHP() + ")"
         c.statusList.foreach(s => infos ++= " (" + s.name + ":" + s.remainingTimeString() + ")")
+        infos ++= s" Lvl. ${c.level}"
         return infos.toString()
       }
       return ""
@@ -63,6 +64,7 @@ object SideMenuRenderer {
     var selectedItem: Option[AbstractItem] = None
 
     menuBuffer ++= "HP : " + player.currentHP.toString + "/" + player.getMaxHP.toString + "\n"
+    menuBuffer ++= s"Level : ${player.level}   Xp : ${player.xp}/${player.nextLevelCap}\n"
     menuBuffer ++= "Attack power : " + player.getAtt.toString + "\n"
     menuBuffer ++= "Defense : " + player.getDef.toString + "\n"
     menuBuffer ++= "Money : " + player.money.toString + "\n"
