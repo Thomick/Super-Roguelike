@@ -25,15 +25,16 @@ object MapGenerator {
   def make_empty(
       map_width: Int,
       map_height: Int,
-      defaultTile: GameTile = FloorTile()
+      defaultTile: GameTile = new FloorTile
   ): Array[Array[GameTile]] = {
     val grid = Array.ofDim[GameTile](map_width, map_height)
     for {
       x <- 0 to map_width - 1
       y <- 0 to map_height - 1
     } defaultTile match {
-      case FloorTile() => grid(x)(y) = FloorTile()
-      case WallTile()  => grid(x)(y) = WallTile()
+      case _: FloorTile => grid(x)(y) = new FloorTile
+      case _: WallTile  => grid(x)(y) = new WallTile
+      case _            => grid(x)(y) = new WallTile
     }
     return grid
   }
@@ -45,22 +46,22 @@ object MapGenerator {
       map_width: Int,
       map_height: Int
   ): (Array[Array[GameTile]], Vector[(Int, Int)]) = {
-    val grid = make_empty(map_width, map_height, WallTile())
+    val grid = make_empty(map_width, map_height, new WallTile)
     var startingPos = (0, 0)
 
     def create_room(room: Rect) {
       for {
         x <- room.x1 + 1 to room.x2 - 1
         y <- room.y1 + 1 to room.y2 - 1
-      } grid(x)(y) = FloorTile()
+      } grid(x)(y) = new FloorTile
     }
 
     def create_h_tunnel(x1: Int, x2: Int, y: Int) {
-      for (x <- min(x1, x2) to max(x1, x2)) grid(x)(y) = FloorTile()
+      for (x <- min(x1, x2) to max(x1, x2)) grid(x)(y) = new FloorTile
     }
 
     def create_v_tunnel(x: Int, y1: Int, y2: Int) {
-      for (y <- min(y1, y2) to max(y1, y2)) grid(x)(y) = FloorTile()
+      for (y <- min(y1, y2) to max(y1, y2)) grid(x)(y) = new FloorTile
     }
 
     var num_room = 0

@@ -68,7 +68,8 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
         pos = nextPos
       } else if (board.hasEntity(nextPos)) {
         action(board.getEntity(nextPos))
-      }
+      } else if (board.isTileInteractable(nextPos))
+        board.interactWithTile(nextPos, this)
   }
 
   // Move the character to an adjacent square according to the specified direction

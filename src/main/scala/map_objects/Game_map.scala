@@ -57,9 +57,9 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
     lastPosition = map._2(0)
     playerEntity.pos = map._2(0)
     if (elevatorOnStartingPosition) {
-      grid(map._2(0)._1)(map._2(0)._2) = UpElevator()
+      grid(map._2(0)._1)(map._2(0)._2) = new UpElevator
     } else {
-      grid(map._2(0)._1)(map._2(0)._2) = BrokenElevator()
+      grid(map._2(0)._1)(map._2(0)._2) = new BrokenElevator
     }
     otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
     itemEntities = new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
@@ -69,7 +69,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
     val elevator = rnd.nextInt(map._2.size - 1) + 1
     for { x <- 1 to map._2.size - 1 } {
       if (x == elevator) {
-        grid(map._2(x)._1)(map._2(x)._2) = DownElevator()
+        grid(map._2(x)._1)(map._2(x)._2) = new DownElevator
         otherEntities += (map._2(x) -> new Lock(map._2(x), this))
       } else {
         rnd.nextInt(5) match {
@@ -275,6 +275,14 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
       }
     }
     //println("Update all entities")
+  }
+
+  def isTileInteractable(pos: (Int, Int)): Boolean = {
+    grid(pos._1)(pos._2).isInstanceOf[InteractableTile]
+  }
+
+  def interactWithTile(pos: (Int, Int), c: Character): Unit = {
+    grid(pos._1)(pos._2).asInstanceOf[InteractableTile].interact(this, c)
   }
 
 }
