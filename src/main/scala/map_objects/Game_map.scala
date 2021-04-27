@@ -25,6 +25,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
   var grid = MapGenerator.make_empty(size_x, size_y)
   var activateElevator = false
   var lastPosition = (0, 0)
+  val triggers = new mutable.ArrayBuffer[Trigger]
 
   def saveLastPosition(): Unit = {
     lastPosition = playerEntity.pos
@@ -273,6 +274,11 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
           e.asInstanceOf[AIControlled].act(fovmap.is_light(e.pos._1, e.pos._2))
         }
       }
+    }
+    for (t <- triggers) {
+      t.update()
+      if (t.triggered)
+        triggers -= t
     }
     //println("Update all entities")
   }
