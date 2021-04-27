@@ -71,10 +71,49 @@ class Door extends GameTile with InteractableTile {
     darkColor = new Color(0, 100, 0)
   }
 
+  def close(): Unit = {
+    opened = false
+    blocking = true
+    blocking_sight = true
+    lightColor = new Color(200, 200, 200)
+    darkColor = new Color(150, 150, 150)
+  }
+
+  def lock(): Unit = {
+    close()
+    locked = true
+    lightColor = new Color(200, 0, 0)
+    darkColor = new Color(100, 0, 0)
+  }
+
+  def unlock(): Unit = {
+    close()
+    locked = false
+  }
+
   def interact(board: GameBoard, c: game_entities.Character): Unit = {
-    if (!opened) {
+    if (!opened && !locked) {
       open()
       Main.fovmap.update(board.grid)
     }
   }
+}
+
+class KeyLockedDoor extends Door {
+  lock()
+  override def interact(board: GameBoard, c: game_entities.Character): Unit = {
+    if (locked && c.isInstanceOf[game_entities.Player]) {
+      val player = c.asInstanceOf[game_entities.Player]
+      if (player.keyCount > 0) {
+        player.keyCount -= 1
+        unlock()
+      }
+    } else
+      super.interact(board, c)
+  }
+}
+
+class TriggerableDoor extends Door with Triggerable {
+  lock()
+  def executeAction(): Unit = unlock
 }
