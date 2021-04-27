@@ -81,3 +81,13 @@ class Lock(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) wi
     p.writeLog("You unlock safely the lock.")
   }
 }
+
+class Lever(init_pos: (Int, Int), b: GameBoard) extends GameEntity(init_pos, b) with map_objects.Activable {
+  val name = "Lever"
+  val description = "It should activate something."
+
+  override def interact(c: Character): Boolean = {
+    activated = true
+    true
+  }
+}

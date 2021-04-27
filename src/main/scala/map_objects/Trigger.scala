@@ -8,6 +8,14 @@ abstract class EventWatcher {
   def checkEvent(): Boolean
 }
 
+trait Activable {
+  var activated = false
+}
+
+class ActivableWatcher(obj: Activable) extends EventWatcher {
+  def checkEvent(): Boolean = obj.activated
+}
+
 trait Triggerable {
   def executeAction(): Unit
 }
@@ -20,10 +28,7 @@ class Trigger {
   def update(): Unit = {
     if (triggered)
       return
-    for (e <- events) {
-      if (e.checkEvent())
-        events -= e
-    }
+    events --= events.filter(_.checkEvent())
     if (events.isEmpty) {
       for (a <- actions)
         a.executeAction()
