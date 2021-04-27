@@ -64,6 +64,49 @@ object MapGenerator {
       for (y <- min(y1, y2) to max(y1, y2)) grid(x)(y) = new FloorTile
     }
 
+    // Add doors based on a pattern (must be called after the generation of doors and walls)
+    def addDoors() {
+      def matchDoorPattern(posArray: Array[(Int, Int)]): Boolean = {
+        if (posArray.length != 9) {
+          return false
+        }
+        for (i <- 0 to 5)
+          if (!grid(posArray(i)._1)(posArray(i)._2).isInstanceOf[FloorTile]) {
+            return false
+          }
+        return grid(posArray(6)._1)(posArray(6)._2).isInstanceOf[WallTile] && grid(posArray(7)._1)(posArray(7)._2)
+          .isInstanceOf[FloorTile] && grid(posArray(8)._1)(posArray(8)._2).isInstanceOf[WallTile]
+      }
+      for {
+        x <- 0 to map_width - 3
+        y <- 0 to map_height - 3
+      } {
+        // Pattern matching with rotations
+        var a1 = new Array[(Int, Int)](9)
+        var a2 = new Array[(Int, Int)](9)
+        var a3 = new Array[(Int, Int)](9)
+        var a4 = new Array[(Int, Int)](9)
+        for {
+          i <- 0 to 2
+          j <- 0 to 2
+          val ind = 3 * i + j
+        } {
+          a1(ind) = (x + i, y + j)
+          a2(ind) = (x + 2 - i, y + j)
+          a3(ind) = (x + j, y + i)
+          a4(ind) = (x + j, y + 2 - i)
+        }
+        if (matchDoorPattern(a1))
+          grid(x + 2)(y + 1) = new Door
+        else if (matchDoorPattern(a2))
+          grid(x)(y + 1) = new Door
+        else if (matchDoorPattern(a3))
+          grid(x + 1)(y + 2) = new Door
+        else if (matchDoorPattern(a4))
+          grid(x + 1)(y) = new Door
+      }
+    }
+
     var num_room = 0
     var rooms = Vector[Rect]()
     var centersRoom = Vector[(Int, Int)]() // Stocks the center of every rooms
@@ -97,6 +140,7 @@ object MapGenerator {
         num_room += 1
       }
     }
+    addDoors()
     return (grid, centersRoom)
   }
 }

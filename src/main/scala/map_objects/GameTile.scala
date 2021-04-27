@@ -68,7 +68,7 @@ class Door extends GameTile with InteractableTile {
     blocking = false
     blocking_sight = false
     lightColor = new Color(0, 200, 0)
-    lightColor = new Color(0, 100, 0)
+    darkColor = new Color(0, 100, 0)
   }
 
   def interact(board: GameBoard, c: game_entities.Character): Unit = {
