@@ -14,6 +14,13 @@ class Money(val value: Int) extends AbstractItem {
   override val image: String = "src/main/resources/money.png"
 }
 
+class Key extends AbstractItem {
+  var name = "Key"
+  val description = "Can open things"
+  val weight = 5
+  override val image: String = "src/main/resources/usbkey.png"
+}
+
 // Item used to interact with Hackable entities
 class HackingTools extends AbstractItem {
   var name = "Hacking Tools"

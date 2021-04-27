@@ -25,6 +25,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
   var grid = MapGenerator.make_empty(size_x, size_y)
   var activateElevator = false
   var lastPosition = (0, 0)
+  val triggers = new mutable.ArrayBuffer[Trigger]
 
   def saveLastPosition(): Unit = {
     lastPosition = playerEntity.pos
@@ -116,6 +117,14 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
         }
       }
     }
+    val exterminationTrigger = new DeathTrigger {
+      actions += new LogAction("There are no more enemies on this floor.", logger)
+    }
+    for ((pos, e) <- otherEntities) {
+      if (e.isInstanceOf[Enemy])
+        exterminationTrigger.addCharacter(e.asInstanceOf[Enemy])
+    }
+    triggers += exterminationTrigger
     // End of test
   }
 
@@ -274,7 +283,10 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
         }
       }
     }
-    //println("Update all entities")
+    for (t <- triggers)
+      t.update()
+    triggers --= triggers.filter(t => t.triggered)
+    println("Update all entities")
   }
 
   def isTileInteractable(pos: (Int, Int)): Boolean = {

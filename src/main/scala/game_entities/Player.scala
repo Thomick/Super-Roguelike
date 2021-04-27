@@ -16,6 +16,7 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
   var alive: Boolean = true
 
   var money: Int = 0
+  var keyCount: Int = 3
 
   // Player action when encountering another character
   override def action(c: GameEntity): Unit = {
@@ -42,6 +43,9 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
       case Some(item) =>
         if (item.isInstanceOf[Money]) {
           money += item.asInstanceOf[Money].value
+          inventory -= item
+        } else if (item.isInstanceOf[Key]) {
+          keyCount += 1
           inventory -= item
         }
       case None => ()
