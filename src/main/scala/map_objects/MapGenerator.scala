@@ -2,6 +2,8 @@ package map_objects
 
 import scala.math.{min, max}
 import scala.util.Random
+import items._
+import game_entities._
 
 class Rect(x: Int, y: Int, w: Int, h: Int) {
   val x1 = x
