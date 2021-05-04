@@ -1,11 +1,13 @@
 package generator
 
-import map_objects._
 import scala.util.parsing.combinator._
 import scala.collection.mutable._
 import scala.util.Random
+import scala.io.Source
+
 import items._
 import game_entities._
+import map_objects._
 
 class Room {
   var floorcells = Vector[(Int, Int)]()
@@ -51,21 +53,35 @@ class RoomParser(depth : Int) extends RegexParsers {
     val height = it.next().toInt
     var entrancex = 0
     var entrancey = 0
+    val northx = it.next().toInt
+    val northy = it.next().toInt
+    val eastx = it.next().toInt
+    val easty = it.next().toInt
+    val southx = it.next().toInt
+    val southy = it.next().toInt
+    val westx = it.next().toInt
+    val westy = it.next().toInt
     entrance match {
-      case Direction.Up => entrancex = it.next().toInt
-                 entrancex = it.next().toInt
-                 it.drop(6)
-      case Direction.Right => it.drop(2)
-                    entrancex = it.next().toInt
-                    entrancex = it.next().toInt
-                    it.drop(4)
-      case Direction.Down => it.drop(4)
-                   entrancex = it.next().toInt
-                   entrancex = it.next().toInt
-                   it.drop(2)
-      case Direction.Left => it.drop(6)
-                   entrancex = it.next().toInt
-                   entrancex = it.next().toInt
+      case Direction.Up => entrancex = northx
+                           entrancey = northy
+                           room.addPossibleExit(Direction.Right,(eastx,easty))
+                           room.addPossibleExit(Direction.Down,(southx,southy))
+                           room.addPossibleExit(Direction.Left,(westx,westy))
+      case Direction.Right => entrancex = eastx
+                              entrancey = easty
+                              room.addPossibleExit(Direction.Up,(northx,northy))
+                              room.addPossibleExit(Direction.Down,(southx,southy))
+                              room.addPossibleExit(Direction.Left,(westx,westy))
+      case Direction.Down => entrancex = southx
+                             entrancey = southy
+                             room.addPossibleExit(Direction.Up,(northx,northy))
+                             room.addPossibleExit(Direction.Right,(eastx,easty))
+                             room.addPossibleExit(Direction.Left,(westx,westy))
+      case Direction.Left => entrancex = westx
+                             entrancey = westy
+                             room.addPossibleExit(Direction.Up,(northx,northy))
+                             room.addPossibleExit(Direction.Right,(eastx,easty))
+                             room.addPossibleExit(Direction.Down,(southx,southy))
     }
     var line = ""
     for (i <- height-1 to 0 by -1) {
@@ -74,7 +90,7 @@ class RoomParser(depth : Int) extends RegexParsers {
         line.apply(j) match {
           case '#' => room.addWallcell(i-entrancex, j-entrancey)
           case '.' => room.addFloorcell(i-entrancex, j-entrancey)
-          case ' ' | '\n' => ()
+          case ' ' | '\n' | '\\' => ()
           case _ => speChar.get(line.apply(j)) match {
             case Some(v) => speChar(line.apply(j)) = (i-entrancex, j-entrancey) +: v
             case None => speChar(line.apply(j)) = Vector[(Int, Int)]((i-entrancex, j-entrancey))
@@ -141,6 +157,26 @@ class RoomParser(depth : Int) extends RegexParsers {
 
 }
 object RoomGenerator {
-  val test = 0
+  def generateSimpleRoom(depth: Int, entrance: Direction.Value): Room = {
+    val parser = new RoomParser(depth)
+    val file = Source.fromFile("src/main/resources/room.des")
+    val fileIt = file.getLines()
+    file.close
+    val nbPresetRooms = fileIt.next().toInt
+    val rnd = new Random
+    val selectedPreset = rnd.nextInt(nbPresetRooms)
+    var count = 0
+    while (count <= selectedPreset) {
+      if (fileIt.next() == "$") {
+        count = count + 1
+      }
+    }
+    parser.readGrid(entrance,fileIt)
+    if (fileIt.next() == "%") {
+      parser.parseAll(parser.program, fileIt.next())
+    }
+    return parser.room
+  }
+  
 }
 
