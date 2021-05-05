@@ -6,6 +6,7 @@ import items._
 import fov_functions._
 import logger._
 import cursor._
+import generator._
 
 import scala.collection._
 import scala.math.{pow, sqrt}
@@ -38,85 +39,26 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
 
   def newMap(
       max_rooms: Int,
-      room_min_size: Int,
-      room_max_size: Int,
+      min_rooms: Int,
       map_width: Int,
       map_height: Int,
+      depth: Int,
       elevatorOnStartingPosition: Boolean
   ) {
-    val map = MapGenerator.make_map(
-      max_rooms,
-      room_min_size,
-      room_max_size,
-      map_width,
-      map_height
-    )
-    grid = map._1
-    size_x = map_width
-    size_y = map_height
-    lastPosition = map._2(0)
-    playerEntity.pos = map._2(0)
-    if (elevatorOnStartingPosition) {
-      grid(map._2(0)._1)(map._2(0)._2) = new UpElevator
-    } else {
-      grid(map._2(0)._1)(map._2(0)._2) = new BrokenElevator
+    var foundValidMap = false
+    while (!foundValidMap) {
+      otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
+      itemEntities = new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
+      foundValidMap = MapGenerator.make_map(
+        max_rooms,
+        min_rooms,
+        map_width,
+        map_height,
+        this,
+        depth,
+        elevatorOnStartingPosition
+      )
     }
-    otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
-    itemEntities = new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
-
-    // Setup of some entities in order to test the features
-    val rnd = new Random
-    val elevator = rnd.nextInt(map._2.size - 1) + 1
-    for { x <- 1 to map._2.size - 1 } {
-      if (x == elevator) {
-        grid(map._2(x)._1)(map._2(x)._2) = new DownElevator
-        otherEntities += (map._2(x) -> new Lock(map._2(x), this))
-      } else {
-        rnd.nextInt(5) match {
-          case 0 => otherEntities += (map._2(x) -> new Robot(map._2(x), this))
-          case 1 => otherEntities += (map._2(x) -> new Dog(map._2(x), this))
-          case 2 => otherEntities += (map._2(x) -> new Turret(map._2(x), this))
-          case 3 =>
-            if (rnd.nextInt(2) == 1)
-              otherEntities += ((map._2(x)._1, map._2(x)._2 + 1) -> new Shopkeeper(
-                (map._2(x)._1, map._2(x)._2 + 1),
-                this
-              ))
-            else
-              otherEntities += ((map._2(x)._1, map._2(x)._2 + 1) -> new Computer(
-                (map._2(x)._1, map._2(x)._2 + 1),
-                this
-              ))
-          case 4 => ()
-        }
-        rnd.nextInt(12) match {
-          case 0 =>
-            addItem(new ItemEntity(map._2(x), this, new Morphin), map._2(x))
-          case 1 =>
-            addItem(new ItemEntity(map._2(x), this, new IronHelmet), map._2(x))
-          case 2 =>
-            addItem(new ItemEntity(map._2(x), this, new LaserChainsaw), map._2(x))
-          case 3 =>
-            addItem(new ItemEntity(map._2(x), this, new Bandage), map._2(x))
-          case 4 =>
-            addItem(new ItemEntity(map._2(x), this, new ArmCannon), map._2(x))
-          case 5 =>
-            addItem(new ItemEntity(map._2(x), this, new CowboyHat), map._2(x))
-          case 6 =>
-            addItem(new ItemEntity(map._2(x), this, new HeavyJacket), map._2(x))
-          case 7 =>
-            addItem(new ItemEntity(map._2(x), this, new Knuckles), map._2(x))
-          case 8 =>
-            addItem(new ItemEntity(map._2(x), this, new LaserEyes), map._2(x))
-          case 9 =>
-            addItem(new ItemEntity(map._2(x), this, new Grenade), map._2(x))
-          case 10 =>
-            addItem(new ItemEntity(map._2(x), this, new EMPGrenade), map._2(x))
-          case 11 => ()
-        }
-      }
-    }
-    // End of test
   }
 
   def inGrid(pos: (Int, Int)): Boolean =

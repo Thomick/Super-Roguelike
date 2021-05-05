@@ -49,8 +49,9 @@ class RoomParser(depth : Int) extends RegexParsers {
     return c
   }
 
-  def readGrid(entrance : Direction.Value, it : Iterator[String]): Unit = {
+  def readGrid(entrance : Option[Direction.Value], it : Iterator[String]): Unit = {
     val height = it.next().toInt
+    val width = it.next().toInt
     var entrancex = 0
     var entrancey = 0
     val northx = it.next().toInt
@@ -62,26 +63,32 @@ class RoomParser(depth : Int) extends RegexParsers {
     val westx = it.next().toInt
     val westy = it.next().toInt
     entrance match {
-      case Direction.Up => entrancex = northx
-                           entrancey = northy
-                           room.addPossibleExit(Direction.Right,(eastx,easty))
-                           room.addPossibleExit(Direction.Down,(southx,southy))
-                           room.addPossibleExit(Direction.Left,(westx,westy))
-      case Direction.Right => entrancex = eastx
-                              entrancey = easty
-                              room.addPossibleExit(Direction.Up,(northx,northy))
-                              room.addPossibleExit(Direction.Down,(southx,southy))
-                              room.addPossibleExit(Direction.Left,(westx,westy))
-      case Direction.Down => entrancex = southx
-                             entrancey = southy
-                             room.addPossibleExit(Direction.Up,(northx,northy))
-                             room.addPossibleExit(Direction.Right,(eastx,easty))
-                             room.addPossibleExit(Direction.Left,(westx,westy))
-      case Direction.Left => entrancex = westx
-                             entrancey = westy
-                             room.addPossibleExit(Direction.Up,(northx,northy))
-                             room.addPossibleExit(Direction.Right,(eastx,easty))
-                             room.addPossibleExit(Direction.Down,(southx,southy))
+      case None => entrancex = width / 2
+                   entrancey = height / 2
+                   room.addPossibleExit(Direction.Up,(northx,northy))
+                   room.addPossibleExit(Direction.Right,(eastx,easty))
+                   room.addPossibleExit(Direction.Down,(southx,southy))
+                   room.addPossibleExit(Direction.Left,(westx,westy))
+      case Some(Direction.Up) => entrancex = northx
+                                 entrancey = northy
+                                 room.addPossibleExit(Direction.Right,(eastx,easty))
+                                 room.addPossibleExit(Direction.Down,(southx,southy))
+                                 room.addPossibleExit(Direction.Left,(westx,westy))
+      case Some(Direction.Right) => entrancex = eastx
+                                    entrancey = easty
+                                    room.addPossibleExit(Direction.Up,(northx,northy))
+                                    room.addPossibleExit(Direction.Down,(southx,southy))
+                                    room.addPossibleExit(Direction.Left,(westx,westy))
+      case Some(Direction.Down) => entrancex = southx
+                                   entrancey = southy
+                                   room.addPossibleExit(Direction.Up,(northx,northy))
+                                   room.addPossibleExit(Direction.Right,(eastx,easty))
+                                   room.addPossibleExit(Direction.Left,(westx,westy))
+      case Some(Direction.Left) => entrancex = westx
+                                   entrancey = westy
+                                   room.addPossibleExit(Direction.Up,(northx,northy))
+                                   room.addPossibleExit(Direction.Right,(eastx,easty))
+                                   room.addPossibleExit(Direction.Down,(southx,southy))
     }
     var line = ""
     for (i <- height-1 to 0 by -1) {
@@ -147,7 +154,7 @@ class RoomParser(depth : Int) extends RegexParsers {
   def expr: Parser[Any] = number ~ (specialCharacter ^^ { _.apply(0) } ) ~ element ^^ {
     case n ~ c ~ e => 
       var shuffledVector = rnd.shuffle(speChar(c))
-      speChar(c) = shuffledVector.zipWithIndex.filter(x => x._2 >= n).map(x=>x._1).toVector // We remove the n first element of the vector
+      speChar(c) = shuffledVector.patch(0,Nil,n)
       for (i <- 0 to n-1) {
         e.apply(shuffledVector(i))
       }
@@ -157,11 +164,10 @@ class RoomParser(depth : Int) extends RegexParsers {
 
 }
 object RoomGenerator {
-  def generateSimpleRoom(depth: Int, entrance: Direction.Value): Room = {
+  def generateRoom(depth: Int, entrance: Option[Direction.Value], filename: String): Room = {
     val parser = new RoomParser(depth)
-    val file = Source.fromFile("src/main/resources/room.des")
+    val file = Source.fromFile("src/main/resources/" + filename + ".des")
     val fileIt = file.getLines()
-    file.close
     val nbPresetRooms = fileIt.next().toInt
     val rnd = new Random
     val selectedPreset = rnd.nextInt(nbPresetRooms)
@@ -175,6 +181,7 @@ object RoomGenerator {
     if (fileIt.next() == "%") {
       parser.parseAll(parser.program, fileIt.next())
     }
+    file.close
     return parser.room
   }
   
