@@ -65,30 +65,30 @@ class RoomParser(depth : Int) extends RegexParsers {
     entrance match {
       case None => entrancex = width / 2
                    entrancey = height / 2
-                   room.addPossibleExit(Direction.Up,(northx,northy))
-                   room.addPossibleExit(Direction.Right,(eastx,easty))
-                   room.addPossibleExit(Direction.Down,(southx,southy))
-                   room.addPossibleExit(Direction.Left,(westx,westy))
+                   room.addPossibleExit(Direction.Up,(northx-entrancex,northy-entrancey))
+                   room.addPossibleExit(Direction.Right,(eastx-entrancex,easty-entrancey))
+                   room.addPossibleExit(Direction.Down,(southx-entrancex,southy-entrancey))
+                   room.addPossibleExit(Direction.Left,(westx-entrancex,westy-entrancey))
       case Some(Direction.Up) => entrancex = northx
                                  entrancey = northy
-                                 room.addPossibleExit(Direction.Right,(eastx,easty))
-                                 room.addPossibleExit(Direction.Down,(southx,southy))
-                                 room.addPossibleExit(Direction.Left,(westx,westy))
+                                 room.addPossibleExit(Direction.Right,(eastx-entrancex,easty-entrancey))
+                                 room.addPossibleExit(Direction.Down,(southx-entrancex,southy-entrancey))
+                                 room.addPossibleExit(Direction.Left,(westx-entrancex,westy-entrancey))
       case Some(Direction.Right) => entrancex = eastx
                                     entrancey = easty
-                                    room.addPossibleExit(Direction.Up,(northx,northy))
-                                    room.addPossibleExit(Direction.Down,(southx,southy))
-                                    room.addPossibleExit(Direction.Left,(westx,westy))
+                                    room.addPossibleExit(Direction.Up,(northx-entrancex,northy-entrancey))
+                                    room.addPossibleExit(Direction.Down,(southx-entrancex,southy-entrancey))
+                                    room.addPossibleExit(Direction.Left,(westx-entrancex,westy-entrancey))
       case Some(Direction.Down) => entrancex = southx
                                    entrancey = southy
-                                   room.addPossibleExit(Direction.Up,(northx,northy))
-                                   room.addPossibleExit(Direction.Right,(eastx,easty))
-                                   room.addPossibleExit(Direction.Left,(westx,westy))
+                                   room.addPossibleExit(Direction.Up,(northx-entrancex,northy-entrancey))
+                                   room.addPossibleExit(Direction.Right,(eastx-entrancex,easty-entrancey))
+                                   room.addPossibleExit(Direction.Left,(westx-entrancex,westy-entrancey))
       case Some(Direction.Left) => entrancex = westx
                                    entrancey = westy
-                                   room.addPossibleExit(Direction.Up,(northx,northy))
-                                   room.addPossibleExit(Direction.Right,(eastx,easty))
-                                   room.addPossibleExit(Direction.Down,(southx,southy))
+                                   room.addPossibleExit(Direction.Up,(northx-entrancex,northy-entrancey))
+                                   room.addPossibleExit(Direction.Right,(eastx-entrancex,easty-entrancey))
+                                   room.addPossibleExit(Direction.Down,(southx-entrancex,southy-entrancey))
     }
     var line = ""
     for (i <- height-1 to 0 by -1) {
@@ -97,7 +97,7 @@ class RoomParser(depth : Int) extends RegexParsers {
         line.apply(j) match {
           case '#' => room.addWallcell(i-entrancex, j-entrancey)
           case '.' => room.addFloorcell(i-entrancex, j-entrancey)
-          case ' ' | '\n' | '\\' => ()
+          case ' ' | '\n' | '/' => ()
           case _ => speChar.get(line.apply(j)) match {
             case Some(v) => speChar(line.apply(j)) = (i-entrancex, j-entrancey) +: v
             case None => speChar(line.apply(j)) = Vector[(Int, Int)]((i-entrancex, j-entrancey))
@@ -113,7 +113,7 @@ class RoomParser(depth : Int) extends RegexParsers {
     }
   }
 
-  val constant = "[1-9][0-9]+".r 
+  val constant = "[1-9][0-9]*".r 
 
   val specialCharacter = "[a-z]|[A-Z]".r
 
@@ -178,9 +178,10 @@ object RoomGenerator {
       }
     }
     parser.readGrid(entrance,fileIt)
-    if (fileIt.next() == "%") {
+    if ((fileIt.next())(0) == '%') {
       parser.parseAll(parser.program, fileIt.next())
     }
+    parser.fillRemainingSpeChar()
     file.close
     return parser.room
   }

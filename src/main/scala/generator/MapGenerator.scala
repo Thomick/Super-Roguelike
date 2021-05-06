@@ -55,6 +55,35 @@ object MapGenerator {
     var unusedExit = Vector[(Direction.Value,(Int,Int))]()
 
     def addRoom(room: Room, entrance: (Int,Int)): Boolean = {
+      for (p <- room.floorcells) {
+        if (0 > entrance._1+p._1 || entrance._1+p._1 >= map_width || 0 > entrance._2+p._2 || entrance._2+p._2 >= map_height || modified(entrance._1+p._1)(entrance._2+p._2)) {
+          return false
+        }
+      }
+
+      for (p <- room.wallcells) {
+        if (0 > entrance._1+p._1 || entrance._1+p._1 >= map_width || 0 > entrance._2+p._2 || entrance._2+p._2 >= map_height || modified(entrance._1+p._1)(entrance._2+p._2)) {
+          return false
+        }
+      }
+
+      for ((f,p) <- room.entities) {
+        if (0 > entrance._1+p._1 || entrance._1+p._1 >= map_width || 0 > entrance._2+p._2 || entrance._2+p._2 >= map_height || modified(entrance._1+p._1)(entrance._2+p._2)) {
+          return false
+        }
+      }
+
+      for ((item,p) <- room.items) {
+        if (0 > entrance._1+p._1 || entrance._1+p._1 >= map_width || 0 > entrance._2+p._2 || entrance._2+p._2 >= map_height || modified(entrance._1+p._1)(entrance._2+p._2)) {
+          return false
+        }
+      }
+
+      for ((d,p) <- room.possibleExits) {
+        if (0 > entrance._1+p._1 || entrance._1+p._1 >= map_width || 0 > entrance._2+p._2 || entrance._2+p._2 >= map_height || modified(entrance._1+p._1)(entrance._2+p._2)) {
+          return false
+        }
+      }
 
       for (p <- room.floorcells) {
         board.grid(entrance._1+p._1)(entrance._2+p._2) = new FloorTile
@@ -79,7 +108,6 @@ object MapGenerator {
 
       for ((d,p) <- room.possibleExits) {
         unusedExit = (d,(entrance._1+p._1,entrance._2+p._2)) +: unusedExit 
-        modified(entrance._1+p._1)(entrance._2+p._2) = true
       }
       return true
     }
@@ -91,7 +119,7 @@ object MapGenerator {
     } else {
       board.grid(startingPos._1)(startingPos._2) = new BrokenElevator
     }
-    while (nbRooms <= max_rooms || unusedExit.length != 0) {
+    while (nbRooms <= max_rooms && unusedExit.length != 0) {
       var valid = true
       val i = rnd.nextInt(unusedExit.length)
       val direction = unusedExit(i)._1
@@ -111,7 +139,7 @@ object MapGenerator {
       }
       val newEntrance = (position._1+4*delta._1,position._2+4*delta._2)
       for (j <- 1 to 3) {
-        if (modified(position._1+j*delta._1)(position._2+j*delta._2)) {
+        if (0 > position._1+j*delta._1 || position._1+j*delta._1 >= map_width || 0 > position._2+j*delta._2 || position._2+j*delta._2 >= map_height || modified(position._1+j*delta._1)(position._2+j*delta._2)) {
           valid = false
         }
       }
