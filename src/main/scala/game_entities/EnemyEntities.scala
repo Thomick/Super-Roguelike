@@ -6,6 +6,12 @@ import scala.math.{pow, sqrt}
 import map_objects._
 
 trait Enemy extends Character with AIControlled {
+  // If the attack is successful then the function [effect] is called with a probability [effectProb] (for example to aplly a status to the target)
+  var effect: Character => Unit = c => ()
+  val effectProb: Double = 0.5
+
+  private val rnd = new Random
+
   def action(c: GameEntity): Unit =
     if (c.isInstanceOf[Player])
       attack(c.asInstanceOf[Player])
@@ -14,6 +20,16 @@ trait Enemy extends Character with AIControlled {
     super.die()
     board.addItem(new ItemEntity(pos, board, new Money((new Random).nextInt(2) + 1)), pos)
   }
+
+  override def attack(c: Character): Boolean = {
+    if (super.attack(c)) {
+      if (rnd.nextDouble() < effectProb)
+        effect(c)
+      return true
+    }
+    return false
+  }
+
 }
 
 // Melee enemy behaviour : walk toward the player and tries to hit it

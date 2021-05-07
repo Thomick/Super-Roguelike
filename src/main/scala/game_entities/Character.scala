@@ -80,20 +80,21 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   def action(c: GameEntity): Unit
 
   // Hand to hand attack based on the character stats
-  def attack(c: Character): Unit = {
+  def attack(c: Character): Boolean = {
     val rnd = new Random
     val damage = max(0, (getAtt() * (1 + 3 * rnd.nextGaussian())).toInt)
-    giveDamage(damage, c)
+    return giveDamage(damage, c)
   }
 
   // Deals damage to another character (used to write logs about the attack and to test if there remains enemies after the attack)
-  def giveDamage(damage: Int, c: Character): Unit = {
+  def giveDamage(damage: Int, c: Character): Boolean = {
     val (effectiveDamage, died) = c.takeDamage(this, damage)
     writeLog(name + " deals " + effectiveDamage.toString + " damage to " + c.name)
     if (died) {
       writeLog(name + " kills " + c.name)
       getXp(c.level)
     }
+    return effectiveDamage > 0 && !died
   }
 
   // Compute effective damage based on defense stat and apply them to this character

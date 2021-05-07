@@ -18,7 +18,7 @@ class Game(val logger: Logger) extends Serializable {
 
   def goUp(): Unit = {
     currentLevel.saveLastPosition
-    levels(currentLocation-1).updatePlayer(currentLevel.playerEntity)
+    levels(currentLocation - 1).updatePlayer(currentLevel.playerEntity)
     currentLocation -= 1
   }
 
@@ -27,12 +27,11 @@ class Game(val logger: Logger) extends Serializable {
       newLevel(currentLevel.activateElevator)
     }
     currentLevel.saveLastPosition
-    levels(currentLocation+1).updatePlayer(currentLevel.playerEntity)
+    levels(currentLocation + 1).updatePlayer(currentLevel.playerEntity)
     currentLocation += 1
   }
 
-
-  def newLevel(elevatorOnStartingPostition : Boolean): Unit = {
+  def newLevel(elevatorOnStartingPostition: Boolean): Unit = {
     val board = new GameBoard(30, 30, logger)
     board.newMap(50, 5, 7, board.size_x, board.size_y, elevatorOnStartingPostition)
     levels = levels :+ board
