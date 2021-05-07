@@ -21,10 +21,7 @@ trait MeleeEnemy extends Character with Enemy {
 
   override def act(visible: Boolean): Unit = {
     updateStatus()
-    nextCellTowards match {
-      case None       => ()
-      case Some(cell) => move(cell)
-    }
+    moveTowards()
   }
 }
 
@@ -39,10 +36,27 @@ trait RangedEnemy extends Character with Enemy {
   }
 }
 
-class Robot(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with MeleeEnemy with Humanoid {
+trait MovingRangedEnemy extends Character with RangedEnemy {
+  val minRange: Int
+  override def act(visible: Boolean): Unit = {
+    updateStatus()
+    val dst = sqrt(pow(pos._1 - board.playerEntity.pos._1, 2) + pow(pos._2 - board.playerEntity.pos._2, 2))
+
+    if (dst <= minRange)
+      moveAway()
+    else if (visible && dst < range)
+      attack(board.playerEntity.asInstanceOf[Player])
+    else
+      moveTowards()
+  }
+}
+
+class Robot(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with MovingRangedEnemy with Humanoid {
   val name = "Robot"
   val description = "An angry robot"
   override val image = "src/main/resources/robot2.png"
+  val minRange: Int = 2
+  val range: Int = 5
 }
 
 class Dog(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with MeleeEnemy {

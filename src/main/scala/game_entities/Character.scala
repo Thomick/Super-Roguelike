@@ -134,22 +134,25 @@ trait AIControlled extends Character {
   def activate(): Unit = active = true
   def deactivate(): Unit = active = false
 
-  // Get the next move toward the player
-  def nextCellTowards(): Option[(Int, Int)] = {
+  // Move toward the player
+  def moveTowards(): Unit = {
     val sPath = board.shortestPath(pos, board.playerEntity.pos)
     sPath match {
-      case Some(path) => Some(path(1))
+      case Some(path) => move(path(1))
       case None       => None
     }
   }
 
-  // Get the next move away from the player
-  def nextCellAway(): Option[(Int, Int)] = {
+  // Move away from the player
+  def moveAway(): Unit = {
     val sPath = board.shortestPath(pos, board.playerEntity.pos)
     sPath match {
       case Some(path) =>
-        board.oppositeFreeCell(pos, path(1))
-      case None => None
+        board.oppositeFreeCell(pos, path(1)) match {
+          case None    => ()
+          case Some(p) => move(p)
+        }
+      case None => ()
     }
   }
 
@@ -165,9 +168,6 @@ trait FleeingWhenDamaged extends Character with AIControlled {
 
   override def act(visible: Boolean): Unit = {
     updateStatus()
-    nextCellAway match {
-      case None       => ()
-      case Some(cell) => move(cell)
-    }
+    moveAway()
   }
 }
