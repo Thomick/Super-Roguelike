@@ -1,12 +1,16 @@
 package generator
 
-import scala.math.{min, max}
+import scala.math.{min, max, pow, sqrt}
 import scala.util.Random
 import items._
 import game_entities._
 import map_objects._
 
 object MapGenerator {
+
+  def distance( pos1: (Int,Int), pos2: (Int, Int)): Double = {
+    sqrt(pow(pos1._1 - pos2._1,2) + pow(pos1._2 - pos2._2,2))
+  }
 
   def make_empty(
       map_width: Int,
@@ -51,8 +55,47 @@ object MapGenerator {
     var nbRooms = 1
     board.grid = make_empty(map_width, map_height, new WallTile)
     val modified = make_empty_boolean(map_width, map_height)
-    var startingPos = (map_width /3 + rnd.nextInt(map_width/3), map_height /3 + rnd.nextInt(map_height/3))
+    var startingPos = ((map_width /3) + rnd.nextInt(map_width/3), (map_height /3) + rnd.nextInt(map_height/3))
     var unusedExit = Vector[(Direction.Value,(Int,Int))]()
+
+    def addLPath(pos1: (Int,Int), pos2: (Int,Int), dir1: Direction.Value, dir2: Direction.Value): Boolean = {
+      val delta1 = Direction.giveVector(dir1)
+      val delta2 = Direction.giveVector(dir2)
+      val diff1 = {
+        if (delta1._2 == 0) {
+          pos2._1 - pos1._1
+        } else {
+          pos2._2 - pos1._2
+        }
+      }
+      val diff2 = {
+        if (delta1._2 == 0) {
+          pos2._2 - pos1._2
+        } else {
+          pos2._1 - pos1._1
+        }
+      }
+      for (i <- 1 to diff1) {
+        if (0 > pos1._1+i*delta1._1 || pos1._1+i*delta1._1 >= map_width || 0 > pos1._2+i*delta1._2 || pos1._2+i*delta1._2 >= map_height || modified(pos1._1+i*delta1._1)(pos1._2+i*delta1._2)) {
+          return false
+        }
+      }
+      for (i <- 1 to diff2-1) {
+        if (0 > pos2._1+i*delta2._1 || pos2._1+i*delta2._1 >= map_width || 0 > pos2._2+i*delta1._2 || pos2._2+i*delta2._2 >= map_height || modified(pos2._1+i*delta2._1)(pos2._2+i*delta2._2)) {
+          return false
+        }
+      }
+      for (i <- 1 to diff1) {
+        board.grid(pos1._1+i*delta1._1)(pos1._2+i*delta1._2)= new FloorTile
+        modified(pos1._1+i*delta1._1)(pos1._2+i*delta1._2) = true
+      }
+      for (i <- 1 to diff2-1) {
+        board.grid(pos2._1+i*delta2._1)(pos2._2+i*delta2._2)= new FloorTile
+        modified(pos2._1+i*delta2._1)(pos2._2+i*delta2._2) = true
+      }
+      return true
+    }
+      
 
     def addZPath(pos1: (Int,Int), pos2: (Int,Int), dir: Direction.Value, check: Boolean): Boolean = {
       val delta1 = Direction.giveVector(dir)
@@ -202,7 +245,29 @@ object MapGenerator {
         addZPath(position,newEntrance,direction,false)
         nbRooms = nbRooms + 1
       } else {
-        
+        var exitPosition = (0,0)
+        var exitDir = Direction.Nop
+        var exitIndex = 0
+        for ( ((d,p),index) <- unusedExit.zipWithIndex ) {
+          if ( distance(p,position) < 5 && d != direction) {
+            exitIndex = index
+            exitPosition = p
+            exitDir = d
+          }
+        }
+        if (exitDir != Direction.Nop) {
+          if (exitDir == Direction.oppositeDirection(direction)) {
+            valid = addZPath(position,exitPosition,direction,true)
+            if (valid) addZPath(position,exitPosition,direction,false)
+          } else {
+            valid = addLPath(position,exitPosition,direction,exitDir)
+          }
+          if (valid) {
+            board.grid(position._1)(position._2) = new Door
+            board.grid(exitPosition._1)(exitPosition._2) = new Door
+            unusedExit = unusedExit.patch(exitIndex,Nil,1)
+          }
+        }
       }
     }
     return (nbRooms >= min_rooms)
