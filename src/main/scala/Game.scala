@@ -34,7 +34,7 @@ class Game(val logger: Logger) extends Serializable {
 
   def newLevel(elevatorOnStartingPostition : Boolean): Unit = {
     val board = new GameBoard(90, 90, logger)
-    board.newMap(10, 10, board.size_x, board.size_y, 1, elevatorOnStartingPostition)
+    board.newMap(50, 20, board.size_x, board.size_y, 1, elevatorOnStartingPostition)
     levels = levels :+ board
   }
 }

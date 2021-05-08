@@ -54,6 +54,71 @@ object MapGenerator {
     var startingPos = (map_width /3 + rnd.nextInt(map_width/3), map_height /3 + rnd.nextInt(map_height/3))
     var unusedExit = Vector[(Direction.Value,(Int,Int))]()
 
+    def addZPath(pos1: (Int,Int), pos2: (Int,Int), dir: Direction.Value, check: Boolean): Boolean = {
+      val delta1 = Direction.giveVector(dir)
+      val diffp = {
+        if (delta1._2 == 0) {
+          pos2._1 - pos1._1
+        } else {
+          pos2._2 - pos1._2
+        }
+      }
+      val diffs = {
+        if (delta1._2 == 0) {
+          pos2._2 - pos1._2
+        } else {
+          pos2._1 - pos1._1
+        }
+      }
+      val delta2 = {
+        if (delta1._1 == 0) {
+          if (diffs >= 0) {
+            (1,0)
+          } else {
+            (-1,0)
+          }
+        } else {
+          if (diffs >= 0) {
+            (0,1)
+          } else {
+            (0,-1)
+          }
+        }
+      }
+      val midPath = Math.abs(diffp)/2
+      for (i <- 1 to midPath) {
+        if (check) {
+          if (0 > pos1._1+i*delta1._1 || pos1._1+i*delta1._1 >= map_width || 0 > pos1._2+i*delta1._2 || pos1._2+i*delta1._2 >= map_height || modified(pos1._1+i*delta1._1)(pos1._2+i*delta1._2)) {
+            return false
+          }
+        } else {
+          board.grid(pos1._1+i*delta1._1)(pos1._2+i*delta1._2)= new FloorTile
+          modified(pos1._1+i*delta1._1)(pos1._2+i*delta1._2) = true
+        }
+      }
+      for (i <- 1 to Math.abs(diffs)) {
+        if (check) {
+          if (0 > pos1._1+midPath*delta1._1+i*delta2._1 || pos1._1+midPath*delta1._1+i*delta2._1 >= map_width || 0 > pos1._2+midPath*delta1._2+i*delta2._2 || pos1._2+midPath*delta1._2+i*delta2._2 >= map_height || modified(pos1._1+midPath*delta1._1+i*delta2._1)(pos1._2+midPath*delta1._2+i*delta2._2)) {
+            return false
+          }
+        } else {
+          board.grid(pos1._1+midPath*delta1._1+i*delta2._1)(pos1._2+midPath*delta1._2+i*delta2._2) = new FloorTile
+          modified(pos1._1+midPath*delta1._1+i*delta2._1)(pos1._2+midPath*delta1._2+i*delta2._2) = true
+        }
+      }
+      for (i <- midPath to Math.abs(diffp)-1) {
+        if (check) {
+          if (0 > pos1._1+i*delta1._1+Math.abs(diffs)*delta2._1 || pos1._1+i*delta1._1+Math.abs(diffs)*delta2._1 >= map_width || 0 > pos1._2+i*delta1._2+Math.abs(diffs)*delta2._2 || pos1._2+i*delta1._2+Math.abs(diffs)*delta2._2 >= map_height || modified(pos1._1+i*delta1._1+Math.abs(diffs)*delta2._1)(pos1._2+i*delta1._2+Math.abs(diffs)*delta2._2)) {
+            return false
+          }
+        } else {
+          board.grid(pos1._1+i*delta1._1+Math.abs(diffs)*delta2._1)(pos1._2+i*delta1._2+Math.abs(diffs)*delta2._2) = new FloorTile
+          modified(pos1._1+i*delta1._1+Math.abs(diffs)*delta2._1)(pos1._2+i*delta1._2+Math.abs(diffs)*delta2._2) = true
+        }
+      }
+      return true
+    }
+
     def addRoom(room: Room, entrance: (Int,Int)): Boolean = {
       for (p <- room.floorcells) {
         if (0 > entrance._1+p._1 || entrance._1+p._1 >= map_width || 0 > entrance._2+p._2 || entrance._2+p._2 >= map_height || modified(entrance._1+p._1)(entrance._2+p._2)) {
@@ -125,32 +190,19 @@ object MapGenerator {
       val direction = unusedExit(i)._1
       val position = unusedExit(i)._2
       unusedExit = unusedExit.patch(i,Nil,1)
-      val delta = direction match {
-        case Direction.Up => (0,1)
-        case Direction.Right => (1,0)
-        case Direction.Down => (0,-1)
-        case Direction.Left => (-1,0)
-      }
-      val newDir = direction match {
-        case Direction.Up => Direction.Down
-        case Direction.Right => Direction.Left
-        case Direction.Down => Direction.Up
-        case Direction.Left => Direction.Right
-      }
-      val newEntrance = (position._1+4*delta._1,position._2+4*delta._2)
-      for (j <- 1 to 3) {
-        if (0 > position._1+j*delta._1 || position._1+j*delta._1 >= map_width || 0 > position._2+j*delta._2 || position._2+j*delta._2 >= map_height || modified(position._1+j*delta._1)(position._2+j*delta._2)) {
-          valid = false
-        }
-      }
+      val delta1 = Direction.giveVector(direction)
+      val delta2 = Direction.giveVector(Direction.turnClockwise(Direction.turnClockwise(direction)))
+      val newDir = Direction.oppositeDirection(direction)
+
+      val newEntrance = (position._1+(3+rnd.nextInt(3))*delta1._1+(4-rnd.nextInt(9))*delta2._1,position._2+(3+rnd.nextInt(3))*delta1._2+(4-rnd.nextInt(9))*delta2._2)
+      valid = addZPath(position,newEntrance,direction,true)
       if (valid && addRoom(RoomGenerator.generateRoom(depth,Some(newDir),"room"),newEntrance)) {
         board.grid(position._1)(position._2) = new Door
         board.grid(newEntrance._1)(newEntrance._2) = new Door
-        for (j <- 1 to 3) {
-          board.grid(position._1+j*delta._1)(position._2+j*delta._2) = new FloorTile
-          modified(position._1+j*delta._1)(position._2+j*delta._2) = true
-        }
+        addZPath(position,newEntrance,direction,false)
         nbRooms = nbRooms + 1
+      } else {
+        
       }
     }
     return (nbRooms >= min_rooms)

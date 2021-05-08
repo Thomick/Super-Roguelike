@@ -21,6 +21,20 @@ object Direction extends Enumeration {
     }
   }
 
+  def giveVector(direction: Direction.Value): (Int,Int) = {
+    direction match {
+      case Direction.Nop => (0,0)
+      case Direction.Up => (0,1)
+      case Direction.Right => (1,0)
+      case Direction.Down => (0,-1)
+      case Direction.Left => (-1,0)
+      case Direction.UpLeft => (-1,-1)
+      case Direction.UpRight => (1,-1)
+      case Direction.DownLeft => (-1,1) 
+      case Direction.DownRight => (1,1)
+    }
+  }
+
   def turnClockwise(dir: Direction.Value): Direction.Value = {
     dir match {
       case Direction.Nop       => Direction.Nop
@@ -46,6 +60,20 @@ object Direction extends Enumeration {
       case Direction.UpRight   => Direction.Up
       case Direction.DownLeft  => Direction.Down
       case Direction.DownRight => Direction.Right
+    }
+  }
+
+  def oppositeDirection(dir: Direction.Value): Direction.Value = {
+    dir match {
+      case Direction.Nop       => Direction.Nop
+      case Direction.Left      => Direction.Right
+      case Direction.Right     => Direction.Left
+      case Direction.Up        => Direction.Down
+      case Direction.Down      => Direction.Up
+      case Direction.UpLeft    => Direction.DownRight
+      case Direction.UpRight   => Direction.DownLeft
+      case Direction.DownLeft  => Direction.UpRight
+      case Direction.DownRight => Direction.UpLeft
     }
   }
 
