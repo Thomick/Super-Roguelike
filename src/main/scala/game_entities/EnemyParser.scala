@@ -5,19 +5,23 @@ import scala.collection.mutable._
 import scala.util.Random
 import scala.io.Source
 import items._
+import map_objects.GameBoard
 
-class EnemyConstructor {
-  var name = ""
+class EnemyConstructor(baseEnemy: Enemy) {
   var reward = 0
   var effects = new ArrayBuffer[String]
   var lootableItems = new ArrayBuffer[AbstractItem]
+
+  def build(): Enemy = {
+    baseEnemy.lootableItems = lootableItems
+    return baseEnemy
+  }
 }
 
-class EnemyParser(depth: Int) extends RegexParsers {
+class EnemyParser(depth: Int, init_pos: (Int, Int), board: GameBoard) extends RegexParsers {
 
   val rnd = new Random
 
-  val constructor = new EnemyConstructor
   val constant = "(-|+)?[1-9][0-9]+".r
 
   val char = "\"(\\w|\\d| |\\.)*\"".r
@@ -50,9 +54,53 @@ class EnemyParser(depth: Int) extends RegexParsers {
     builtItem
   }
 
-  def modifier: Parser[Any] = "named" ~ text | "loots " ~ item
-  def modifierSequence: Parser[Any] = modifier ~ opt(conjunction ~ modifierSequence)
+  def modifier: Parser[EnemyConstructor => Unit] = "loots" ~> item ^^ { case item =>
+    constructor => constructor.lootableItems += item
+  }
 
-  def description: Parser[Any] = text ~ " of type " ~ enemyType ~ opt(conjunction ~ modifierSequence)
+  def modifierSequence: Parser[List[EnemyConstructor => Unit]] = modifier ~ ((conjunction ~> modifier) *) ^^ {
+    case x ~ y => x :: y
+  }
+
+  def description: Parser[Enemy] = text ~ ("of type" ~> enemyType) ~ opt(conjunction ~> modifierSequence) ^^ {
+    case name ~ et ~ modifiers =>
+      val constructor = et match {
+        case "robot"  => new EnemyConstructor(new Robot(init_pos, board, name))
+        case "turret" => new EnemyConstructor(new Turret(init_pos, board, name))
+        case "dog"    => new EnemyConstructor(new Dog(init_pos, board, name))
+      }
+      modifiers match {
+        case None       => ()
+        case Some(mods) => mods.foreach(f => f(constructor))
+      }
+      constructor.build()
+  }
+
+}
+
+object EnemyGenerator {
+  def generateEnemy(filename: String, depth: Int, init_pos: (Int, Int), board: GameBoard): Enemy = {
+    val parser = new EnemyParser(depth, init_pos, board)
+    val file = Source.fromFile("src/main/resources/enemies/" + filename + ".des")
+    val fileIt = file.getLines()
+    val nbPreset = fileIt.count(_ == "$")
+    val rnd = new Random
+    val selectedPreset = rnd.nextInt(nbPreset) + 1
+    var count = 0
+    while (count <= selectedPreset) {
+      if (fileIt.next() == "$") {
+        count = count + 1
+      }
+    }
+    val enemyDescription = new StringBuilder
+    var lastStr = fileIt.next()
+    while (lastStr != "%") {
+      enemyDescription ++= " " + lastStr
+      lastStr = fileIt.next()
+    }
+    val enemy = parser.parseAll(parser.description, enemyDescription.toString()).get
+    file.close
+    return enemy
+  }
 
 }

@@ -4,11 +4,18 @@ import scala.util.Random
 import items.Money
 import scala.math.{pow, sqrt}
 import map_objects._
+import items.AbstractItem
+import scala.collection.mutable._
 
-trait Enemy extends Character with AIControlled {
+abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Unnamed")
+    extends Character(init_pos, b)
+    with AIControlled {
+  val name = init_name
+
   // If the attack is successful then the function [effect] is called with a probability [effectProb] (for example to aplly a status to the target)
   var effect: Character => Unit = c => ()
-  val effectProb: Double = 0.5
+  var effectProb: Double = 0.5
+  var lootableItems = new ArrayBuffer[AbstractItem]
 
   private val rnd = new Random
 
@@ -33,7 +40,7 @@ trait Enemy extends Character with AIControlled {
 }
 
 // Melee enemy behaviour : walk toward the player and tries to hit it
-trait MeleeEnemy extends Character with Enemy {
+trait MeleeEnemy extends Enemy {
 
   override def act(visible: Boolean): Unit = {
     updateStatus()
@@ -41,7 +48,7 @@ trait MeleeEnemy extends Character with Enemy {
   }
 }
 
-trait RangedEnemy extends Character with Enemy {
+trait RangedEnemy extends Enemy {
   val range: Int
   override def act(visible: Boolean): Unit = {
     updateStatus()
@@ -52,7 +59,7 @@ trait RangedEnemy extends Character with Enemy {
   }
 }
 
-trait MovingRangedEnemy extends Character with RangedEnemy {
+trait MovingRangedEnemy extends RangedEnemy {
   val minRange: Int
   override def act(visible: Boolean): Unit = {
     updateStatus()
@@ -67,22 +74,24 @@ trait MovingRangedEnemy extends Character with RangedEnemy {
   }
 }
 
-class Robot(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with MovingRangedEnemy with Humanoid {
-  val name = "Robot"
+class Robot(init_pos: (Int, Int), b: GameBoard, name: String = "Robot")
+    extends Enemy(init_pos, b, name)
+    with MovingRangedEnemy
+    with Humanoid {
   val description = "An angry robot"
   override val image = "src/main/resources/robot2.png"
   val minRange: Int = 2
   val range: Int = 5
 }
 
-class Dog(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with MeleeEnemy {
-  val name = "Dog"
+class Dog(init_pos: (Int, Int), b: GameBoard, name: String = "Dog") extends Enemy(init_pos, b, name) with MeleeEnemy {
   val description = "An angry robot dog"
   override val image = "src/main/resources/dog1.png"
 }
 
-class Turret(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with RangedEnemy {
-  val name = "Turret"
+class Turret(init_pos: (Int, Int), b: GameBoard, name: String = "Turret")
+    extends Enemy(init_pos, b, name)
+    with RangedEnemy {
   val description = ""
   val range = 5
   override val image = "src/main/resources/turret.png"
