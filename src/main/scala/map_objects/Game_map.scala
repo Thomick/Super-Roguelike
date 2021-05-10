@@ -73,14 +73,9 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
         grid(map._2(x)._1)(map._2(x)._2) = new DownElevator
         otherEntities += (map._2(x) -> new Lock(map._2(x), this))
       } else {
-        rnd.nextInt(5) match {
-          case 0 =>
-            otherEntities += (map._2(x) -> new Robot(map._2(x), this) {
-              effect = (c => c.statusList += new BleedingStatus(10))
-            })
-          case 1 => otherEntities += (map._2(x) -> new Dog(map._2(x), this))
-          case 2 => otherEntities += (map._2(x) -> new Turret(map._2(x), this))
-          case 3 =>
+        rnd.nextInt(3) match {
+          case 0 => otherEntities += (map._2(x) -> EnemyGenerator.generateEnemy("normal", 1, map._2(x), this))
+          case 1 =>
             if (rnd.nextInt(2) == 1)
               otherEntities += ((map._2(x)._1, map._2(x)._2 + 1) -> new Shopkeeper(
                 (map._2(x)._1, map._2(x)._2 + 1),
@@ -91,7 +86,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
                 (map._2(x)._1, map._2(x)._2 + 1),
                 this
               ))
-          case 4 => ()
+          case 2 => ()
         }
         rnd.nextInt(12) match {
           case 0 =>

@@ -26,6 +26,8 @@ abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Un
   override def die: Unit = {
     super.die()
     board.addItem(new ItemEntity(pos, board, new Money((new Random).nextInt(2) + 1)), pos)
+    if (lootableItems.length > 0)
+      board.addItem(new ItemEntity(pos, board, lootableItems(0)), pos)
   }
 
   override def attack(c: Character): Boolean = {

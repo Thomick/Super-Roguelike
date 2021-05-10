@@ -22,7 +22,7 @@ class EnemyParser(depth: Int, init_pos: (Int, Int), board: GameBoard) extends Re
 
   val rnd = new Random
 
-  val constant = "(-|+)?[1-9][0-9]+".r
+  val constant = "(-|\\+)?[1-9][0-9]+".r
 
   val char = "\"(\\w|\\d| |\\.)*\"".r
 
@@ -81,13 +81,13 @@ class EnemyParser(depth: Int, init_pos: (Int, Int), board: GameBoard) extends Re
 object EnemyGenerator {
   def generateEnemy(filename: String, depth: Int, init_pos: (Int, Int), board: GameBoard): Enemy = {
     val parser = new EnemyParser(depth, init_pos, board)
-    val file = Source.fromFile("src/main/resources/enemies/" + filename + ".des")
+    val file = Source.fromFile("src/main/resources/enemies/normal.edf")
     val fileIt = file.getLines()
-    val nbPreset = fileIt.count(_ == "$")
+    val nbPreset = 1
     val rnd = new Random
     val selectedPreset = rnd.nextInt(nbPreset) + 1
     var count = 0
-    while (count <= selectedPreset) {
+    while (count < selectedPreset) {
       if (fileIt.next() == "$") {
         count = count + 1
       }
@@ -98,7 +98,7 @@ object EnemyGenerator {
       enemyDescription ++= " " + lastStr
       lastStr = fileIt.next()
     }
-    val enemy = parser.parseAll(parser.description, enemyDescription.toString()).get
+    val enemy = parser.parse(parser.description, enemyDescription.toString()).get
     file.close
     return enemy
   }
