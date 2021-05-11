@@ -16,6 +16,7 @@ abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Un
   var effect: Character => Unit = c => ()
   var effectProb: Double = 0.5
   var lootableItems = new ArrayBuffer[(AbstractItem, Double)]
+  var reward = 0
 
   private val rnd = new Random
 
@@ -25,7 +26,7 @@ abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Un
 
   override def die: Unit = {
     super.die()
-    board.addItem(new ItemEntity(pos, board, new Money((new Random).nextInt(2) + 1)), pos)
+    board.addItem(new ItemEntity(pos, board, new Money(reward)), pos)
     val rnd = new Random
     val s = rnd.nextDouble()
     var i = 0

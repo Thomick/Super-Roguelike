@@ -6,16 +6,20 @@ import scala.util.Random
 import scala.io.Source
 import items._
 import map_objects.GameBoard
+import scala.collection.immutable
+import scala.math.max
 
 class EnemyConstructor(baseEnemy: Enemy) {
   var reward = 0
   var effects = new ArrayBuffer[String]
   val lootableItems = new ArrayBuffer[(AbstractItem, Int)]
   var totalWeight = 0
+  val rnd = new Random
 
   def build(): Enemy = {
     if (totalWeight > 0)
       lootableItems.foreach(t => baseEnemy.lootableItems += ((t._1, t._2.toDouble / totalWeight)))
+    baseEnemy.reward = max(0, reward + rnd.nextInt(6) - 3)
     return baseEnemy
   }
 
@@ -70,9 +74,11 @@ class EnemyParser(depth: Int, init_pos: (Int, Int), board: GameBoard) extends Re
       (Some(builtItem), w)
   }
 
-  def modifier: Parser[EnemyConstructor => Unit] = "loots" ~> rep1sep(item, "or") ^^ { case items =>
-    constructor => items.foreach((a => constructor.addItem(a._1, a._2)))
-  }
+  def modifier: Parser[EnemyConstructor => Unit] =
+    ("loots" ~> rep1sep(item, "or") ^^ { case items =>
+      constructor: EnemyConstructor => items.foreach((a => constructor.addItem(a._1, a._2)))
+    })
+      .|("reward" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.reward += n })
 
   def description: Parser[Enemy] = text ~ ("of type" ~> enemyType) ~ ("and" ~> repsep(modifier, "and")) ^^ {
     case name ~ et ~ modifiers =>

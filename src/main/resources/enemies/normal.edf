@@ -1,6 +1,7 @@
 $
 "Angry robot" of type robot
-and loots  armcannon +1 with weight 1 
-        or armcannon 2 with weight 3 
-        or nothing with weight 5
+    and loots  armcannon +1 with weight 1 
+            or armcannon 2 with weight 3 
+            or nothing with weight 5
+    and reward 10
 %
