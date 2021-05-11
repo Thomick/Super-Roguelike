@@ -15,7 +15,7 @@ abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Un
   // If the attack is successful then the function [effect] is called with a probability [effectProb] (for example to aplly a status to the target)
   var effect: Character => Unit = c => ()
   var effectProb: Double = 0.5
-  var lootableItems = new ArrayBuffer[AbstractItem]
+  var lootableItems = new ArrayBuffer[(AbstractItem, Double)]
 
   private val rnd = new Random
 
@@ -26,8 +26,19 @@ abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Un
   override def die: Unit = {
     super.die()
     board.addItem(new ItemEntity(pos, board, new Money((new Random).nextInt(2) + 1)), pos)
-    if (lootableItems.length > 0)
-      board.addItem(new ItemEntity(pos, board, lootableItems(0)), pos)
+    val rnd = new Random
+    val s = rnd.nextDouble()
+    var i = 0
+    var acc: Double = 0
+    var looted = false
+    while (lootableItems.length > i && !looted) {
+      acc += lootableItems(i)._2
+      if (acc > s) {
+        board.addItem(new ItemEntity(pos, board, lootableItems(i)._1), pos)
+        looted = true
+      }
+      i += 1
+    }
   }
 
   override def attack(c: Character): Boolean = {
