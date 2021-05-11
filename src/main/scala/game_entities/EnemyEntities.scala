@@ -77,13 +77,13 @@ trait MovingRangedEnemy extends RangedEnemy {
   override def act(visible: Boolean): Unit = {
     updateStatus()
     val dst = sqrt(pow(pos._1 - board.playerEntity.pos._1, 2) + pow(pos._2 - board.playerEntity.pos._2, 2))
-
+    val oldPos = pos
     if (dst <= minRange)
       moveAway()
-    else if (visible && dst < range)
-      attack(board.playerEntity.asInstanceOf[Player])
-    else
+    else if (!visible || dst > range)
       moveTowards()
+    if (oldPos == pos && visible && dst <= range)
+      attack(board.playerEntity.asInstanceOf[Player])
   }
 }
 
