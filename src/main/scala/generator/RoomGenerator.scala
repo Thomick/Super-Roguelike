@@ -12,6 +12,8 @@ import map_objects._
 class Room {
   var floorcells = Vector[(Int, Int)]()
   var wallcells = Vector[(Int, Int)]()
+  var levers = Vector[(Int,Int)]()
+  var lockedDoors = Vector[(Int,Int)]()
   var entities = Vector[(((Int,Int),GameBoard)=>GameEntity, (Int,Int))]()
   var items = Vector[(AbstractItem, (Int, Int))]()
   var possibleExits = Vector[(Direction.Value,(Int,Int))]()
@@ -22,6 +24,14 @@ class Room {
 
   def addWallcell(pos : (Int,Int)): Unit = {
     wallcells = pos +: wallcells
+  }
+
+  def addLever(pos : (Int,Int)): Unit = {
+    levers = pos +: levers
+  }
+
+  def addLockedDoor(pos : (Int,Int)): Unit = {
+    lockedDoors = pos +: lockedDoors
   }
 
   def addEntity(pos : (Int,Int), entity : ((Int,Int),GameBoard)=>GameEntity): Unit = {
@@ -49,58 +59,61 @@ class RoomParser(depth : Int) extends RegexParsers {
     return c
   }
 
-  def readGrid(entrance : Option[Direction.Value], it : Iterator[String]): Unit = {
-    val height = it.next().toInt
-    val width = it.next().toInt
-    var entrancex = 0
-    var entrancey = 0
-    val northx = it.next().toInt
-    val northy = it.next().toInt
-    val eastx = it.next().toInt
-    val easty = it.next().toInt
-    val southx = it.next().toInt
-    val southy = it.next().toInt
-    val westx = it.next().toInt
-    val westy = it.next().toInt
-    entrance match {
-      case None => entrancex = width / 2
-                   entrancey = height / 2
-                   room.addPossibleExit(Direction.Up,(northx-entrancex,northy-entrancey))
-                   room.addPossibleExit(Direction.Right,(eastx-entrancex,easty-entrancey))
-                   room.addPossibleExit(Direction.Down,(southx-entrancex,southy-entrancey))
-                   room.addPossibleExit(Direction.Left,(westx-entrancex,westy-entrancey))
-      case Some(Direction.Up) => entrancex = northx
-                                 entrancey = northy
-                                 room.addPossibleExit(Direction.Right,(eastx-entrancex,easty-entrancey))
-                                 room.addPossibleExit(Direction.Down,(southx-entrancex,southy-entrancey))
-                                 room.addPossibleExit(Direction.Left,(westx-entrancex,westy-entrancey))
-      case Some(Direction.Right) => entrancex = eastx
-                                    entrancey = easty
-                                    room.addPossibleExit(Direction.Up,(northx-entrancex,northy-entrancey))
-                                    room.addPossibleExit(Direction.Down,(southx-entrancex,southy-entrancey))
-                                    room.addPossibleExit(Direction.Left,(westx-entrancex,westy-entrancey))
-      case Some(Direction.Down) => entrancex = southx
-                                   entrancey = southy
-                                   room.addPossibleExit(Direction.Up,(northx-entrancex,northy-entrancey))
-                                   room.addPossibleExit(Direction.Right,(eastx-entrancex,easty-entrancey))
-                                   room.addPossibleExit(Direction.Left,(westx-entrancex,westy-entrancey))
-      case Some(Direction.Left) => entrancex = westx
-                                   entrancey = westy
-                                   room.addPossibleExit(Direction.Up,(northx-entrancex,northy-entrancey))
-                                   room.addPossibleExit(Direction.Right,(eastx-entrancex,easty-entrancey))
-                                   room.addPossibleExit(Direction.Down,(southx-entrancex,southy-entrancey))
+  def sub2D(pos1: (Int,Int), pos2: (Int,Int)): (Int,Int) = (pos1._1 - pos2._1, pos1._2 - pos2._2)
+
+  def readGrid(entrance : Direction.Value, it : Iterator[String]): Unit = {
+    var line = it.next()
+    var temp = line.substring(7).split(",")
+    val width = temp(0).toInt
+    val height = temp(1).toInt
+    var entrancepos = (width/2,height/2)
+    var entrancex = width/2
+    var entrancey = height/2
+    var initialDirection = Direction.Nop
+    var exit = Vector[(Direction.Value,(Int,Int))]()
+    line = it.next()
+    while (!(line == "%")) {
+      temp = line.substring(4).split(",")
+      line.apply(0) match {
+        case 'N' => if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
+                      initialDirection = Direction.Up
+                      entrancepos = Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance)
+                    } else { 
+                      room.addPossibleExit(Direction.turnBasis(initialDirection,Direction.Up,entrance),sub2D(Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance),entrancepos))
+                    }
+        case 'E' => if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
+                      initialDirection = Direction.Right
+                      entrancepos = Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance)
+                    } else { 
+                      room.addPossibleExit(Direction.turnBasis(initialDirection,Direction.Right,entrance),sub2D(Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance),entrancepos))
+                    }
+        case 'S' => if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
+                      initialDirection = Direction.Down
+                      entrancepos = Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance)
+                    } else { 
+                      room.addPossibleExit(Direction.turnBasis(initialDirection,Direction.Down,entrance),sub2D(Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance),entrancepos))
+                    }
+        case 'W' => if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
+                      initialDirection = Direction.Left
+                      entrancepos = Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance)
+                    } else { 
+                      room.addPossibleExit(Direction.turnBasis(initialDirection,Direction.Left,entrance),sub2D(Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance),entrancepos))
+                    }
+        case _ => ()
+      }
+      line = it.next()
     }
-    var line = ""
-    for (i <- height-1 to 0 by -1) {
+    for (i <- width-1 to 0 by -1) {
       line = it.next()
       for (j<- 0 to line.length -1) {
+        val relativepos = sub2D(Direction.turnBasisVector(initialDirection,(i,j),entrance),entrancepos)
         line.apply(j) match {
-          case '#' => room.addWallcell(i-entrancex, j-entrancey)
-          case '.' => room.addFloorcell(i-entrancex, j-entrancey)
+          case '#' => room.addWallcell(relativepos._1,relativepos._2)
+          case '.' => room.addFloorcell(relativepos._1,relativepos._2)
           case ' ' | '\n' | '/' => ()
           case _ => speChar.get(line.apply(j)) match {
-            case Some(v) => speChar(line.apply(j)) = (i-entrancex, j-entrancey) +: v
-            case None => speChar(line.apply(j)) = Vector[(Int, Int)]((i-entrancex, j-entrancey))
+            case Some(v) => speChar(line.apply(j)) = relativepos +: v
+            case None => speChar(line.apply(j)) = Vector[(Int, Int)](relativepos)
           }
         }
       }
@@ -121,7 +134,7 @@ class RoomParser(depth : Int) extends RegexParsers {
 
   def conjunction: Parser[Any] = "and"
 
-  def element: Parser[((Int,Int))=>Unit] = character | item | ("wall" ^^ {s => p => room.addWallcell(p)})
+  def element: Parser[((Int,Int))=>Unit] = character | item | ("wall" ^^ {s => p => room.addWallcell(p)}) | ("lever" ^^ {s => p => room.addLever(p)}) | ("lockedDoor" ^^ {s => p => room.addLockedDoor(p)})
 
   def enemyType: Parser[Any] = "robot" | "turret" | "dog"
 
@@ -164,9 +177,9 @@ class RoomParser(depth : Int) extends RegexParsers {
 
 }
 object RoomGenerator {
-  def generateRoom(depth: Int, entrance: Option[Direction.Value], filename: String): Room = {
+  def generateRoom(depth: Int, entrance: Direction.Value, filename: String): Room = {
     val parser = new RoomParser(depth)
-    val file = Source.fromFile("src/main/resources/" + filename + ".des")
+    val file = Source.fromFile("src/main/resources/" + filename + ".rdf")
     val fileIt = file.getLines()
     val nbPresetRooms = fileIt.next().toInt
     val rnd = new Random

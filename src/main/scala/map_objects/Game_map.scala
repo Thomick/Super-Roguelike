@@ -49,7 +49,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
     while (!foundValidMap) {
       otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
       itemEntities = new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
-      foundValidMap = MapGenerator.make_map(
+      foundValidMap = MapGenerator.make_map_interior(
         max_rooms,
         min_rooms,
         map_width,

@@ -62,6 +62,26 @@ object Direction extends Enumeration {
       case Direction.DownRight => Direction.Right
     }
   }
+  
+  def turnBasis(dir1: Direction.Value, dir2: Direction.Value, dir3: Direction.Value): Direction.Value = {//Turn the basis formed by dir1 and dir2 such that dir1 is aligned with dir3 and return the new direction of dir2. If dir1 and dir3 are equal to Direction.Nop, returns dir2
+    var dir1modified = dir1
+    var dir2modified = dir2
+    while (dir1modified != dir3) {
+      dir1modified = turnClockwise(dir1modified)
+      dir2modified = turnClockwise(dir2modified)
+    }
+    return dir2modified
+  }
+
+  def turnBasisVector(dir1: Direction.Value, v: (Int,Int), dir3: Direction.Value): (Int,Int) = {
+    var dir1modified = dir1
+    var vmodified = v
+    while (dir1modified != dir3) {
+      dir1modified = turnClockwise(turnClockwise(dir1modified))
+      vmodified = (vmodified._2,-vmodified._1)
+    }
+    return vmodified
+  }
 
   def oppositeDirection(dir: Direction.Value): Direction.Value = {
     dir match {

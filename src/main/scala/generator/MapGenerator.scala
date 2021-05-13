@@ -42,7 +42,7 @@ object MapGenerator {
     return grid
   }
 
-  def make_map(
+  def make_map_interior(
       max_rooms: Int,
       min_rooms: Int,
       map_width: Int,
@@ -57,6 +57,7 @@ object MapGenerator {
     val modified = make_empty_boolean(map_width, map_height)
     var startingPos = ((map_width /3) + rnd.nextInt(map_width/3), (map_height /3) + rnd.nextInt(map_height/3))
     var unusedExit = Vector[(Direction.Value,(Int,Int))]()
+    var levers = Vector[(Int,Int)]()
 
     def addLPath(pos1: (Int,Int), pos2: (Int,Int), dir1: Direction.Value, dir2: Direction.Value): Boolean = {
       val delta1 = Direction.giveVector(dir1)
@@ -175,6 +176,18 @@ object MapGenerator {
         }
       }
 
+      for (p <- room.lockedDoors) {
+        if (0 > entrance._1+p._1 || entrance._1+p._1 >= map_width || 0 > entrance._2+p._2 || entrance._2+p._2 >= map_height || modified(entrance._1+p._1)(entrance._2+p._2)) {
+          return false
+        }
+      }
+
+      for (p <- room.levers) {
+        if (0 > entrance._1+p._1 || entrance._1+p._1 >= map_width || 0 > entrance._2+p._2 || entrance._2+p._2 >= map_height || modified(entrance._1+p._1)(entrance._2+p._2)) {
+          return false
+        }
+      }
+
       for ((f,p) <- room.entities) {
         if (0 > entrance._1+p._1 || entrance._1+p._1 >= map_width || 0 > entrance._2+p._2 || entrance._2+p._2 >= map_height || modified(entrance._1+p._1)(entrance._2+p._2)) {
           return false
@@ -202,6 +215,19 @@ object MapGenerator {
         modified(entrance._1+p._1)(entrance._2+p._2) = true
       }
 
+      for (p <- room.levers) {
+        //val lever = new Lever((entrance._1+p._1,entrance._2+p._2),board)
+        board.grid(entrance._1+p._1)(entrance._2+p._2) = new FloorTile
+        //board.otherEntities += ((entrance._1+p._1,entrance._2+p._2) -> lever)
+        modified(entrance._1+p._1)(entrance._2+p._2) = true
+        //levers = lever +: levers
+      }
+
+      for (p <- room.lockedDoors) {
+        board.grid(entrance._1+p._1)(entrance._2+p._2) = new Door
+        modified(entrance._1+p._1)(entrance._2+p._2) = true
+      }
+
       for ((f,p) <- room.entities) {
         board.grid(entrance._1+p._1)(entrance._2+p._2) = new FloorTile
         board.otherEntities += ((entrance._1+p._1,entrance._2+p._2) -> f((entrance._1+p._1,entrance._2+p._2),board))
@@ -221,7 +247,7 @@ object MapGenerator {
     }
     board.lastPosition = startingPos
     board.playerEntity.pos = startingPos
-    addRoom(RoomGenerator.generateRoom(depth,None,"arrival"),startingPos)
+    addRoom(RoomGenerator.generateRoom(depth,Direction.Nop,"arrival"),startingPos)
     if (elevatorOnStartingPosition) {
       board.grid(startingPos._1)(startingPos._2) = new UpElevator
     } else {
@@ -236,10 +262,15 @@ object MapGenerator {
       val delta1 = Direction.giveVector(direction)
       val delta2 = Direction.giveVector(Direction.turnClockwise(Direction.turnClockwise(direction)))
       val newDir = Direction.oppositeDirection(direction)
-
-      val newEntrance = (position._1+(3+rnd.nextInt(3))*delta1._1+(4-rnd.nextInt(9))*delta2._1,position._2+(3+rnd.nextInt(3))*delta1._2+(4-rnd.nextInt(9))*delta2._2)
+      var file = "room"
+      rnd.nextInt(5) match {
+        case 0 => file = "lever"
+        case 1 => if (levers.size != 0) file = "test"
+        case _ => ()
+      }
+      val newEntrance = (position._1+(1+rnd.nextInt(6))*delta1._1+(4-rnd.nextInt(9))*delta2._1,position._2+(1+rnd.nextInt(6))*delta1._2+(4-rnd.nextInt(9))*delta2._2)
       valid = addZPath(position,newEntrance,direction,true)
-      if (valid && addRoom(RoomGenerator.generateRoom(depth,Some(newDir),"room"),newEntrance)) {
+      if (valid && addRoom(RoomGenerator.generateRoom(depth,newDir,file),newEntrance)) {
         board.grid(position._1)(position._2) = new Door
         board.grid(newEntrance._1)(newEntrance._2) = new Door
         addZPath(position,newEntrance,direction,false)
