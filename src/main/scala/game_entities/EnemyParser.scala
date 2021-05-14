@@ -15,11 +15,18 @@ class EnemyConstructor(baseEnemy: Enemy) {
   val lootableItems = new ArrayBuffer[(AbstractItem, Int)]
   var totalWeight = 0
   val rnd = new Random
+  var bonusDef = 0
+  var bonusAtt = 0
+  var bonusHealth = 0
 
   def build(): Enemy = {
     if (totalWeight > 0)
       lootableItems.foreach(t => baseEnemy.lootableItems += ((t._1, t._2.toDouble / totalWeight)))
     baseEnemy.reward = max(0, reward + rnd.nextInt(6) - 3)
+    baseEnemy.baseAtt = baseEnemy.baseAtt + bonusAtt
+    baseEnemy.baseDef = baseEnemy.baseDef + bonusDef
+    baseEnemy.baseMaxHP = baseEnemy.baseMaxHP + bonusHealth
+    baseEnemy.currentHP = baseEnemy.baseMaxHP
     return baseEnemy
   }
 
@@ -74,6 +81,11 @@ class EnemyParser(depth: Int, init_pos: (Int, Int), board: GameBoard) extends Re
       (Some(builtItem), w)
   }
 
+  def statModifier: Parser[EnemyConstructor => Unit] =
+    ("strength" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.bonusAtt += n })
+      .|("defense" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.bonusDef += n })
+      .|("health" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.bonusHealth += n })
+
   def modifier: Parser[EnemyConstructor => Unit] =
     ("loots" ~> rep1sep(item, "or") ^^ { case items =>
       constructor: EnemyConstructor => items.foreach((a => constructor.addItem(a._1, a._2)))
@@ -96,9 +108,12 @@ class EnemyParser(depth: Int, init_pos: (Int, Int), board: GameBoard) extends Re
 object EnemyGenerator {
   def generateEnemy(filename: String, depth: Int, init_pos: (Int, Int), board: GameBoard): Enemy = {
     val parser = new EnemyParser(depth, init_pos, board)
-    val file = Source.fromFile("src/main/resources/enemies/normal.edf")
+    var file = Source.fromFile(s"src/main/resources/enemies/${filename}.edf")
+    val countIt = file.getLines()
+    val nbPreset = countIt.count(_ == "$")
+    file.close
+    file = Source.fromFile(s"src/main/resources/enemies/${filename}.edf")
     val fileIt = file.getLines()
-    val nbPreset = 1
     val rnd = new Random
     val selectedPreset = rnd.nextInt(nbPreset) + 1
     var count = 0

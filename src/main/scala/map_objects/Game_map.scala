@@ -115,6 +115,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
         }
       }
     }
+    
     val exterminationTrigger = new DeathTrigger {
       actions += new LogAction("There are no more enemies on this floor.", logger)
     }
