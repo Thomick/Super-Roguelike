@@ -74,7 +74,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
         otherEntities += (map._2(x) -> new Lock(map._2(x), this))
       } else {
         rnd.nextInt(3) match {
-          case 0 => otherEntities += (map._2(x) -> EnemyGenerator.generateEnemy("normal", 0, map._2(x), this))
+          case 0 => otherEntities += (map._2(x) -> EnemyGenerator.generateEnemy("normal", 0)(map._2(x), this))
           case 1 =>
             if (rnd.nextInt(2) == 1)
               otherEntities += ((map._2(x)._1, map._2(x)._2 + 1) -> new Shopkeeper(
@@ -115,7 +115,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
         }
       }
     }
-    
+
     val exterminationTrigger = new DeathTrigger {
       actions += new LogAction("There are no more enemies on this floor.", logger)
     }

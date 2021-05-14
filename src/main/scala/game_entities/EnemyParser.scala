@@ -9,9 +9,9 @@ import map_objects.GameBoard
 import scala.collection.immutable
 import scala.math.max
 
-class EnemyConstructor(baseEnemy: Enemy) {
+class EnemyConstructor(enemyType: String, name: String) {
   var reward = 0
-  var effects = new ArrayBuffer[String]
+  var effects = new ArrayBuffer[(String, Int, Int)]
   val lootableItems = new ArrayBuffer[(AbstractItem, Int)]
   var totalWeight = 0
   val rnd = new Random
@@ -19,7 +19,12 @@ class EnemyConstructor(baseEnemy: Enemy) {
   var bonusAtt = 0
   var bonusHealth = 0
 
-  def build(): Enemy = {
+  def build(init_pos: (Int, Int), board: GameBoard): Enemy = {
+    val baseEnemy = enemyType match {
+      case "robot"  => new Robot(init_pos, board, name)
+      case "turret" => new Turret(init_pos, board, name)
+      case "dog"    => new Dog(init_pos, board, name)
+    }
     if (totalWeight > 0)
       lootableItems.foreach(t => baseEnemy.lootableItems += ((t._1, t._2.toDouble / totalWeight)))
     baseEnemy.reward = max(0, reward + rnd.nextInt(6) - 3)
@@ -39,7 +44,7 @@ class EnemyConstructor(baseEnemy: Enemy) {
   }
 }
 
-class EnemyParser(depth: Int, init_pos: (Int, Int), board: GameBoard) extends RegexParsers {
+class EnemyParser(depth: Int) extends RegexParsers {
 
   val rnd = new Random
 
@@ -54,7 +59,7 @@ class EnemyParser(depth: Int, init_pos: (Int, Int), board: GameBoard) extends Re
     str.substring(1, str.length - 1)
   })
 
-  def enemyType: Parser[Any] = "robot" | "turret" | "dog"
+  def enemyType: Parser[String] = "robot" | "turret" | "dog"
 
   def itemType: Parser[Any] = "armcannon" | "nothing"
 
@@ -91,23 +96,20 @@ class EnemyParser(depth: Int, init_pos: (Int, Int), board: GameBoard) extends Re
       constructor: EnemyConstructor => items.foreach((a => constructor.addItem(a._1, a._2)))
     })
       .|("reward" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.reward += n })
+      .|("with" ~> statModifier ^^ { case s => s })
 
-  def description: Parser[Enemy] = text ~ ("of type" ~> enemyType) ~ ("and" ~> repsep(modifier, "and")) ^^ {
-    case name ~ et ~ modifiers =>
-      val constructor = et match {
-        case "robot"  => new EnemyConstructor(new Robot(init_pos, board, name))
-        case "turret" => new EnemyConstructor(new Turret(init_pos, board, name))
-        case "dog"    => new EnemyConstructor(new Dog(init_pos, board, name))
-      }
+  def description: Parser[((Int, Int), GameBoard) => Enemy] =
+    text ~ ("of type" ~> enemyType) ~ ("and" ~> repsep(modifier, "and")) ^^ { case name ~ et ~ modifiers =>
+      val constructor = new EnemyConstructor(et, name)
       modifiers.foreach(f => f(constructor))
-      constructor.build()
-  }
+      constructor.build
+    }
 
 }
 
 object EnemyGenerator {
-  def generateEnemy(filename: String, depth: Int, init_pos: (Int, Int), board: GameBoard): Enemy = {
-    val parser = new EnemyParser(depth, init_pos, board)
+  def generateEnemy(filename: String, depth: Int): ((Int, Int), GameBoard) => Enemy = {
+    val parser = new EnemyParser(depth)
     var file = Source.fromFile(s"src/main/resources/enemies/${filename}.edf")
     val countIt = file.getLines()
     val nbPreset = countIt.count(_ == "$")
