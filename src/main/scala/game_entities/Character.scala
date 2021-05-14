@@ -38,9 +38,11 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
     baseAtt = ((baseAtt) * 1.2).toInt + 1
     baseDef = ((baseDef) * 1.2).toInt + 1
     baseMaxHP = ((baseMaxHP) * 1.2).toInt + 1
+    currentHP = getMaxHP()
     level = level + 1
     xp = 0
     nextLevelCap = (nextLevelCap * 1.5).toInt
+    writeLog("You just leveled up. You feel stronger and your wounds are healed.")
   }
 
   def levelUp(n: Int): Unit = {

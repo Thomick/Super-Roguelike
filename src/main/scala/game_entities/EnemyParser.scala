@@ -18,6 +18,7 @@ class EnemyConstructor(enemyType: String, name: String) {
   var bonusDef = 0
   var bonusAtt = 0
   var bonusHealth = 0
+  var level = 0
 
   def build(init_pos: (Int, Int), board: GameBoard): Enemy = {
     val baseEnemy = enemyType match {
@@ -25,6 +26,7 @@ class EnemyConstructor(enemyType: String, name: String) {
       case "turret" => new Turret(init_pos, board, name)
       case "dog"    => new Dog(init_pos, board, name)
     }
+    baseEnemy.levelUp(level)
     if (totalWeight > 0)
       lootableItems.foreach(t => baseEnemy.lootableItems += ((t._1, t._2.toDouble / totalWeight)))
     baseEnemy.reward = max(0, reward + rnd.nextInt(6) - 3)
@@ -90,6 +92,7 @@ class EnemyParser(depth: Int) extends RegexParsers {
     ("strength" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.bonusAtt += n })
       .|("defense" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.bonusDef += n })
       .|("health" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.bonusHealth += n })
+      .|("level" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.level += n })
 
   def modifier: Parser[EnemyConstructor => Unit] =
     ("loots" ~> rep1sep(item, "or") ^^ { case items =>
@@ -101,6 +104,7 @@ class EnemyParser(depth: Int) extends RegexParsers {
   def description: Parser[((Int, Int), GameBoard) => Enemy] =
     text ~ ("of type" ~> enemyType) ~ ("and" ~> repsep(modifier, "and")) ^^ { case name ~ et ~ modifiers =>
       val constructor = new EnemyConstructor(et, name)
+      constructor.level = depth
       modifiers.foreach(f => f(constructor))
       constructor.build
     }
