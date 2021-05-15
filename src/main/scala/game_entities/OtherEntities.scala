@@ -85,9 +85,11 @@ class Lock(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) wi
 class Lever(init_pos: (Int, Int), b: GameBoard) extends GameEntity(init_pos, b) with map_objects.Activable {
   val name = "Lever"
   val description = "It should activate something."
+  image = "src/main/resources/entity_sprites/leveroff.png"
 
   override def interact(c: Character): Boolean = {
     activated = true
+    image = "src/main/resources/entity_sprites/leveron.png"
     true
   }
 }
