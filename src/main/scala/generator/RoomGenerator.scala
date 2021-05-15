@@ -12,192 +12,208 @@ import map_objects._
 class Room {
   var floorcells = Vector[(Int, Int)]()
   var wallcells = Vector[(Int, Int)]()
-  var levers = Vector[(Int,Int)]()
-  var lockedDoors = Vector[(Int,Int)]()
-  var locks = Vector[(Int,Int)]()
-  var elevator = Vector[(Int,Int)]()
-  var entities = Vector[(((Int,Int),GameBoard)=>GameEntity, (Int,Int))]()
+  var levers = Vector[(Int, Int)]()
+  var lockedDoors = Vector[(Int, Int)]()
+  var locks = Vector[(Int, Int)]()
+  var elevators = Vector[(Int, Int)]()
+  var entities = Vector[(((Int, Int), GameBoard) => GameEntity, (Int, Int))]()
   var items = Vector[(AbstractItem, (Int, Int))]()
-  var possibleExits = Vector[(Direction.Value,(Int,Int))]()
+  var possibleExits = Vector[(Direction.Value, (Int, Int))]()
 
-  def addFloorcell(pos : (Int,Int)): Unit = {
+  def addFloorcell(pos: (Int, Int)): Unit = {
     floorcells = pos +: floorcells
   }
 
-  def addWallcell(pos : (Int,Int)): Unit = {
+  def addWallcell(pos: (Int, Int)): Unit = {
     wallcells = pos +: wallcells
   }
 
-  def addLever(pos : (Int,Int)): Unit = {
+  def addLever(pos: (Int, Int)): Unit = {
     levers = pos +: levers
   }
 
-  def addLockedDoor(pos : (Int,Int)): Unit = {
+  def addLockedDoor(pos: (Int, Int)): Unit = {
     lockedDoors = pos +: lockedDoors
   }
 
-  def addLock(pos : (Int,Int)): Unit = {
+  def addLock(pos: (Int, Int)): Unit = {
     locks = pos +: locks
   }
 
-  def addElevator(pos : (Int,Int)): Unit = {
+  def addElevator(pos: (Int, Int)): Unit = {
     elevators = pos +: elevators
   }
 
-  def addEntity(pos : (Int,Int), entity : ((Int,Int),GameBoard)=>GameEntity): Unit = {
+  def addEntity(pos: (Int, Int), entity: ((Int, Int), GameBoard) => GameEntity): Unit = {
     entities = (entity, pos) +: entities
   }
 
-  def addItem(pos : (Int,Int), item : AbstractItem): Unit = {
+  def addItem(pos: (Int, Int), item: AbstractItem): Unit = {
     items = (item, pos) +: items
   }
 
-  def addPossibleExit(dir : Direction.Value, pos : (Int,Int)): Unit = {
-    possibleExits = (dir,pos) +: possibleExits
+  def addPossibleExit(dir: Direction.Value, pos: (Int, Int)): Unit = {
+    possibleExits = (dir, pos) +: possibleExits
   }
 }
 
-class RoomParser(depth : Int) extends RegexParsers {
+class RoomParser(depth: Int) extends RegexParsers {
   val room = new Room
 
   val speChar = Map[Char, Vector[(Int, Int)]]()
 
   val rnd = new Random
 
-  def levelUp(c : Character, n : Int): Character = {
+  def levelUp(c: Character, n: Int): Character = {
     c.levelUp(n)
     return c
   }
 
-  def sub2D(pos1: (Int,Int), pos2: (Int,Int)): (Int,Int) = (pos1._1 - pos2._1, pos1._2 - pos2._2)
+  def sub2D(pos1: (Int, Int), pos2: (Int, Int)): (Int, Int) = (pos1._1 - pos2._1, pos1._2 - pos2._2)
 
-  def readGrid(entrance : Direction.Value, it : Iterator[String]): Unit = {
+  def readGrid(entrance: Direction.Value, it: Iterator[String]): Unit = {
     var line = it.next()
     var temp = line.substring(7).split(",")
     val width = temp(0).toInt
     val height = temp(1).toInt
-    var entrancepos = (width/2,height/2)
+    var entrancepos = (width / 2, height / 2)
     var initialDirection = Direction.Nop
-    var exit = Vector[(Direction.Value,(Int,Int))]()
+    var exit = Vector[(Direction.Value, (Int, Int))]()
     line = it.next()
     while (!(line == "%")) {
       temp = line.substring(4).split(",")
       line.apply(0) match {
-        case 'N' => if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
-                      initialDirection = Direction.Up
-                      entrancepos = Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance)
-                    } else { 
-                      room.addPossibleExit(Direction.turnBasis(initialDirection,Direction.Up,entrance),sub2D(Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance),entrancepos))
-                    }
-        case 'E' => if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
-                      initialDirection = Direction.Right
-                      entrancepos = Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance)
-                    } else { 
-                      room.addPossibleExit(Direction.turnBasis(initialDirection,Direction.Right,entrance),sub2D(Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance),entrancepos))
-                    }
-        case 'S' => if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
-                      initialDirection = Direction.Down
-                      entrancepos = Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance)
-                    } else { 
-                      room.addPossibleExit(Direction.turnBasis(initialDirection,Direction.Down,entrance),sub2D(Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance),entrancepos))
-                    }
-        case 'W' => if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
-                      initialDirection = Direction.Left
-                      entrancepos = Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance)
-                    } else { 
-                      room.addPossibleExit(Direction.turnBasis(initialDirection,Direction.Left,entrance),sub2D(Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance),entrancepos))
-                    }
+        case 'N' =>
+          if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
+            initialDirection = Direction.Up
+            entrancepos = Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance)
+          } else {
+            room.addPossibleExit(
+              Direction.turnBasis(initialDirection, Direction.Up, entrance),
+              sub2D(Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance), entrancepos)
+            )
+          }
+        case 'E' =>
+          if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
+            initialDirection = Direction.Right
+            entrancepos = Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance)
+          } else {
+            room.addPossibleExit(
+              Direction.turnBasis(initialDirection, Direction.Right, entrance),
+              sub2D(Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance), entrancepos)
+            )
+          }
+        case 'S' =>
+          if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
+            initialDirection = Direction.Down
+            entrancepos = Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance)
+          } else {
+            room.addPossibleExit(
+              Direction.turnBasis(initialDirection, Direction.Down, entrance),
+              sub2D(Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance), entrancepos)
+            )
+          }
+        case 'W' =>
+          if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
+            initialDirection = Direction.Left
+            entrancepos = Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance)
+          } else {
+            room.addPossibleExit(
+              Direction.turnBasis(initialDirection, Direction.Left, entrance),
+              sub2D(Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance), entrancepos)
+            )
+          }
         case _ => ()
       }
       line = it.next()
     }
-    for (i <- height-1 to 0 by -1) {
+    for (i <- height - 1 to 0 by -1) {
       line = it.next()
-      for (j<- 0 to line.length -1) {
-        val relativepos = sub2D(Direction.turnBasisVector(initialDirection,(j,i),entrance),entrancepos)
+      for (j <- 0 to line.length - 1) {
+        val relativepos = sub2D(Direction.turnBasisVector(initialDirection, (j, i), entrance), entrancepos)
         line.apply(j) match {
-          case '#' => room.addWallcell(relativepos._1,relativepos._2)
-          case '.' => room.addFloorcell(relativepos._1,relativepos._2)
+          case '#'              => room.addWallcell(relativepos._1, relativepos._2)
+          case '.'              => room.addFloorcell(relativepos._1, relativepos._2)
           case ' ' | '\n' | '/' => ()
-          case _ => speChar.get(line.apply(j)) match {
-            case Some(v) => speChar(line.apply(j)) = relativepos +: v
-            case None => speChar(line.apply(j)) = Vector[(Int, Int)](relativepos)
-          }
+          case _ =>
+            speChar.get(line.apply(j)) match {
+              case Some(v) => speChar(line.apply(j)) = relativepos +: v
+              case None    => speChar(line.apply(j)) = Vector[(Int, Int)](relativepos)
+            }
         }
       }
     }
   }
 
   def fillRemainingSpeChar(): Unit = {
-    for(v <- speChar.values) {
+    for (v <- speChar.values) {
       v.foreach(room.addFloorcell)
     }
   }
 
-  val constant = "[1-9][0-9]*".r 
+  val constant = "[1-9][0-9]*".r
 
   val specialCharacter = "[a-z]|[A-Z]".r
 
-  def number: Parser[Int] = (constant ^^ {_.toInt}) | ("depth" ^^ { s => depth})
+  def number: Parser[Int] = (constant ^^ { _.toInt }) | ("depth" ^^ { s => depth })
 
   def conjunction: Parser[Any] = "and"
 
-  def element: Parser[((Int,Int))=>Unit] = character | item | ("wall" ^^ {s => p => room.addWallcell(p)}) | ("lever" ^^ {s => p => room.addLever(p)}) | ("lockedDoor" ^^ {s => p => room.addLockedDoor(p)}) | ("lock" ^^ {s => p => room.addLock(p)}) | ("elevator" ^^ {s => p => room.addElevator(p)})
+  def element: Parser[((Int, Int)) => Unit] = character | item | ("wall" ^^ { s => p => room.addWallcell(p) }) | ("lever" ^^ { s => p => room.addLever(p) }) | ("lockedDoor" ^^ { s => p => room.addLockedDoor(p) }) | ("lock" ^^ { s => p => room.addLock(p) }) | ("elevator" ^^ { s => p => room.addElevator(p) })
 
   def enemyType: Parser[Any] = "robot" | "turret" | "dog"
 
-  def enemy: Parser[((Int,Int))=>Unit] = number ~ opt(enemyType) ^^ {
+  def enemy: Parser[((Int, Int)) => Unit] = number ~ opt(enemyType) ^^ {
     case n ~ None =>
       rnd.nextInt(3) match {
-        case 0 => p => room.addEntity(p,(pos,b) => levelUp(new Robot(pos,b),n-1))
-        case 1 => p => room.addEntity(p,(pos,b) => levelUp(new Dog(pos,b),n-1))
-        case 2 => p => room.addEntity(p,(pos,b) => levelUp(new Turret(pos,b),n-1))
+        case 0 => p => room.addEntity(p, (pos, b) => levelUp(new Robot(pos, b), n - 1))
+        case 1 => p => room.addEntity(p, (pos, b) => levelUp(new Dog(pos, b), n - 1))
+        case 2 => p => room.addEntity(p, (pos, b) => levelUp(new Turret(pos, b), n - 1))
       }
-    case n ~ Some("robot") => p => room.addEntity(p,(pos,b) => levelUp(new Robot(pos,b),n-1))
-    case n ~ Some("dog") => p => room.addEntity(p,(pos,b) => levelUp(new Dog(pos,b),n-1))
-    case n ~ Some("turret") => p => room.addEntity(p,(pos,b) => levelUp(new Turret(pos,b),n-1) )
+    case n ~ Some("robot")  => p => room.addEntity(p, (pos, b) => levelUp(new Robot(pos, b), n - 1))
+    case n ~ Some("dog")    => p => room.addEntity(p, (pos, b) => levelUp(new Dog(pos, b), n - 1))
+    case n ~ Some("turret") => p => room.addEntity(p, (pos, b) => levelUp(new Turret(pos, b), n - 1))
   }
 
   def itemType: Parser[Any] = "armcannon" | "item"
 
-  def item: Parser[((Int,Int))=>Unit] = itemType ^^ {
-    case "morphin" => p => room.addItem(p,new Morphin)
-    case "ironhelmet" => p => room.addItem(p,new IronHelmet)
-    case "laserchainsaw" => p => room.addItem(p,new LaserChainsaw)
-    case "bandage" => p => room.addItem(p,new Bandage)
-    case "armcannon" => p => room.addItem(p,new ArmCannon)
-    case "lasereyes" => p => room.addItem(p,new LaserEyes)
-    case "cowboyhat" => p => room.addItem(p,new CowboyHat)
-    case "heavyjacket" => p => room.addItem(p,new HeavyJacket)
-    case "knuckles" => p => room.addItem(p,new Knuckles)
-    case "poweredhammer" => p => room.addItem(p,new PoweredHammer)
+  def item: Parser[((Int, Int)) => Unit] = itemType ^^ {
+    case "morphin"       => p => room.addItem(p, new Morphin)
+    case "ironhelmet"    => p => room.addItem(p, new IronHelmet)
+    case "laserchainsaw" => p => room.addItem(p, new LaserChainsaw)
+    case "bandage"       => p => room.addItem(p, new Bandage)
+    case "armcannon"     => p => room.addItem(p, new ArmCannon)
+    case "lasereyes"     => p => room.addItem(p, new LaserEyes)
+    case "cowboyhat"     => p => room.addItem(p, new CowboyHat)
+    case "heavyjacket"   => p => room.addItem(p, new HeavyJacket)
+    case "knuckles"      => p => room.addItem(p, new Knuckles)
+    case "poweredhammer" => p => room.addItem(p, new PoweredHammer)
     case _ =>
       rnd.nextInt(10) match {
-        case 0 => p => room.addItem(p,new Morphin)
-        case 1 => p => room.addItem(p,new IronHelmet)
-        case 2 => p => room.addItem(p,new LaserChainsaw)
-        case 3 => p => room.addItem(p,new Bandage)
-        case 4 => p => room.addItem(p,new ArmCannon)
-        case 5 => p => room.addItem(p,new LaserEyes)
-        case 6 => p => room.addItem(p,new CowboyHat)
-        case 7 => p => room.addItem(p,new HeavyJacket)
-        case 8 => p => room.addItem(p,new Knuckles)
-        case 9 => p => room.addItem(p,new PoweredHammer)
+        case 0 => p => room.addItem(p, new Morphin)
+        case 1 => p => room.addItem(p, new IronHelmet)
+        case 2 => p => room.addItem(p, new LaserChainsaw)
+        case 3 => p => room.addItem(p, new Bandage)
+        case 4 => p => room.addItem(p, new ArmCannon)
+        case 5 => p => room.addItem(p, new LaserEyes)
+        case 6 => p => room.addItem(p, new CowboyHat)
+        case 7 => p => room.addItem(p, new HeavyJacket)
+        case 8 => p => room.addItem(p, new Knuckles)
+        case 9 => p => room.addItem(p, new PoweredHammer)
       }
   }
 
-  def character: Parser[((Int,Int))=>Unit] = enemy  | ("vending machine" ^^ {s => p => room.addEntity(p,((pos,b)=> new Shopkeeper(pos,b)))}) | ("computer" ^^ {s => p => room.addEntity(p,(pos,b)=> new Computer(pos,b))})
+  def character: Parser[((Int, Int)) => Unit] = enemy | ("vending machine" ^^ { s => p => room.addEntity(p, ((pos, b) => new Shopkeeper(pos, b))) }) | ("computer" ^^ { s => p => room.addEntity(p, (pos, b) => new Computer(pos, b)) })
 
-  def expr: Parser[Any] = number ~ (specialCharacter ^^ { _.apply(0) } ) ~ element ^^ {
-    case n ~ c ~ e => 
-      var shuffledVector = rnd.shuffle(speChar(c))
-      speChar(c) = shuffledVector.patch(0,Nil,n)
-      for (i <- 0 to n-1) {
-        e.apply(shuffledVector(i))
-      }
+  def expr: Parser[Any] = number ~ (specialCharacter ^^ { _.apply(0) }) ~ element ^^ { case n ~ c ~ e =>
+    var shuffledVector = rnd.shuffle(speChar(c))
+    speChar(c) = shuffledVector.patch(0, Nil, n)
+    for (i <- 0 to n - 1) {
+      e.apply(shuffledVector(i))
+    }
   }
 
-  def program: Parser[Any] = expr ~opt(conjunction ~ program)
+  def program: Parser[Any] = expr ~ opt(conjunction ~ program)
 
 }
 object RoomGenerator {
@@ -214,7 +230,7 @@ object RoomGenerator {
         count = count + 1
       }
     }
-    parser.readGrid(entrance,fileIt)
+    parser.readGrid(entrance, fileIt)
     if ((fileIt.next())(0) == '%') {
       parser.parseAll(parser.program, fileIt.next())
     }
@@ -222,6 +238,5 @@ object RoomGenerator {
     file.close
     return parser.room
   }
-  
-}
 
+}

@@ -34,12 +34,23 @@ abstract class Status(duration: Int) {
 }
 
 // Effect : Lose some health points each turn
+class BurningStatus(duration: Int) extends Status(duration) {
+  val name = "Burning"
+  val effectDescription = "You lose health each turn"
+
+  override def applyEffect(results: StatusResults): Unit = {
+    results.healthModifier -= 3
+    super.applyEffect(results)
+  }
+}
+
+// Effect : Lose some health points each turn
 class BleedingStatus(duration: Int) extends Status(duration) {
   val name = "Bleeding"
   val effectDescription = "You lose health each turn"
 
   override def applyEffect(results: StatusResults): Unit = {
-    results.healthModifier -= 3
+    results.healthModifier -= 5
     super.applyEffect(results)
   }
 }

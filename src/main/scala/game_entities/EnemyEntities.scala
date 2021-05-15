@@ -13,8 +13,7 @@ abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Un
   val name = init_name
 
   // If the attack is successful then the function [effect] is called with a probability [effectProb] (for example to aplly a status to the target)
-  var effect: Character => Unit = c => ()
-  var effectProb: Double = 0.5
+  var effects = new ArrayBuffer[(String, Int, Double)]
   var lootableItems = new ArrayBuffer[(AbstractItem, Double)]
   var reward = 0
 
@@ -29,23 +28,34 @@ abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Un
     board.addItem(new ItemEntity(pos, board, new Money(reward)), pos)
     val rnd = new Random
     val s = rnd.nextDouble()
-    var i = 0
     var acc: Double = 0
-    var looted = false
-    while (lootableItems.length > i && !looted) {
-      acc += lootableItems(i)._2
-      if (acc > s) {
-        board.addItem(new ItemEntity(pos, board, lootableItems(i)._1), pos)
-        looted = true
+    for ((item, prob) <- lootableItems) {
+      acc += prob
+      if (acc > s)
+        board.addItem(new ItemEntity(pos, board, item), pos)
+    }
+  }
+
+  def appliesEffect(c: Character): Unit = {
+    val s = rnd.nextDouble()
+    var totProb: Double = 0
+    for ((et, duration, prob) <- effects) {
+      totProb += prob
+      if (totProb > s) {
+        et match {
+          case "burning"      => c.statusList += new BurningStatus(duration)
+          case "regeneration" => c.statusList += new RegenerationStatus(duration)
+          case "stunned"      => c.statusList += new StunnedStatus(duration)
+          case "bleeding"     => c.statusList += new BleedingStatus(duration)
+          case _              => ()
+        }
       }
-      i += 1
     }
   }
 
   override def attack(c: Character): Boolean = {
     if (super.attack(c)) {
-      if (rnd.nextDouble() < effectProb)
-        effect(c)
+      appliesEffect(c)
       return true
     }
     return false

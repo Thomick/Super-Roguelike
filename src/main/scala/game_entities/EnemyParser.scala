@@ -13,7 +13,8 @@ class EnemyConstructor(enemyType: String, name: String) {
   var reward = 0
   var effects = new ArrayBuffer[(String, Int, Int)]
   val lootableItems = new ArrayBuffer[(AbstractItem, Int)]
-  var totalWeight = 0
+  var totalItemWeight = 0
+  var totalEffectWeight = 0
   val rnd = new Random
   var bonusDef = 0
   var bonusAtt = 0
@@ -27,8 +28,10 @@ class EnemyConstructor(enemyType: String, name: String) {
       case "dog"    => new Dog(init_pos, board, name)
     }
     baseEnemy.levelUp(level)
-    if (totalWeight > 0)
-      lootableItems.foreach(t => baseEnemy.lootableItems += ((t._1, t._2.toDouble / totalWeight)))
+    if (totalItemWeight > 0)
+      lootableItems.foreach(t => baseEnemy.lootableItems += ((t._1, t._2.toDouble / totalItemWeight)))
+    if (totalEffectWeight > 0)
+      effects.foreach(t => baseEnemy.effects += ((t._1, t._2, t._3.toDouble / totalEffectWeight)))
     baseEnemy.reward = max(0, reward + rnd.nextInt(6) - 3)
     baseEnemy.baseAtt = baseEnemy.baseAtt + bonusAtt
     baseEnemy.baseDef = baseEnemy.baseDef + bonusDef
@@ -38,10 +41,17 @@ class EnemyConstructor(enemyType: String, name: String) {
   }
 
   def addItem(item: Option[AbstractItem], weight: Int) = {
-    totalWeight += weight
+    totalItemWeight += weight
     item match {
       case None        => ()
       case Some(value) => lootableItems += ((value, weight))
+    }
+  }
+  def addEffect(effectType: String, duration: Int, weight: Int) = {
+    totalEffectWeight += weight
+    effectType match {
+      case "nothing" => ()
+      case et        => effects += ((et, duration, weight))
     }
   }
 }
@@ -62,6 +72,13 @@ class EnemyParser(depth: Int) extends RegexParsers {
   })
 
   def enemyType: Parser[String] = "robot" | "turret" | "dog"
+
+  def effectType: Parser[String] = "burning" | "regeneration" | "stunned" | "bleeding" | "nothing"
+
+  def effect: Parser[(String, Int, Int)] =
+    effectType ~ opt("for" ~> number <~ "turns") ~ opt("with weight" ~> number) ^^ { case et ~ duration ~ weight =>
+      (et, duration.getOrElse(2), weight.getOrElse(1))
+    }
 
   def itemType: Parser[Any] = "armcannon" | "nothing"
 
@@ -100,6 +117,7 @@ class EnemyParser(depth: Int) extends RegexParsers {
     })
       .|("reward" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.reward += n })
       .|("with" ~> statModifier ^^ { case s => s })
+      .|("applies" ~> effect ^^ { case (et, d, w) => constructor: EnemyConstructor => constructor.addEffect(et, d, w) })
 
   def description: Parser[((Int, Int), GameBoard) => Enemy] =
     text ~ ("of type" ~> enemyType) ~ ("and" ~> repsep(modifier, "and")) ^^ { case name ~ et ~ modifiers =>
