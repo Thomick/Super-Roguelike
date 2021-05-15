@@ -16,6 +16,7 @@ class Room {
   var lockedDoors = Vector[(Int, Int)]()
   var locks = Vector[(Int, Int)]()
   var elevators = Vector[(Int, Int)]()
+  var bosses = Vector[(((Int, Int), GameBoard) => GameEntity, (Int, Int))]()
   var entities = Vector[(((Int, Int), GameBoard) => GameEntity, (Int, Int))]()
   var items = Vector[(AbstractItem, (Int, Int))]()
   var possibleExits = Vector[(Direction.Value, (Int, Int))]()
@@ -42,6 +43,10 @@ class Room {
 
   def addElevator(pos: (Int, Int)): Unit = {
     elevators = pos +: elevators
+  }
+
+  def addBoss(pos: (Int, Int), entity: ((Int, Int), GameBoard) => GameEntity): Unit = {
+    bosses = (entity, pos) +: bosses
   }
 
   def addEntity(pos: (Int, Int), entity: ((Int, Int), GameBoard) => GameEntity): Unit = {
@@ -82,48 +87,21 @@ class RoomParser(depth: Int) extends RegexParsers {
     line = it.next()
     while (!(line == "%")) {
       temp = line.substring(4).split(",")
-      line.apply(0) match {
-        case 'N' =>
-          if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
-            initialDirection = Direction.Up
-            entrancepos = Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance)
-          } else {
-            room.addPossibleExit(
-              Direction.turnBasis(initialDirection, Direction.Up, entrance),
-              sub2D(Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance), entrancepos)
-            )
-          }
-        case 'E' =>
-          if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
-            initialDirection = Direction.Right
-            entrancepos = Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance)
-          } else {
-            room.addPossibleExit(
-              Direction.turnBasis(initialDirection, Direction.Right, entrance),
-              sub2D(Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance), entrancepos)
-            )
-          }
-        case 'S' =>
-          if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
-            initialDirection = Direction.Down
-            entrancepos = Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance)
-          } else {
-            room.addPossibleExit(
-              Direction.turnBasis(initialDirection, Direction.Down, entrance),
-              sub2D(Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance), entrancepos)
-            )
-          }
-        case 'W' =>
-          if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
-            initialDirection = Direction.Left
-            entrancepos = Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance)
-          } else {
-            room.addPossibleExit(
-              Direction.turnBasis(initialDirection, Direction.Left, entrance),
-              sub2D(Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance), entrancepos)
-            )
-          }
-        case _ => ()
+      val dir = line.apply(0) match {
+        case 'N' => Direction.Up
+        case 'E' => Direction.Right
+        case 'S' => Direction.Down
+        case 'W' => Direction.Left
+        case _   => Direction.Nop
+      }
+      if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
+        initialDirection = dir
+        entrancepos = Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance)
+      } else {
+        room.addPossibleExit(
+          Direction.turnBasis(initialDirection, dir, entrance),
+          sub2D(Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance), entrancepos)
+        )
       }
       line = it.next()
     }
@@ -161,21 +139,17 @@ class RoomParser(depth: Int) extends RegexParsers {
 
   def element: Parser[((Int, Int)) => Unit] = character | item | ("wall" ^^ { s => p => room.addWallcell(p) }) | ("lever" ^^ { s => p => room.addLever(p) }) | ("lockedDoor" ^^ { s => p => room.addLockedDoor(p) }) | ("lock" ^^ { s => p => room.addLock(p) }) | ("elevator" ^^ { s => p => room.addElevator(p) })
 
-  def enemyType: Parser[Any] = "robot" | "turret" | "dog"
+  def enemyDifficulty: Parser[String] = "easy" | "normal" | "hard" | "boss"
 
-  def enemy: Parser[((Int, Int)) => Unit] = number ~ opt(enemyType) ^^ {
-    case n ~ None =>
-      rnd.nextInt(3) match {
-        case 0 => p => room.addEntity(p, (pos, b) => levelUp(new Robot(pos, b), n - 1))
-        case 1 => p => room.addEntity(p, (pos, b) => levelUp(new Dog(pos, b), n - 1))
-        case 2 => p => room.addEntity(p, (pos, b) => levelUp(new Turret(pos, b), n - 1))
-      }
-    case n ~ Some("robot")  => p => room.addEntity(p, (pos, b) => levelUp(new Robot(pos, b), n - 1))
-    case n ~ Some("dog")    => p => room.addEntity(p, (pos, b) => levelUp(new Dog(pos, b), n - 1))
-    case n ~ Some("turret") => p => room.addEntity(p, (pos, b) => levelUp(new Turret(pos, b), n - 1))
+  def enemy: Parser[((Int, Int)) => Unit] = enemyDifficulty ^^ { s => p =>
+    if (s == "boss") {
+      room.addBoss(p, EnemyGenerator.generateEnemy(s, depth))
+    } else {
+      room.addEntity(p, EnemyGenerator.generateEnemy(s, depth))
+    }
   }
 
-  def itemType: Parser[Any] = "armcannon" | "item"
+  def itemType: Parser[Any] = "morphin" | "ironhelmet" | "laserchainsaw" | "bandage" | "armcannon" | "lasereyes" | "cowboyhat" | "heavyjacket" | "knuckles" | "poweredhammer" | "item"
 
   def item: Parser[((Int, Int)) => Unit] = itemType ^^ {
     case "morphin"       => p => room.addItem(p, new Morphin)
@@ -219,7 +193,7 @@ class RoomParser(depth: Int) extends RegexParsers {
 object RoomGenerator {
   def generateRoom(depth: Int, entrance: Direction.Value, filename: String): Room = {
     val parser = new RoomParser(depth)
-    val file = Source.fromFile("src/main/resources/rooms/" + filename + ".rdf")
+    val file = Source.fromFile(s"src/main/resources/rooms/${filename}.rdf")
     val fileIt = file.getLines()
     val nbPresetRooms = fileIt.next().toInt
     val rnd = new Random
