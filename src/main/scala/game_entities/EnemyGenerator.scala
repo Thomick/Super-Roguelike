@@ -83,7 +83,7 @@ class EnemyParser(depth: Int) extends RegexParsers {
       (et, duration.getOrElse(2), weight.getOrElse(1))
     }
 
-  def itemType: Parser[Any] = "armcannon" | "nothing"
+  def itemType: Parser[Any] = "morphin" | "ironhelmet" | "laserchainsaw" | "bandage" | "armcannon" | "lasereyes" | "cowboyhat" | "heavyjacket" | "knuckles" | "poweredhammer" | "nothing"
 
   def item: Parser[(Option[AbstractItem], Int)] = itemType ~ opt(number) ~ opt("with weight" ~> number) ^^ {
     case "nothing" ~ _ ~ weight =>
@@ -101,7 +101,16 @@ class EnemyParser(depth: Int) extends RegexParsers {
         case Some(value) => value
       }
       val builtItem: AbstractItem = item match {
-        case "armcannon" => new ArmCannon
+        case "morphin"       => new Morphin
+        case "ironhelmet"    => new IronHelmet
+        case "laserchainsaw" => new LaserChainsaw
+        case "bandage"       => new Bandage
+        case "armcannon"     => new ArmCannon
+        case "lasereyes"     => new LaserEyes
+        case "cowboyhat"     => new CowboyHat
+        case "heavyjacket"   => new HeavyJacket
+        case "knuckles"      => new Knuckles
+        case "poweredhammer" => new PoweredHammer
       }
       if (builtItem.isInstanceOf[Upgradable])
         builtItem.asInstanceOf[Upgradable].upgrade(level)
