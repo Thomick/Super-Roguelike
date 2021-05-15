@@ -8,7 +8,7 @@ import main._
 abstract class GameTile extends Serializable {
   var blocking: Boolean
   var blocking_sight: Boolean
-  var explored = false 
+  var explored = false
   var turnToCross = 1
   var lightColor: Color
   var darkColor: Color

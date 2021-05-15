@@ -57,7 +57,7 @@ object MapGenerator {
     val modified = make_empty_boolean(map_width, map_height)
     var startingPos = ((map_width /3) + rnd.nextInt(map_width/3), (map_height /3) + rnd.nextInt(map_height/3))
     var unusedExit = Vector[(Direction.Value,(Int,Int))]()
-    var levers = Vector[(Int,Int)]()
+    var levers = Vector[Lever]()
 
     def addLPath(pos1: (Int,Int), pos2: (Int,Int), dir1: Direction.Value, dir2: Direction.Value): Boolean = {
       val delta1 = Direction.giveVector(dir1)
@@ -188,6 +188,18 @@ object MapGenerator {
         }
       }
 
+      for (p <- room.locks) {
+        if (0 > entrance._1+p._1 || entrance._1+p._1 >= map_width || 0 > entrance._2+p._2 || entrance._2+p._2 >= map_height || modified(entrance._1+p._1)(entrance._2+p._2)) {
+          return false
+        }
+      }
+
+      for (p <- room.elevator) {
+        if (0 > entrance._1+p._1 || entrance._1+p._1 >= map_width || 0 > entrance._2+p._2 || entrance._2+p._2 >= map_height || modified(entrance._1+p._1)(entrance._2+p._2)) {
+          return false
+        }
+      }
+
       for ((f,p) <- room.entities) {
         if (0 > entrance._1+p._1 || entrance._1+p._1 >= map_width || 0 > entrance._2+p._2 || entrance._2+p._2 >= map_height || modified(entrance._1+p._1)(entrance._2+p._2)) {
           return false
@@ -216,15 +228,33 @@ object MapGenerator {
       }
 
       for (p <- room.levers) {
-        //val lever = new Lever((entrance._1+p._1,entrance._2+p._2),board)
+        val lever = new Lever((entrance._1+p._1,entrance._2+p._2),board)
         board.grid(entrance._1+p._1)(entrance._2+p._2) = new FloorTile
-        //board.otherEntities += ((entrance._1+p._1,entrance._2+p._2) -> lever)
+        board.otherEntities += ((entrance._1+p._1,entrance._2+p._2) -> lever)
         modified(entrance._1+p._1)(entrance._2+p._2) = true
-        //levers = lever +: levers
+        levers = lever +: levers
       }
 
       for (p <- room.lockedDoors) {
-        board.grid(entrance._1+p._1)(entrance._2+p._2) = new Door
+        val lockedDoor = new TriggerableDoor
+        board.grid(entrance._1+p._1)(entrance._2+p._2) = lockedDoor
+        modified(entrance._1+p._1)(entrance._2+p._2) = true
+        board.triggers += new Trigger {
+          actions += lockedDoor
+          events += new ActivableWatcher (levers(0))
+        }
+        levers = levers.patch(0,Nil,1)
+
+      }
+
+      for (p <- room.elevators) {
+        board.grid(entrance._1+p._1)(entrance._2+p._2) = new DownElevator
+        modified(entrance._1+p._1)(entrance._2+p._2) = true
+      }
+
+      for (p <- room.locks) {
+        board.grid(entrance._1+p._1)(entrance._2+p._2) = new DownElevator
+        board.otherEntities += ((entrance._1+p._1,entrance._2+p._2) -> new Lock((entrance._1+p._1,entrance._2+p._2),board)
         modified(entrance._1+p._1)(entrance._2+p._2) = true
       }
 
@@ -265,7 +295,9 @@ object MapGenerator {
       var file = "room"
       rnd.nextInt(5) match {
         case 0 => file = "lever"
-        case 1 => if (levers.size != 0) file = "test"
+        case 1 => if (levers.size != 0) {
+          file = "treasureRooms"
+        }
         case _ => ()
       }
       val newEntrance = (position._1+(1+rnd.nextInt(6))*delta1._1+(4-rnd.nextInt(9))*delta2._1,position._2+(1+rnd.nextInt(6))*delta1._2+(4-rnd.nextInt(9))*delta2._2)
