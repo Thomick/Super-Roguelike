@@ -16,6 +16,7 @@ class Room {
   var lockedDoors = Vector[(Int,Int)]()
   var locks = Vector[(Int,Int)]()
   var elevators = Vector[(Int,Int)]()
+  var bosses = Vector[(((Int,Int),GameBoard)=>GameEntity, (Int,Int))]()
   var entities = Vector[(((Int,Int),GameBoard)=>GameEntity, (Int,Int))]()
   var items = Vector[(AbstractItem, (Int, Int))]()
   var possibleExits = Vector[(Direction.Value,(Int,Int))]()
@@ -42,6 +43,10 @@ class Room {
 
   def addElevator(pos : (Int,Int)): Unit = {
     elevators = pos +: elevators
+  }
+
+  def addBoss(pos : (Int,Int), entity : ((Int,Int),GameBoard)=>GameEntity): Unit = {
+    bosses = (entity, pos) +: bosses
   }
 
   def addEntity(pos : (Int,Int), entity : ((Int,Int),GameBoard)=>GameEntity): Unit = {
@@ -82,32 +87,18 @@ class RoomParser(depth : Int) extends RegexParsers {
     line = it.next()
     while (!(line == "%")) {
       temp = line.substring(4).split(",")
-      line.apply(0) match {
-        case 'N' => if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
-                      initialDirection = Direction.Up
-                      entrancepos = Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance)
-                    } else { 
-                      room.addPossibleExit(Direction.turnBasis(initialDirection,Direction.Up,entrance),sub2D(Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance),entrancepos))
-                    }
-        case 'E' => if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
-                      initialDirection = Direction.Right
-                      entrancepos = Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance)
-                    } else { 
-                      room.addPossibleExit(Direction.turnBasis(initialDirection,Direction.Right,entrance),sub2D(Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance),entrancepos))
-                    }
-        case 'S' => if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
-                      initialDirection = Direction.Down
-                      entrancepos = Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance)
-                    } else { 
-                      room.addPossibleExit(Direction.turnBasis(initialDirection,Direction.Down,entrance),sub2D(Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance),entrancepos))
-                    }
-        case 'W' => if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
-                      initialDirection = Direction.Left
-                      entrancepos = Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance)
-                    } else { 
-                      room.addPossibleExit(Direction.turnBasis(initialDirection,Direction.Left,entrance),sub2D(Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance),entrancepos))
-                    }
-        case _ => ()
+      val dir = line.apply(0) match {
+        case 'N' => Direction.Up
+        case 'E' => Direction.Right
+        case 'S' => Direction.Down
+        case 'W' => Direction.Left
+        case _ => Direction.Nop
+      }
+      if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
+        initialDirection = dir
+        entrancepos = Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance)
+      } else { 
+        room.addPossibleExit(Direction.turnBasis(initialDirection,dir,entrance),sub2D(Direction.turnBasisVector(initialDirection,(temp(0).toInt,temp(1).toInt),entrance),entrancepos))
       }
       line = it.next()
     }
@@ -147,10 +138,14 @@ class RoomParser(depth : Int) extends RegexParsers {
   def enemyDifficulty: Parser[String] = "easy" | "normal" | "hard" | "boss"
 
   def enemy: Parser[((Int,Int))=>Unit] = enemyDifficulty ^^ {
-    s => p => room.addEntity(p,EnemyGenerator.generateEnemy(s,depth))
+    s => p => if (s == "boss") {
+      room.addBoss(p,EnemyGenerator.generateEnemy(s,depth))
+    } else { 
+      room.addEntity(p,EnemyGenerator.generateEnemy(s,depth))
+    }
   }
 
-  def itemType: Parser[Any] = "armcannon" | "item"
+  def itemType: Parser[Any] = "morphin" | "ironhelmet" | "laserchainsaw" | "bandage" | "armcannon" | "lasereyes" | "cowboyhat" | "heavyjacket" | "knuckles" | "poweredhammer" | "item"
 
   def item: Parser[((Int,Int))=>Unit] = itemType ^^ {
     case "morphin" => p => room.addItem(p,new Morphin)

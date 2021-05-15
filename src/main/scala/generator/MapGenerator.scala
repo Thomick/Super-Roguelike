@@ -43,8 +43,7 @@ object MapGenerator {
   }
 
   def make_map_interior(
-      max_rooms: Int,
-      min_rooms: Int,
+      nbRooms: Int,
       map_width: Int,
       map_height: Int,
       board: GameBoard,
@@ -52,7 +51,7 @@ object MapGenerator {
       elevatorOnStartingPosition: Boolean
   ): Boolean = {
     val rnd = new Random
-    var nbRooms = 1
+    var countRooms = 1
     board.grid = make_empty(map_width, map_height, new WallTile)
     val modified = make_empty_boolean(map_width, map_height)
     var startingPos = ((map_width /3) + rnd.nextInt(map_width/3), (map_height /3) + rnd.nextInt(map_height/3))
@@ -235,16 +234,51 @@ object MapGenerator {
         levers = lever +: levers
       }
 
-      for (p <- room.lockedDoors) {
-        val lockedDoor = new TriggerableDoor
-        board.grid(entrance._1+p._1)(entrance._2+p._2) = lockedDoor
-        modified(entrance._1+p._1)(entrance._2+p._2) = true
-        board.triggers += new Trigger {
-          actions += lockedDoor
-          events += new ActivableWatcher (levers(0))
+      if (room.bosses.size > 0) {
+        var bosses = Vector[GameEntity]()
+        for ((f,p) <- room.bosses) {
+          val boss = f((entrance._1+p._1,entrance._2+p._2),board)
+          board.grid(entrance._1+p._1)(entrance._2+p._2) = new FloorTile
+          board.otherEntities += ((entrance._1+p._1,entrance._2+p._2) -> boss)
+          modified(entrance._1+p._1)(entrance._2+p._2) = true
+          bosses = boss +: bosses
         }
-        levers = levers.patch(0,Nil,1)
-
+        for (p <- room.lockedDoors) {
+          val lockedDoor = new TriggerableDoor
+          board.grid(entrance._1+p._1)(entrance._2+p._2) = lockedDoor
+          modified(entrance._1+p._1)(entrance._2+p._2) = true
+          board.triggers += new Trigger {
+            actions += lockedDoor
+            actions += new LogAction("You have defeated the boss ! The door is now unlocked.", board.logger)
+            for (boss <- bosses) {
+              events += new DeathWatcher (boss.asInstanceOf[Enemy])
+            }
+          }
+        }
+      } else {
+        for (p <- room.lockedDoors) {
+          val lockedDoor = new TriggerableDoor
+          board.grid(entrance._1+p._1)(entrance._2+p._2) = lockedDoor
+          modified(entrance._1+p._1)(entrance._2+p._2) = true
+          if (levers.size > 0) {
+            board.triggers += new Trigger {
+              actions += lockedDoor
+              actions += new LogAction("The door is now unlocked.", board.logger)
+              events += new ActivableWatcher (levers(0))
+            }
+            levers = levers.patch(0,Nil,1)
+          } else {
+            board.triggers += new Trigger {
+              actions += lockedDoor
+              actions += new LogAction("The door is now unlocked.", board.logger)
+              for ((pos, e) <- board.otherEntities) {
+                if (e.isInstanceOf[Enemy]) {
+                  events += new DeathWatcher (e.asInstanceOf[Enemy])
+                }
+              }
+            }
+          }
+        }
       }
 
       for (p <- room.elevators) {
@@ -283,7 +317,7 @@ object MapGenerator {
     } else {
       board.grid(startingPos._1)(startingPos._2) = new BrokenElevator
     }
-    while (nbRooms <= max_rooms && unusedExit.length != 0) {
+    while (countRooms <= nbRooms && unusedExit.length != 0) {
       var valid = true
       val i = rnd.nextInt(unusedExit.length)
       val direction = unusedExit(i)._1
@@ -292,13 +326,22 @@ object MapGenerator {
       val delta1 = Direction.giveVector(direction)
       val delta2 = Direction.giveVector(Direction.turnClockwise(Direction.turnClockwise(direction)))
       val newDir = Direction.oppositeDirection(direction)
-      var file = "room"
-      rnd.nextInt(5) match {
-        case 0 => file = "lever"
-        case 1 => if (levers.size != 0) {
-          file = "treasureRooms"
+      val file = if (countRooms == nbRooms) {
+        rnd.nextInt(4) match {
+          //case 0 => "boss"
+          case 1 => "exitLock"
+          case _ => "exitDoor"
         }
-        case _ => ()
+      } else {
+        rnd.nextInt(5) match {
+          case 0 => "lever"
+          case 1 => if (levers.size != 0) {
+            "treasureRooms"
+          } else {
+            "room"
+          }
+          case _ => "room"
+        }
       }
       val newEntrance = (position._1+(1+rnd.nextInt(6))*delta1._1+(4-rnd.nextInt(9))*delta2._1,position._2+(1+rnd.nextInt(6))*delta1._2+(4-rnd.nextInt(9))*delta2._2)
       valid = addZPath(position,newEntrance,direction,true)
@@ -306,7 +349,7 @@ object MapGenerator {
         board.grid(position._1)(position._2) = new Door
         board.grid(newEntrance._1)(newEntrance._2) = new Door
         addZPath(position,newEntrance,direction,false)
-        nbRooms = nbRooms + 1
+        countRooms = countRooms + 1
       } else {
         var exitPosition = (0,0)
         var exitDir = Direction.Nop
@@ -333,6 +376,6 @@ object MapGenerator {
         }
       }
     }
-    return (nbRooms >= min_rooms)
+    return (countRooms >= nbRooms)
   }
 }
