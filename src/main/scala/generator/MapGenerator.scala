@@ -194,7 +194,7 @@ object MapGenerator {
         }
       }
 
-      for (p <- room.elevator) {
+      for (p <- room.elevators) {
         if (0 > entrance._1+p._1 || entrance._1+p._1 >= map_width || 0 > entrance._2+p._2 || entrance._2+p._2 >= map_height || modified(entrance._1+p._1)(entrance._2+p._2)) {
           return false
         }
@@ -254,7 +254,7 @@ object MapGenerator {
 
       for (p <- room.locks) {
         board.grid(entrance._1+p._1)(entrance._2+p._2) = new DownElevator
-        board.otherEntities += ((entrance._1+p._1,entrance._2+p._2) -> new Lock((entrance._1+p._1,entrance._2+p._2),board)
+        board.otherEntities += ((entrance._1+p._1,entrance._2+p._2) -> new Lock((entrance._1+p._1,entrance._2+p._2),board))
         modified(entrance._1+p._1)(entrance._2+p._2) = true
       }
 

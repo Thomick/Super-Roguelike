@@ -15,7 +15,7 @@ class Room {
   var levers = Vector[(Int,Int)]()
   var lockedDoors = Vector[(Int,Int)]()
   var locks = Vector[(Int,Int)]()
-  var elevator = Vector[(Int,Int)]()
+  var elevators = Vector[(Int,Int)]()
   var entities = Vector[(((Int,Int),GameBoard)=>GameEntity, (Int,Int))]()
   var items = Vector[(AbstractItem, (Int, Int))]()
   var possibleExits = Vector[(Direction.Value,(Int,Int))]()
@@ -144,18 +144,10 @@ class RoomParser(depth : Int) extends RegexParsers {
 
   def element: Parser[((Int,Int))=>Unit] = character | item | ("wall" ^^ {s => p => room.addWallcell(p)}) | ("lever" ^^ {s => p => room.addLever(p)}) | ("lockedDoor" ^^ {s => p => room.addLockedDoor(p)}) | ("lock" ^^ {s => p => room.addLock(p)}) | ("elevator" ^^ {s => p => room.addElevator(p)})
 
-  def enemyType: Parser[Any] = "robot" | "turret" | "dog"
+  def enemyDifficulty: Parser[String] = "easy" | "normal" | "hard" | "boss"
 
-  def enemy: Parser[((Int,Int))=>Unit] = number ~ opt(enemyType) ^^ {
-    case n ~ None =>
-      rnd.nextInt(3) match {
-        case 0 => p => room.addEntity(p,(pos,b) => levelUp(new Robot(pos,b),n-1))
-        case 1 => p => room.addEntity(p,(pos,b) => levelUp(new Dog(pos,b),n-1))
-        case 2 => p => room.addEntity(p,(pos,b) => levelUp(new Turret(pos,b),n-1))
-      }
-    case n ~ Some("robot") => p => room.addEntity(p,(pos,b) => levelUp(new Robot(pos,b),n-1))
-    case n ~ Some("dog") => p => room.addEntity(p,(pos,b) => levelUp(new Dog(pos,b),n-1))
-    case n ~ Some("turret") => p => room.addEntity(p,(pos,b) => levelUp(new Turret(pos,b),n-1) )
+  def enemy: Parser[((Int,Int))=>Unit] = enemyDifficulty ^^ {
+    s => p => room.addEntity(p,EnemyGenerator.generateEnemy(s,depth))
   }
 
   def itemType: Parser[Any] = "armcannon" | "item"
@@ -203,7 +195,7 @@ class RoomParser(depth : Int) extends RegexParsers {
 object RoomGenerator {
   def generateRoom(depth: Int, entrance: Direction.Value, filename: String): Room = {
     val parser = new RoomParser(depth)
-    val file = Source.fromFile("src/main/resources/rooms/" + filename + ".rdf")
+    val file = Source.fromFile(s"src/main/resources/rooms/${filename}.rdf")
     val fileIt = file.getLines()
     val nbPresetRooms = fileIt.next().toInt
     val rnd = new Random
