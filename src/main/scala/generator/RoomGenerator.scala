@@ -14,6 +14,8 @@ class Room {
   var wallcells = Vector[(Int, Int)]()
   var levers = Vector[(Int,Int)]()
   var lockedDoors = Vector[(Int,Int)]()
+  var locks = Vector[(Int,Int)]()
+  var elevator = Vector[(Int,Int)]()
   var entities = Vector[(((Int,Int),GameBoard)=>GameEntity, (Int,Int))]()
   var items = Vector[(AbstractItem, (Int, Int))]()
   var possibleExits = Vector[(Direction.Value,(Int,Int))]()
@@ -32,6 +34,14 @@ class Room {
 
   def addLockedDoor(pos : (Int,Int)): Unit = {
     lockedDoors = pos +: lockedDoors
+  }
+
+  def addLock(pos : (Int,Int)): Unit = {
+    locks = pos +: locks
+  }
+
+  def addElevator(pos : (Int,Int)): Unit = {
+    elevators = pos +: elevators
   }
 
   def addEntity(pos : (Int,Int), entity : ((Int,Int),GameBoard)=>GameEntity): Unit = {
@@ -67,8 +77,6 @@ class RoomParser(depth : Int) extends RegexParsers {
     val width = temp(0).toInt
     val height = temp(1).toInt
     var entrancepos = (width/2,height/2)
-    var entrancex = width/2
-    var entrancey = height/2
     var initialDirection = Direction.Nop
     var exit = Vector[(Direction.Value,(Int,Int))]()
     line = it.next()
@@ -103,10 +111,10 @@ class RoomParser(depth : Int) extends RegexParsers {
       }
       line = it.next()
     }
-    for (i <- width-1 to 0 by -1) {
+    for (i <- height-1 to 0 by -1) {
       line = it.next()
       for (j<- 0 to line.length -1) {
-        val relativepos = sub2D(Direction.turnBasisVector(initialDirection,(i,j),entrance),entrancepos)
+        val relativepos = sub2D(Direction.turnBasisVector(initialDirection,(j,i),entrance),entrancepos)
         line.apply(j) match {
           case '#' => room.addWallcell(relativepos._1,relativepos._2)
           case '.' => room.addFloorcell(relativepos._1,relativepos._2)
@@ -134,7 +142,7 @@ class RoomParser(depth : Int) extends RegexParsers {
 
   def conjunction: Parser[Any] = "and"
 
-  def element: Parser[((Int,Int))=>Unit] = character | item | ("wall" ^^ {s => p => room.addWallcell(p)}) | ("lever" ^^ {s => p => room.addLever(p)}) | ("lockedDoor" ^^ {s => p => room.addLockedDoor(p)})
+  def element: Parser[((Int,Int))=>Unit] = character | item | ("wall" ^^ {s => p => room.addWallcell(p)}) | ("lever" ^^ {s => p => room.addLever(p)}) | ("lockedDoor" ^^ {s => p => room.addLockedDoor(p)}) | ("lock" ^^ {s => p => room.addLock(p)}) | ("elevator" ^^ {s => p => room.addElevator(p)})
 
   def enemyType: Parser[Any] = "robot" | "turret" | "dog"
 
@@ -150,16 +158,32 @@ class RoomParser(depth : Int) extends RegexParsers {
     case n ~ Some("turret") => p => room.addEntity(p,(pos,b) => levelUp(new Turret(pos,b),n-1) )
   }
 
-  def itemType: Parser[Any] = "armcannon"
+  def itemType: Parser[Any] = "armcannon" | "item"
 
-  def item: Parser[((Int,Int))=>Unit] = number ~ opt(itemType) ^^ {
-    case n ~ None =>
-      rnd.nextInt(3) match {
+  def item: Parser[((Int,Int))=>Unit] = itemType ^^ {
+    case "morphin" => p => room.addItem(p,new Morphin)
+    case "ironhelmet" => p => room.addItem(p,new IronHelmet)
+    case "laserchainsaw" => p => room.addItem(p,new LaserChainsaw)
+    case "bandage" => p => room.addItem(p,new Bandage)
+    case "armcannon" => p => room.addItem(p,new ArmCannon)
+    case "lasereyes" => p => room.addItem(p,new LaserEyes)
+    case "cowboyhat" => p => room.addItem(p,new CowboyHat)
+    case "heavyjacket" => p => room.addItem(p,new HeavyJacket)
+    case "knuckles" => p => room.addItem(p,new Knuckles)
+    case "poweredhammer" => p => room.addItem(p,new PoweredHammer)
+    case _ =>
+      rnd.nextInt(10) match {
         case 0 => p => room.addItem(p,new Morphin)
         case 1 => p => room.addItem(p,new IronHelmet)
         case 2 => p => room.addItem(p,new LaserChainsaw)
+        case 3 => p => room.addItem(p,new Bandage)
+        case 4 => p => room.addItem(p,new ArmCannon)
+        case 5 => p => room.addItem(p,new LaserEyes)
+        case 6 => p => room.addItem(p,new CowboyHat)
+        case 7 => p => room.addItem(p,new HeavyJacket)
+        case 8 => p => room.addItem(p,new Knuckles)
+        case 9 => p => room.addItem(p,new PoweredHammer)
       }
-    case n ~ Some("armcannon") => p => room.addItem(p,new ArmCannon)
   }
 
   def character: Parser[((Int,Int))=>Unit] = enemy  | ("vending machine" ^^ {s => p => room.addEntity(p,((pos,b)=> new Shopkeeper(pos,b)))}) | ("computer" ^^ {s => p => room.addEntity(p,(pos,b)=> new Computer(pos,b))})
@@ -179,7 +203,7 @@ class RoomParser(depth : Int) extends RegexParsers {
 object RoomGenerator {
   def generateRoom(depth: Int, entrance: Direction.Value, filename: String): Room = {
     val parser = new RoomParser(depth)
-    val file = Source.fromFile("src/main/resources/" + filename + ".rdf")
+    val file = Source.fromFile("src/main/resources/rooms/" + filename + ".rdf")
     val fileIt = file.getLines()
     val nbPresetRooms = fileIt.next().toInt
     val rnd = new Random
