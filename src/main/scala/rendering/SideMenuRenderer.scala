@@ -5,6 +5,7 @@ import input_handling.UI
 import java.awt.{Graphics2D, Color, Toolkit}
 import items.AbstractItem
 import map_objects.GameBoard
+import items.Money
 
 object SideMenuRenderer {
   val selectedColor = new Color(255, 200, 200)
@@ -27,6 +28,11 @@ object SideMenuRenderer {
         c.statusList.foreach(s => infos ++= " (" + s.name + ":" + s.remainingTimeString() + ")")
         infos ++= s" Lvl. ${c.level}"
         return infos.toString()
+      }
+      if (e.isInstanceOf[ItemEntity]) {
+        val item = e.asInstanceOf[ItemEntity].associatedItem
+        if (item.isInstanceOf[Money])
+          return s"(${item.asInstanceOf[Money].value} §)"
       }
       return ""
     }
