@@ -20,6 +20,7 @@ class EnemyConstructor(enemyType: String, name: String) {
   var bonusAtt = 0
   var bonusHealth = 0
   var level = 0
+  var image = ""
 
   def build(init_pos: (Int, Int), board: GameBoard): Enemy = {
     val baseEnemy = enemyType match {
@@ -37,6 +38,8 @@ class EnemyConstructor(enemyType: String, name: String) {
     baseEnemy.baseDef = baseEnemy.baseDef + bonusDef
     baseEnemy.baseMaxHP = baseEnemy.baseMaxHP + bonusHealth
     baseEnemy.currentHP = baseEnemy.baseMaxHP
+    if (image != "")
+      baseEnemy.image = s"src/main/resources/enemy_sprites/${image}.png"
     return baseEnemy
   }
 
@@ -111,13 +114,14 @@ class EnemyParser(depth: Int) extends RegexParsers {
       .|("health" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.bonusHealth += n })
       .|("level" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.level += n })
 
-  def modifier: Parser[EnemyConstructor => Unit] =
+  def modifier: Parser[EnemyConstructor => Any] =
     ("loots" ~> rep1sep(item, "or") ^^ { case items =>
       constructor: EnemyConstructor => items.foreach((a => constructor.addItem(a._1, a._2)))
     })
       .|("reward" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.reward += n })
       .|("with" ~> statModifier ^^ { case s => s })
       .|("applies" ~> effect ^^ { case (et, d, w) => constructor: EnemyConstructor => constructor.addEffect(et, d, w) })
+      .|("looks like" ~> text ^^ { case s => constructor: EnemyConstructor => constructor.image = s })
 
   def description: Parser[((Int, Int), GameBoard) => Enemy] =
     text ~ ("of type" ~> enemyType) ~ ("and" ~> repsep(modifier, "and")) ^^ { case name ~ et ~ modifiers =>
