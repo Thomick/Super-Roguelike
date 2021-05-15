@@ -10,7 +10,7 @@ abstract class GameEntity(init_pos: (Int, Int), b: GameBoard, val hasLogs: Boole
   val description: String
   var pos: (Int, Int) = init_pos
   var board: GameBoard = b
-  val image: String = "src/main/resources/other_sprites/placeholder.png"
+  var image: String = "src/main/resources/other_sprites/placeholder.png"
 
   // Write the input message to the gameboard logger
   def writeLog(message: String): Unit = {

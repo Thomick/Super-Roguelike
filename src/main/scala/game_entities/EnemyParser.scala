@@ -23,9 +23,9 @@ class EnemyConstructor(enemyType: String, name: String) {
 
   def build(init_pos: (Int, Int), board: GameBoard): Enemy = {
     val baseEnemy = enemyType match {
-      case "robot"  => new Robot(init_pos, board, name)
-      case "turret" => new Turret(init_pos, board, name)
-      case "dog"    => new Dog(init_pos, board, name)
+      case "ranged"    => new MovingRangedEnemy(init_pos, board, name)
+      case "fixranged" => new RangedEnemy(init_pos, board, name)
+      case "melee"     => new MeleeEnemy(init_pos, board, name)
     }
     baseEnemy.levelUp(level)
     if (totalItemWeight > 0)
@@ -71,7 +71,7 @@ class EnemyParser(depth: Int) extends RegexParsers {
     str.substring(1, str.length - 1)
   })
 
-  def enemyType: Parser[String] = "robot" | "turret" | "dog"
+  def enemyType: Parser[String] = "ranged" | "fixranged" | "melee"
 
   def effectType: Parser[String] = "burning" | "regeneration" | "stunned" | "bleeding" | "nothing"
 

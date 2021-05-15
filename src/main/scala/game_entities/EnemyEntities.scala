@@ -7,10 +7,9 @@ import map_objects._
 import items.AbstractItem
 import scala.collection.mutable._
 
-abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Unnamed")
-    extends Character(init_pos, b)
-    with AIControlled {
+abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Unnamed") extends Character(init_pos, b) with AIControlled {
   val name = init_name
+  val description: String = ""
 
   // If the attack is successful then the function [effect] is called with a probability [effectProb] (for example to aplly a status to the target)
   var effects = new ArrayBuffer[(String, Int, Double)]
@@ -64,27 +63,28 @@ abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Un
 }
 
 // Melee enemy behaviour : walk toward the player and tries to hit it
-trait MeleeEnemy extends Enemy {
-
+class MeleeEnemy(init_pos: (Int, Int), b: GameBoard, name: String = "Dog") extends Enemy(init_pos, b, name) {
+  image = "src/main/resources/enemy_sprites/dog1.png"
   override def act(visible: Boolean): Unit = {
     updateStatus()
     moveTowards()
   }
 }
 
-trait RangedEnemy extends Enemy {
-  val range: Int
+class RangedEnemy(init_pos: (Int, Int), b: GameBoard, name: String = "Turret") extends Enemy(init_pos, b, name) {
+  var range = 5
+  image = "src/main/resources/enemy_sprites/turret.png"
   override def act(visible: Boolean): Unit = {
     updateStatus()
-    if (
-      visible && sqrt(pow(pos._1 - board.playerEntity.pos._1, 2) + pow(pos._2 - board.playerEntity.pos._2, 2)) < range
-    )
+    if (visible && sqrt(pow(pos._1 - board.playerEntity.pos._1, 2) + pow(pos._2 - board.playerEntity.pos._2, 2)) < range)
       attack(board.playerEntity.asInstanceOf[Player])
   }
 }
 
-trait MovingRangedEnemy extends RangedEnemy {
-  val minRange: Int
+class MovingRangedEnemy(init_pos: (Int, Int), b: GameBoard, name: String = "Robot") extends RangedEnemy(init_pos, b, name) {
+  image = "src/main/resources/enemy_sprites/robot2.png"
+  var minRange: Int = 2
+  range = 5
   override def act(visible: Boolean): Unit = {
     updateStatus()
     val dst = sqrt(pow(pos._1 - board.playerEntity.pos._1, 2) + pow(pos._2 - board.playerEntity.pos._2, 2))
@@ -96,27 +96,4 @@ trait MovingRangedEnemy extends RangedEnemy {
     if (oldPos == pos && visible && dst <= range)
       attack(board.playerEntity.asInstanceOf[Player])
   }
-}
-
-class Robot(init_pos: (Int, Int), b: GameBoard, name: String = "Robot")
-    extends Enemy(init_pos, b, name)
-    with MovingRangedEnemy
-    with Humanoid {
-  val description = "An angry robot"
-  override val image = "src/main/resources/enemy_sprites/robot2.png"
-  val minRange: Int = 2
-  val range: Int = 5
-}
-
-class Dog(init_pos: (Int, Int), b: GameBoard, name: String = "Dog") extends Enemy(init_pos, b, name) with MeleeEnemy {
-  val description = "An angry robot dog"
-  override val image = "src/main/resources/enemy_sprites/dog1.png"
-}
-
-class Turret(init_pos: (Int, Int), b: GameBoard, name: String = "Turret")
-    extends Enemy(init_pos, b, name)
-    with RangedEnemy {
-  val description = ""
-  val range = 5
-  override val image = "src/main/resources/enemy_sprites/turret.png"
 }

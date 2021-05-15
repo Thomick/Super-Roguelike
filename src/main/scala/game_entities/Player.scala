@@ -11,7 +11,7 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
   val description = "It's you !"
   baseMaxHP = 100
   currentHP = 100
-  override val image = "src/main/resources/entity_sprites/robot.png"
+  image = "src/main/resources/entity_sprites/robot.png"
   inventory += new ArmCannon
   var alive: Boolean = true
 

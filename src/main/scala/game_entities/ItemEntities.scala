@@ -9,5 +9,5 @@ class ItemEntity(init_pos: (Int, Int), b: GameBoard, item: AbstractItem) extends
   val associatedItem: AbstractItem = item
   val name = item.name
   val description = item.description
-  override val image = item.image
+  image = item.image
 }

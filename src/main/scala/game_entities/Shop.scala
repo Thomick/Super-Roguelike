@@ -25,13 +25,10 @@ class ShopMenu(shop: Shopkeeper, player: Player) extends Menu {
 
 // Character who can sell items
 @SerialVersionUID(150L)
-class Shopkeeper(init_pos: (Int, Int), b: GameBoard)
-    extends Character(init_pos, b)
-    with FleeingWhenDamaged
-    with Serializable {
+class Shopkeeper(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with FleeingWhenDamaged with Serializable {
   val name = "Vending machine"
   val description = "It sells low quality goods at a high price"
-  override val image: String = "src/main/resources/entity_sprites/vendingmachine.png"
+  image = "src/main/resources/entity_sprites/vendingmachine.png"
   val forSale = new mutable.ArrayBuffer[(AbstractItem, Int)]
   forSale += ((new LaserChainsaw, 10), (new IronHelmet, 3), (new Morphin, 1), (new Bandage, 3))
   forSale += ((new HackingTools, 10), (new ElectronicComponents, 5), (new Grenade, 3), (new EMPGrenade, 3))

@@ -42,7 +42,7 @@ trait Hackable extends GameEntity with InteractWithItems {
 class Computer(init_pos: (Int, Int), b: GameBoard) extends GameEntity(init_pos, b) with Hackable {
   val name = "Computer"
   val description = "A computer. It seems connected to the internal network."
-  override val image: String = "src/main/resources/entity_sprites/computer.png"
+  image = "src/main/resources/entity_sprites/computer.png"
 
   // Custom message if the interaction fails
   override def interact(c: Character): Boolean = {
@@ -63,7 +63,7 @@ class Computer(init_pos: (Int, Int), b: GameBoard) extends GameEntity(init_pos, 
 class Lock(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b) with Hackable {
   val name = "Lock"
   val description = "A lock. It prevents you from using the elevator."
-  override val image: String = "src/main/resources/entity_sprites/lock.png"
+  image = "src/main/resources/entity_sprites/lock.png"
 
   override def interact(c: Character): Boolean = {
     if (!super[Hackable].interact(c)) {

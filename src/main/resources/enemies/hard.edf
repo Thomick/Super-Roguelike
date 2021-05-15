@@ -1,5 +1,5 @@
 $
-"Angry robot" of type robot
+"Angry robot" of type ranged
     and loots  armcannon +1 with weight 1 
             or armcannon +2 with weight 3 
             or nothing with weight 5

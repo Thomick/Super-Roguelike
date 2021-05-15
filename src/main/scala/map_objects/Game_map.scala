@@ -228,7 +228,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
     for (t <- triggers)
       t.update()
     triggers --= triggers.filter(t => t.triggered)
-    println("Update all entities")
+    //println("Update all entities")
   }
 
   def isTileInteractable(pos: (Int, Int)): Boolean = {
