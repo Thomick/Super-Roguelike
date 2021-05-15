@@ -9,7 +9,7 @@ abstract class AbstractItem() extends Serializable {
   var name: String
   val description: String
   val weight: Int
-  val image: String = "src/main/resources/placeholder.png"
+  val image: String = "src/main/resources/other_sprites/placeholder.png"
   val availableActions: ArrayBuffer[String] = new ArrayBuffer[String]
   availableActions += "D - Drop"
 }

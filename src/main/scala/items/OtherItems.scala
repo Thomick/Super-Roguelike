@@ -11,14 +11,14 @@ class Money(val value: Int) extends AbstractItem {
   var name = "Money"
   val description = "You are rich !"
   val weight = value * 5
-  override val image: String = "src/main/resources/money.png"
+  override val image: String = "src/main/resources/item_sprites/money.png"
 }
 
 class Key extends AbstractItem {
   var name = "Key"
   val description = "Can open things"
   val weight = 5
-  override val image: String = "src/main/resources/usbkey.png"
+  override val image: String = "src/main/resources/item_sprites/usbkey.png"
 }
 
 // Item used to interact with Hackable entities
@@ -34,7 +34,7 @@ class ElectronicComponents extends AbstractItem with Consumable {
   var name = "Electronic components"
   val description = "Can be used to upgrade some equipment"
   val weight = 100
-  override val image: String = "src/main/resources/circuitboard.png"
+  override val image: String = "src/main/resources/item_sprites/circuitboard.png"
 
   val consumptionMessage = "You can choose an item to upgrade"
 
@@ -88,7 +88,7 @@ class Screwdriver extends AbstractItem with Consumable {
   var name = "Screwdriver"
   val description = "Can be used to disassemble equipment and get electronic components"
   val weight = 100
-  override val image: String = "src/main/resources/screwdriver.png"
+  override val image: String = "src/main/resources/item_sprites/screwdriver.png"
 
   val consumptionMessage = "You can choose an item to disassemble"
 

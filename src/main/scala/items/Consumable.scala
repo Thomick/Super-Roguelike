@@ -37,7 +37,7 @@ class Morphin extends Syringe with Consumable {
   var name = "Morphin"
   val description = "A cute little needle to feel a little better"
   val weight = 50
-  override val image: String = "src/main/resources/morphin.png"
+  override val image: String = "src/main/resources/item_sprites/morphin.png"
   val consumptionMessage = "It stings. You feel a little better."
 
   override def consume(character: Character): String = {
@@ -54,7 +54,7 @@ class EmptySyringe extends Syringe {
   var name = "Empty syringe"
   val description = "An empty syringe. Fill it or drop it"
   val weight = 30
-  override val image: String = "src/main/resources/emptysyringe.png"
+  override val image: String = "src/main/resources/item_sprites/emptysyringe.png"
 }
 
 // Consumable item that can remove bleeding effect
@@ -62,7 +62,7 @@ class Bandage() extends AbstractItem with Consumable {
   var name = "Bandage"
   val description = "A cute little needle to feel a little better"
   val weight = 50
-  override val image: String = "src/main/resources/bandage.png"
+  override val image: String = "src/main/resources/item_sprites/bandage.png"
   val consumptionMessage = "It hurts but at least you stop bleeding"
 
   override def consume(character: Character): String = {

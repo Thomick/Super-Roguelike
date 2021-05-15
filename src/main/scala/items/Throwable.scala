@@ -68,7 +68,7 @@ class Grenade extends ThrowableWithAoE {
   var name: String = "Grenade"
   val description: String = "Kaboom !"
   val weight: Int = 300
-  override val image: String = "src/main/resources/handgrenade.png"
+  override val image: String = "src/main/resources/item_sprites/handgrenade.png"
   val consumedWhenThrown: Boolean = true
   def effectWhenThrown(board: GameBoard, pos: (Int, Int)): String = {
     if (board.hasCharacter(pos)) {
@@ -85,7 +85,7 @@ class EMPGrenade extends ThrowableWithAoE {
   var name = "EMP Grenade"
   val description = "This grenade is able to release electro magnetic pulses and stun enemies"
   val weight: Int = 300
-  override val image: String = "src/main/resources/empgrenade.png"
+  override val image: String = "src/main/resources/item_sprites/empgrenade.png"
   val consumedWhenThrown: Boolean = true
   def effectWhenThrown(board: GameBoard, pos: (Int, Int)): String = {
     if (board.hasCharacter(pos)) {

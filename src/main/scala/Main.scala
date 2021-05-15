@@ -28,9 +28,9 @@ object Main extends SimpleSwingApplication {
   }
 
   def loadGame: Unit = {
-    val save = new File("src/main/resources/save.ser")
+    val save = new File("src/main/resources/saves/save.ser")
     if (save.exists) {
-      val ois = new ObjectInputStream(new FileInputStream("src/main/resources/save.ser"))
+      val ois = new ObjectInputStream(new FileInputStream("src/main/resources/saves/save.ser"))
       game = ois.readObject.asInstanceOf[Game]
       ois.close
       logger = game.logger
@@ -40,7 +40,7 @@ object Main extends SimpleSwingApplication {
   }
 
   def saveGame: Unit = {
-    val oos = new ObjectOutputStream(new FileOutputStream("src/main/resources/save.ser"))
+    val oos = new ObjectOutputStream(new FileOutputStream("src/main/resources/saves/save.ser"))
     oos.writeObject(game)
     oos.close
   }

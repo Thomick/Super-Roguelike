@@ -6,9 +6,9 @@ import scala.math.{min, max}
 
 @SerialVersionUID(101L)
 class Cursor(board: GameBoard) extends Serializable {
-  val image = "src/main/resources/cursor.png"
-  val imageAoE = "src/main/resources/cursorbis.png"
-  val highlightImage = "src/main/resources/highlight.png"
+  val image = "src/main/resources/other_sprites/cursor.png"
+  val imageAoE = "src/main/resources/other_sprites/cursorbis.png"
+  val highlightImage = "src/main/resources/other_sprites/highlight.png"
   var xpos = 0
   var ypos = 0
   var visible = false
@@ -27,7 +27,7 @@ class Cursor(board: GameBoard) extends Serializable {
   def makeInvisible: Unit = {
     visible = false
   }
-  def activateAOE(range: Int): Unit = { 
+  def activateAOE(range: Int): Unit = {
     areaOfEffect = true
     rangeOfEffect = range
   }
@@ -60,7 +60,8 @@ class Cursor(board: GameBoard) extends Serializable {
     }
   }
 
-  def highlightedCells: (Vector[(Int, Int)], Boolean) = { // Return the list of cells on the path from the player to the cursor when using a ranged weapon
+  def highlightedCells
+      : (Vector[(Int, Int)], Boolean) = { // Return the list of cells on the path from the player to the cursor when using a ranged weapon
     var hCells = Vector[(Int, Int)]()
     val dx: Double = xpos - board.playerEntity.pos._1
     val dy: Double = ypos - board.playerEntity.pos._2
@@ -89,9 +90,9 @@ class Cursor(board: GameBoard) extends Serializable {
           hCells = hCells :+ (board.playerEntity.pos._1 + round(x), board.playerEntity.pos._2 + round(y))
           i += 1
           if (!board.isFree(board.playerEntity.pos._1 + round(x), board.playerEntity.pos._2 + round(y))) { // When there is an enemy between the player and the cursor
-            finish = true 
+            finish = true
             if (i >= steps) { // When the enemy is on the cursor
-              accessible = true 
+              accessible = true
             }
           }
         }

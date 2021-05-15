@@ -103,14 +103,14 @@ class Robot(init_pos: (Int, Int), b: GameBoard, name: String = "Robot")
     with MovingRangedEnemy
     with Humanoid {
   val description = "An angry robot"
-  override val image = "src/main/resources/robot2.png"
+  override val image = "src/main/resources/enemy_sprites/robot2.png"
   val minRange: Int = 2
   val range: Int = 5
 }
 
 class Dog(init_pos: (Int, Int), b: GameBoard, name: String = "Dog") extends Enemy(init_pos, b, name) with MeleeEnemy {
   val description = "An angry robot dog"
-  override val image = "src/main/resources/dog1.png"
+  override val image = "src/main/resources/enemy_sprites/dog1.png"
 }
 
 class Turret(init_pos: (Int, Int), b: GameBoard, name: String = "Turret")
@@ -118,5 +118,5 @@ class Turret(init_pos: (Int, Int), b: GameBoard, name: String = "Turret")
     with RangedEnemy {
   val description = ""
   val range = 5
-  override val image = "src/main/resources/turret.png"
+  override val image = "src/main/resources/enemy_sprites/turret.png"
 }

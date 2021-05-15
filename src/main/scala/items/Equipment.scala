@@ -84,7 +84,7 @@ class ArmCannon() extends RangedWeapon {
   val weight = 1500
   var bonusAtt = 0
   var att = 1
-  override val image = "src/main/resources/armcannon.png"
+  override val image = "src/main/resources/item_sprites/armcannon.png"
 
   val upgradeValue = 2
 }
@@ -96,7 +96,7 @@ class LaserEyes extends RangedWeapon {
   val weight = 100
   var bonusAtt = 0
   var att = 1
-  override val image = "src/main/resources/lasereyes.png"
+  override val image = "src/main/resources/item_sprites/lasereyes.png"
 
   val upgradeValue = 1
 }
@@ -105,7 +105,7 @@ class IronHelmet() extends Armor with Upgradable {
   val part: BodyPart.Value = BodyPart.Head
   var name: String = "Iron helmet"
   val description: String = "It is a slightly rusty iron helmet"
-  override val image = "src/main/resources/ironhelmet.png"
+  override val image = "src/main/resources/item_sprites/ironhelmet.png"
   var bonusDef: Int = 5
   val weight = 500
 
@@ -120,7 +120,7 @@ class CowboyHat extends Armor {
   val part: BodyPart.Value = BodyPart.Head
   var name: String = "Cowboy Hat"
   val description: String = ""
-  override val image = "src/main/resources/cowboyhat.png"
+  override val image = "src/main/resources/item_sprites/cowboyhat.png"
   var bonusDef: Int = 2
   val weight = 100
 }
@@ -129,7 +129,7 @@ class HeavyJacket extends Armor {
   val part: BodyPart.Value = BodyPart.Torso
   var name: String = "Heavy Jacket"
   val description: String = ""
-  override val image = "src/main/resources/jacket.png"
+  override val image = "src/main/resources/item_sprites/jacket.png"
   var bonusDef: Int = 7
   val weight = 1000
 }
@@ -137,7 +137,7 @@ class HeavyJacket extends Armor {
 class LaserChainsaw() extends Weapon with Upgradable {
   var name: String = "Laser chainsaw"
   val description: String = "It is a laser chainsaw. It seems really powerful."
-  override val image = "src/main/resources/laserchainsaw.png"
+  override val image = "src/main/resources/item_sprites/laserchainsaw.png"
   var bonusAtt: Int = 20
   val weight = 1500
 
@@ -147,7 +147,7 @@ class LaserChainsaw() extends Weapon with Upgradable {
 class Knuckles() extends Weapon with Upgradable {
   var name: String = "Brass Knuckles"
   val description: String = ""
-  override val image = "src/main/resources/knuckles.png"
+  override val image = "src/main/resources/item_sprites/knuckles.png"
   var bonusAtt: Int = 3
   val weight = 500
 
@@ -157,7 +157,7 @@ class Knuckles() extends Weapon with Upgradable {
 class PoweredHammer extends Weapon with Upgradable {
   var name: String = "PoweredHammer"
   val description: String = ""
-  override val image = "src/main/resources/hammer.png"
+  override val image = "src/main/resources/item_sprites/hammer.png"
   var bonusAtt: Int = 10
   val weight = 1500
 

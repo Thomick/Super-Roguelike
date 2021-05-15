@@ -13,7 +13,7 @@ abstract class GameTile extends Serializable {
   var lightColor: Color
   var darkColor: Color
   var hasImage: Boolean = false
-  var image: String = "src/main/resources/placeholder.png"
+  var image: String = "src/main/resources/other_sprites/placeholder.png"
 }
 
 trait InteractableTile extends GameTile {
