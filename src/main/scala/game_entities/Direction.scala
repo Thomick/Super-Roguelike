@@ -6,7 +6,7 @@ object Direction extends Enumeration {
   val allDirections =
     List(Up, Down, Left, Right, UpLeft, UpRight, DownLeft, DownRight)
 
-  // Transforms a element of {-1,0,1}^2 into a direction
+  // Transforms an element of {-1,0,1}^2 into a direction
   def giveDirection(distance: (Int, Int)): Direction.Value = {
     distance match {
       case (-1,0) => Direction.Left
@@ -21,6 +21,7 @@ object Direction extends Enumeration {
     }
   }
 
+  // Transforms a direction into an element of {-1,0,1}^2 
   def giveVector(direction: Direction.Value): (Int,Int) = {
     direction match {
       case Direction.Nop => (0,0)
@@ -63,7 +64,8 @@ object Direction extends Enumeration {
     }
   }
   
-  def turnBasis(dir1: Direction.Value, dir2: Direction.Value, dir3: Direction.Value): Direction.Value = {//Turn the basis formed by dir1 and dir2 such that dir1 is aligned with dir3 and return the new direction of dir2. If dir1 and dir3 are equal to Direction.Nop, returns dir2
+  //Turn the basis formed by dir1 and dir2 such that dir1 is aligned with dir3 and return the new direction of dir2. If dir1 and dir3 are equal to Direction.Nop, returns dir2
+  def turnBasis(dir1: Direction.Value, dir2: Direction.Value, dir3: Direction.Value): Direction.Value = {
     var dir1modified = dir1
     var dir2modified = dir2
     while (dir1modified != dir3) {

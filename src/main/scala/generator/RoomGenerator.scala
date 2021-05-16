@@ -71,14 +71,9 @@ class RoomParser(depth: Int) extends RegexParsers with Serializable {
 
   val rnd = new Random
 
-  def levelUp(c: Character, n: Int): Character = {
-    c.levelUp(n)
-    return c
-  }
-
   def sub2D(pos1: (Int, Int), pos2: (Int, Int)): (Int, Int) = (pos1._1 - pos2._1, pos1._2 - pos2._2)
 
-  def readGrid(entrance: Direction.Value, it: Iterator[String]): Unit = {
+  def readGrid(entrance: Direction.Value, it: Iterator[String]): Unit = {//If entrance is Direction.Nop, the room is the first one of a level and the player starts in the middle of the room. Else, entrance is the direction of the first door generated.
     var line = it.next()
     var temp = line.substring(7).split(",")
     val width = temp(0).toInt
@@ -96,7 +91,7 @@ class RoomParser(depth: Int) extends RegexParsers with Serializable {
         case 'W' => Direction.Left
         case _   => Direction.Nop
       }
-      if (initialDirection == Direction.Nop && entrance != Direction.Nop) {
+      if (initialDirection == Direction.Nop && entrance != Direction.Nop) {//We use the first entrance described by the file to be the one where the first door is generated. We turn the room accordingly.
         initialDirection = dir
         entrancepos = Direction.turnBasisVector(initialDirection, (temp(0).toInt, temp(1).toInt), entrance)
       } else {
@@ -114,7 +109,7 @@ class RoomParser(depth: Int) extends RegexParsers with Serializable {
         line.apply(j) match {
           case '#'              => room.addWallcell(relativepos._1, relativepos._2)
           case '.'              => room.addFloorcell(relativepos._1, relativepos._2)
-          case ' ' | '\n' | '/' => ()
+          case ' ' | '/'        => ()
           case _ =>
             speChar.get(line.apply(j)) match {
               case Some(v) => speChar(line.apply(j)) = relativepos +: v

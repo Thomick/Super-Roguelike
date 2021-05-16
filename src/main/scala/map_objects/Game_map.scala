@@ -24,7 +24,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
     new mutable.HashMap[(Int, Int), mutable.ArrayBuffer[ItemEntity]]
   var otherEntities = new mutable.HashMap[(Int, Int), GameEntity]
   var grid = MapGenerator.make_empty(size_x, size_y)
-  var activateElevator = false
+  var activateElevator = true
   var lastPosition = (0, 0)
   val triggers = new mutable.ArrayBuffer[Trigger]
 

@@ -137,7 +137,7 @@ object MapGenerator {
       }
       val midPath = Math.abs(diffp) / 2
       for (i <- 1 to midPath) {
-        if (check) {
+        if (check) { // If check is true, check that the cells are not modified. Else add the path.
           if (0 > pos1._1 + i * delta1._1 || pos1._1 + i * delta1._1 >= map_width || 0 > pos1._2 + i * delta1._2 || pos1._2 + i * delta1._2 >= map_height || modified(pos1._1 + i * delta1._1)(pos1._2 + i * delta1._2)) {
             return false
           }
@@ -219,7 +219,7 @@ object MapGenerator {
           board.otherEntities += ((entrance._1 + p._1, entrance._2 + p._2) -> boss)
           bosses = boss +: bosses
         }
-        for (p <- room.lockedDoors) {
+        for (p <- room.lockedDoors) { //Unlock the doors when the bosses die
           val lockedDoor = new TriggerableDoor
           changeTile(p, lockedDoor)
           board.triggers += new Trigger {
@@ -234,14 +234,14 @@ object MapGenerator {
         for (p <- room.lockedDoors) {
           val lockedDoor = new TriggerableDoor
           changeTile(p, lockedDoor)
-          if (levers.size > 0) {
+          if (levers.size > 0) { //If there are levers, unlock the door when one of the lever is activated.
             board.triggers += new Trigger {
               actions += lockedDoor
               actions += new LogAction("The door is now unlocked.", board.logger)
               events += new ActivableWatcher(levers(0))
             }
             levers = levers.patch(0, Nil, 1)
-          } else {
+          } else { //Else, unlock the door when all enemies are dead. It can only happen for the exit
             board.triggers += new Trigger {
               actions += lockedDoor
               actions += new LogAction("The door is now unlocked.", board.logger)
@@ -260,6 +260,7 @@ object MapGenerator {
 
       for (p <- room.locks) {
         changeTile(p, new DownElevator)
+        board.activateElevator = false
         board.otherEntities += ((entrance._1 + p._1, entrance._2 + p._2) -> new Lock((entrance._1 + p._1, entrance._2 + p._2), board))
       }
 
@@ -281,23 +282,23 @@ object MapGenerator {
     board.lastPosition = startingPos
     board.playerEntity.pos = startingPos
     addRoom(RoomGenerator.generateRoom(depth, Direction.Nop, "arrival"), startingPos)
-    if (elevatorOnStartingPosition) {
-      board.grid(startingPos._1)(startingPos._2) = new UpElevator
+    board.grid(startingPos._1)(startingPos._2) = if (elevatorOnStartingPosition) {
+      new UpElevator
     } else {
-      board.grid(startingPos._1)(startingPos._2) = new BrokenElevator
+      new BrokenElevator
     }
-    while (countRooms <= nbRooms && unusedExit.length != 0) {
+    while (countRooms < nbRooms && unusedExit.length != 0) {
       var valid = true
       val i = rnd.nextInt(unusedExit.length)
       val direction = unusedExit(i)._1
       val position = unusedExit(i)._2
-      unusedExit = unusedExit.patch(i, Nil, 1)
+      unusedExit = unusedExit.patch(i, Nil, 1) // Remove the ith element
       val delta1 = Direction.giveVector(direction)
       val delta2 = Direction.giveVector(Direction.turnClockwise(Direction.turnClockwise(direction)))
       val newDir = Direction.oppositeDirection(direction)
-      val file = if (countRooms == nbRooms) {
+      val file = if (countRooms == nbRooms-1) { // If this is the last room of the level, add an exit room
         rnd.nextInt(4) match {
-          //case 0 => "boss"
+          case 0 => "boss"
           case 1 => "exitLock"
           case _ => "exitDoor"
         }
@@ -315,23 +316,23 @@ object MapGenerator {
       }
       val newEntrance = (position._1 + (1 + rnd.nextInt(6)) * delta1._1 + (4 - rnd.nextInt(9)) * delta2._1, position._2 + (1 + rnd.nextInt(6)) * delta1._2 + (4 - rnd.nextInt(9)) * delta2._2)
       valid = addZPath(position, newEntrance, direction, true)
-      if (valid && addRoom(RoomGenerator.generateRoom(depth, newDir, file), newEntrance)) {
+      if (valid && addRoom(RoomGenerator.generateRoom(depth, newDir, file), newEntrance)) { //We try to add a new room
+        addZPath(position, newEntrance, direction, false)
         board.grid(position._1)(position._2) = new Door
         board.grid(newEntrance._1)(newEntrance._2) = new Door
-        addZPath(position, newEntrance, direction, false)
         countRooms += 1
-      } else {
+      } else { //If we can't, we try to link the exit with another one
         var exitPosition = (0, 0)
         var exitDir = Direction.Nop
         var exitIndex = 0
         for (((d, p), index) <- unusedExit.zipWithIndex) {
-          if (distance(p, position) < 5 && d != direction && checkAngle(position, p, direction)) {
+          if (distance(p, position) < 8 && d != direction && checkAngle(position, p, direction)) {
             exitIndex = index
             exitPosition = p
             exitDir = d
           }
         }
-        if (exitDir != Direction.Nop) {
+        if (exitDir != Direction.Nop) {//If there is another near unused exit, we try to add a path between.
           if (exitDir == Direction.oppositeDirection(direction)) {
             valid = addZPath(position, exitPosition, direction, true)
             if (valid) addZPath(position, exitPosition, direction, false)
@@ -346,6 +347,6 @@ object MapGenerator {
         }
       }
     }
-    return (countRooms >= nbRooms)
+    return (countRooms == nbRooms)
   }
 }
