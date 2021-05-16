@@ -1,8 +1,28 @@
 $
-"Angry robot" of type ranged
-    and loots  armcannon +1 with weight 1 
-            or armcannon +2 with weight 3 
-            or nothing with weight 5
-    and reward 10
-    and with defense -2
+"DOOMbot" of type melee
+    and loots  laserchainsaw +3 with weight 3 
+            or heavyjacket +1 with weight 2
+            or hackingtools with weight 1
+    and reward 20
+    and with defense +2
+    and with strength +2
+    and with level +2
+    and with health +10
+    and looks like "redrobot"
+    and applies burning for 4 turns with weight 1
+        or nothing with weight 4
+%
+$
+"Cerberus the robot from Hell" of type melee
+    and loots  knuckles +3 with weight 3 
+            or poweredhammer +1 with weight 2
+            or hackingtools with weight 1
+    and reward 20
+    and with defense -5
+    and with strength +3
+    and with level +2
+    and looks like "cerberus"
+    and applies burning for 4 turns with weight 1
+        or bleeding for 4 turns with weight 1
+        or nothing with weight 6
 %

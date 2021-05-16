@@ -28,7 +28,7 @@ class EnemyConstructor(enemyType: String, name: String) {
       case "fixranged" => new RangedEnemy(init_pos, board, name)
       case "melee"     => new MeleeEnemy(init_pos, board, name)
     }
-    baseEnemy.levelUp(level)
+    baseEnemy.levelUp(max(0, level))
     if (totalItemWeight > 0)
       lootableItems.foreach(t => baseEnemy.lootableItems += ((t._1, t._2.toDouble / totalItemWeight)))
     if (totalEffectWeight > 0)
@@ -65,7 +65,7 @@ class EnemyParser(depth: Int) extends RegexParsers {
 
   val constant = """(-|\+)?(0|[1-9][0-9]*)""".r
 
-  val char = """"(\w|\d| |\.)*\"""".r
+  val char = """"(\w|\d| |\.)*"""".r
 
   def number: Parser[Int] = constant ^^ { _.toInt }
 
@@ -83,7 +83,8 @@ class EnemyParser(depth: Int) extends RegexParsers {
       (et, duration.getOrElse(2), weight.getOrElse(1))
     }
 
-  def itemType: Parser[Any] = "morphin" | "ironhelmet" | "laserchainsaw" | "bandage" | "armcannon" | "lasereyes" | "cowboyhat" | "heavyjacket" | "knuckles" | "poweredhammer" | "nothing"
+  def itemType: Parser[Any] =
+    "morphin" | "ironhelmet" | "laserchainsaw" | "bandage" | "armcannon" | "lasereyes" | "cowboyhat" | "heavyjacket" | "knuckles" | "poweredhammer" | "components" | "hackingtools" | "nothing"
 
   def item: Parser[(Option[AbstractItem], Int)] = itemType ~ opt(number) ~ opt("with weight" ~> number) ^^ {
     case "nothing" ~ _ ~ weight =>
@@ -111,6 +112,8 @@ class EnemyParser(depth: Int) extends RegexParsers {
         case "heavyjacket"   => new HeavyJacket
         case "knuckles"      => new Knuckles
         case "poweredhammer" => new PoweredHammer
+        case "components"    => new ElectronicComponents
+        case "hackingtools"  => new HackingTools
       }
       if (builtItem.isInstanceOf[Upgradable])
         builtItem.asInstanceOf[Upgradable].upgrade(level)
@@ -129,7 +132,9 @@ class EnemyParser(depth: Int) extends RegexParsers {
     })
       .|("reward" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.reward += n })
       .|("with" ~> statModifier ^^ { case s => s })
-      .|("applies" ~> effect ^^ { case (et, d, w) => constructor: EnemyConstructor => constructor.addEffect(et, d, w) })
+      .|("applies" ~> rep1sep(effect, "or") ^^ { case effects =>
+        constructor: EnemyConstructor => effects.foreach((a => constructor.addEffect(a._1, a._2, a._3)))
+      })
       .|("looks like" ~> text ^^ { case s => constructor: EnemyConstructor => constructor.image = s })
 
   def description: Parser[((Int, Int), GameBoard) => Enemy] =
@@ -144,7 +149,7 @@ class EnemyParser(depth: Int) extends RegexParsers {
 
 object EnemyGenerator {
   def generateEnemy(filename: String, depth: Int): ((Int, Int), GameBoard) => Enemy = {
-    val parser = new EnemyParser(depth)
+    val parser = new EnemyParser(depth - 1)
     var file = Source.fromFile(s"src/main/resources/enemies/${filename}.edf")
     val countIt = file.getLines()
     val nbPreset = countIt.count(_ == "$")

@@ -1,9 +1,37 @@
 $
-"Angry robot" of type ranged
+"Angry robot equiped with lasers" of type ranged
     and loots  armcannon +1 with weight 1 
             or armcannon +2 with weight 3 
-            or nothing with weight 5
-    and reward 10
+            or lasereyes +1 with weight 5
+    and reward 15
     and with defense -2
     and with level +1
+    and applies stunned for 3 turns with weight 1
+                or nothing with weight 5
+    and looks like "robot2"
+%
+$
+"Really big cyborg dog" of type melee
+    and loots  poweredhammer +1 with weight 2
+            or armcannon +2 with weight 2
+    and reward 12
+    and with strength +2
+    and with level +1
+    and applies bleeding for 5 turns with weight 1
+                or nothing with weight 4
+    and looks like "dog1"
+%
+$
+"Armored robot" of type melee
+    and loots  poweredhammer +1 with weight 1 
+            or components with weight 1
+            or knuckles +3 with weight 3
+    and reward 10
+    and with defense +1
+    and with strength +1
+    and with level +1
+    and applies stunned for 3 turns with weight 1
+                or bleeding for 4 turns with weight 2
+                or nothing with weight 5
+    and looks like "robot2"
 %

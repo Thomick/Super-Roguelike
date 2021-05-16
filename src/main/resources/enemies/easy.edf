@@ -1,8 +1,52 @@
 $
-"Angry robot" of type ranged
-    and loots  armcannon +1 with weight 1 
-            or armcannon +2 with weight 3 
-            or nothing with weight 5
-    and reward 10
+"Small drone" of type melee
+    and loots  components with weight 1
+            or nothing with weight 1
+    and reward 2
     and with defense -2
+    and level -2
+    and looks like "drone"
+%
+$
+"Angry vacuum cleaner" of type melee
+    and loots  components with weight 1
+            or morphin with weight 2
+            or nothing with weight 1
+    and reward 2
+    and with defense -2
+    and level -2
+    and looks like "robot3"
+%
+$
+"Robot puppy" of type melee
+    and loots  lasereyes -1 with weight 1
+            or cowboyhat with weight 1
+            or nothing with weight 3
+    and reward 3
+    and with defense -2
+    and level -1
+    and strength +2
+    and looks like "dog1"
+%
+$
+"Coffee machine" of type fixranged
+    and loots  morphin with weight 3
+            or armcannon +1 with weight 3 
+            or nothing with weight 5
+    and reward 5
+    and with health -5
+    and applies bleeding for 5 turns with weight 1
+            or nothing with weight 4
+    and looks like "robot2"
+%
+$
+"Medic bot" of type fixranged
+    and loots  components with weight 1
+            or morphin with weight 2
+    and reward 2
+    and with defense -5
+    and with strength +1
+    and applies regeneration for 2 turns with weight 1
+                or nothing with weight 2
+    and looks like "robot3"
 %

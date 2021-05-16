@@ -7,7 +7,8 @@ import scala.util.Random
 import scala.math.{min, max}
 
 // Base class for game characters
-abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = false) extends GameEntity(init_pos, b, hasLogs) {
+abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = false)
+    extends GameEntity(init_pos, b, hasLogs) {
 
   // Stats (must be positive)
   var baseMaxHP: Int = 10
@@ -36,8 +37,9 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   def levelUp(): Unit = {
     baseAtt = ((baseAtt) * 1.2).toInt + 1
     baseDef = ((baseDef) * 1.2).toInt + 1
-    baseMaxHP = ((baseMaxHP) * 1.2).toInt + 1
-    currentHP = getMaxHP()
+    val hpIncrease = ((baseMaxHP) * 1.2).toInt + 1 - baseMaxHP
+    baseMaxHP += hpIncrease
+    addToHP(hpIncrease)
     level = level + 1
     xp = 0
     nextLevelCap = (nextLevelCap * 1.5).toInt
