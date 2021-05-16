@@ -1,6 +1,6 @@
 package generator
 
-import scala.math.{min, max, pow, sqrt}
+import scala.math.{min, max, pow, sqrt, abs, acos}
 import scala.util.Random
 import items._
 import game_entities._
@@ -10,6 +10,15 @@ object MapGenerator {
 
   def distance( pos1: (Int,Int), pos2: (Int, Int)): Double = {
     sqrt(pow(pos1._1 - pos2._1,2) + pow(pos1._2 - pos2._2,2))
+  }
+
+  def checkAngle(pos1: (Int,Int), pos2: (Int,Int), dir: Direction.Value): Boolean = {// Checks if the angle pos2 pos1 pos3 is inferior to pi/2, where pos3 is pos1 moved by one in the direction of dir.
+    val delta = Direction.giveVector(dir)
+    val pos3 = (pos1._1 + delta._1, pos1._2 + delta._2)
+    val p12 = distance(pos1,pos2) 
+    val p23 = distance(pos2,pos3) 
+    val p13 = distance(pos1,pos3) 
+    return (abs(acos((p12*p12+p13*p13-p23*p23)/(2*p12*p13))) < 1.571)
   }
 
   def make_empty(
@@ -63,16 +72,16 @@ object MapGenerator {
       val delta2 = Direction.giveVector(dir2)
       val diff1 = {
         if (delta1._2 == 0) {
-          pos2._1 - pos1._1
+          abs(pos2._1 - pos1._1)
         } else {
-          pos2._2 - pos1._2
+          abs(pos2._2 - pos1._2)
         }
       }
       val diff2 = {
         if (delta1._2 == 0) {
-          pos2._2 - pos1._2
+          abs(pos2._2 - pos1._2)
         } else {
-          pos2._1 - pos1._1
+          abs(pos2._1 - pos1._1)
         }
       }
       for (i <- 1 to diff1) {
@@ -355,7 +364,7 @@ object MapGenerator {
         var exitDir = Direction.Nop
         var exitIndex = 0
         for ( ((d,p),index) <- unusedExit.zipWithIndex ) {
-          if ( distance(p,position) < 5 && d != direction) {
+          if ( distance(p,position) < 8 && d != direction && checkAngle(position,p,direction)) {
             exitIndex = index
             exitPosition = p
             exitDir = d
