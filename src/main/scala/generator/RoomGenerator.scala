@@ -9,7 +9,8 @@ import items._
 import game_entities._
 import map_objects._
 
-class Room {
+@SerialVersionUID(100000L)
+class Room extends Serializable {
   var floorcells = Vector[(Int, Int)]()
   var wallcells = Vector[(Int, Int)]()
   var levers = Vector[(Int, Int)]()
@@ -62,7 +63,8 @@ class Room {
   }
 }
 
-class RoomParser(depth: Int) extends RegexParsers {
+@SerialVersionUID(100001L)
+class RoomParser(depth: Int) extends RegexParsers with Serializable {
   val room = new Room
 
   val speChar = Map[Char, Vector[(Int, Int)]]()

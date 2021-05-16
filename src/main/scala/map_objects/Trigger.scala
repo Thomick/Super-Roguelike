@@ -4,7 +4,8 @@ import scala.collection.mutable._
 import game_entities._
 import logger.Logger
 
-abstract class EventWatcher {
+@SerialVersionUID(100002L)
+abstract class EventWatcher extends Serializable {
   def checkEvent(): Boolean
 }
 
@@ -20,7 +21,8 @@ trait Triggerable {
   def executeAction(): Unit
 }
 
-class Trigger {
+@SerialVersionUID(100003L)
+class Trigger extends Serializable {
   val events = new ArrayBuffer[EventWatcher]
   val actions = new ArrayBuffer[Triggerable]
   var triggered = false
@@ -37,7 +39,8 @@ class Trigger {
   }
 }
 
-class LogAction(message: String, logger: Logger) extends Triggerable {
+@SerialVersionUID(100004L)
+class LogAction(message: String, logger: Logger) extends Triggerable with Serializable {
   def executeAction(): Unit = logger.writeLog(message)
 }
 
