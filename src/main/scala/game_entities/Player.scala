@@ -14,6 +14,8 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
   image = "src/main/resources/entity_sprites/robot.png"
   inventory += new ArmCannon
   var alive: Boolean = true
+  baseAtt = 4
+  baseDef = 1
 
   var money: Int = 0
   var keyCount: Int = 3

@@ -161,74 +161,44 @@ object MapGenerator {
     }
 
     def addRoom(room: Room, entrance: (Int, Int)): Boolean = {
-      for (p <- room.floorcells) {
-        if (0 > entrance._1 + p._1 || entrance._1 + p._1 >= map_width || 0 > entrance._2 + p._2 || entrance._2 + p._2 >= map_height || modified(entrance._1 + p._1)(entrance._2 + p._2)) {
-          return false
-        }
+      def checkInGrid(p: (Int, Int)): Boolean = {
+        0 <= entrance._1 + p._1 && entrance._1 + p._1 < map_width && 0 <= entrance._2 + p._2 && entrance._2 + p._2 < map_height && !modified(entrance._1 + p._1)(entrance._2 + p._2)
       }
 
-      for (p <- room.wallcells) {
-        if (0 > entrance._1 + p._1 || entrance._1 + p._1 >= map_width || 0 > entrance._2 + p._2 || entrance._2 + p._2 >= map_height || modified(entrance._1 + p._1)(entrance._2 + p._2)) {
-          return false
-        }
+      def checkInGridArr(arr: Vector[(Int, Int)]): Boolean = {
+        for (p <- arr)
+          if (!checkInGrid(p))
+            return false
+        return true
+      }
+      def checkInGridArr2(arr: Vector[(Any, (Int, Int))]): Boolean = {
+        for ((_, p) <- arr)
+          if (!checkInGrid(p))
+            return false
+        return true
       }
 
-      for (p <- room.lockedDoors) {
-        if (0 > entrance._1 + p._1 || entrance._1 + p._1 >= map_width || 0 > entrance._2 + p._2 || entrance._2 + p._2 >= map_height || modified(entrance._1 + p._1)(entrance._2 + p._2)) {
-          return false
-        }
-      }
+      if (!(checkInGridArr(room.floorcells) && checkInGridArr(room.wallcells) && checkInGridArr(room.lockedDoors) && checkInGridArr(room.levers) && checkInGridArr(room.locks) && checkInGridArr(room.elevators)))
+        return false
 
-      for (p <- room.levers) {
-        if (0 > entrance._1 + p._1 || entrance._1 + p._1 >= map_width || 0 > entrance._2 + p._2 || entrance._2 + p._2 >= map_height || modified(entrance._1 + p._1)(entrance._2 + p._2)) {
-          return false
-        }
-      }
+      if (!(checkInGridArr2(room.entities) && checkInGridArr2(room.items) && checkInGridArr2(room.possibleExits)))
+        return false
 
-      for (p <- room.locks) {
-        if (0 > entrance._1 + p._1 || entrance._1 + p._1 >= map_width || 0 > entrance._2 + p._2 || entrance._2 + p._2 >= map_height || modified(entrance._1 + p._1)(entrance._2 + p._2)) {
-          return false
-        }
-      }
-
-      for (p <- room.elevators) {
-        if (0 > entrance._1 + p._1 || entrance._1 + p._1 >= map_width || 0 > entrance._2 + p._2 || entrance._2 + p._2 >= map_height || modified(entrance._1 + p._1)(entrance._2 + p._2)) {
-          return false
-        }
-      }
-
-      for ((f, p) <- room.entities) {
-        if (0 > entrance._1 + p._1 || entrance._1 + p._1 >= map_width || 0 > entrance._2 + p._2 || entrance._2 + p._2 >= map_height || modified(entrance._1 + p._1)(entrance._2 + p._2)) {
-          return false
-        }
-      }
-
-      for ((item, p) <- room.items) {
-        if (0 > entrance._1 + p._1 || entrance._1 + p._1 >= map_width || 0 > entrance._2 + p._2 || entrance._2 + p._2 >= map_height || modified(entrance._1 + p._1)(entrance._2 + p._2)) {
-          return false
-        }
-      }
-
-      for ((d, p) <- room.possibleExits) {
-        if (0 > entrance._1 + p._1 || entrance._1 + p._1 >= map_width || 0 > entrance._2 + p._2 || entrance._2 + p._2 >= map_height || modified(entrance._1 + p._1)(entrance._2 + p._2)) {
-          return false
-        }
-      }
-
-      for (p <- room.floorcells) {
-        board.grid(entrance._1 + p._1)(entrance._2 + p._2) = new FloorTile
+      def changeTile(p: (Int, Int), newTile: GameTile): Unit = {
+        board.grid(entrance._1 + p._1)(entrance._2 + p._2) = newTile
         modified(entrance._1 + p._1)(entrance._2 + p._2) = true
       }
 
-      for (p <- room.wallcells) {
+      for (p <- room.floorcells)
+        changeTile(p, new FloorTile)
+
+      for (p <- room.wallcells)
         modified(entrance._1 + p._1)(entrance._2 + p._2) = true
-      }
 
       for (p <- room.levers) {
         val lever = new Lever((entrance._1 + p._1, entrance._2 + p._2), board)
-        board.grid(entrance._1 + p._1)(entrance._2 + p._2) = new FloorTile
+        changeTile(p, new FloorTile)
         board.otherEntities += ((entrance._1 + p._1, entrance._2 + p._2) -> lever)
-        modified(entrance._1 + p._1)(entrance._2 + p._2) = true
         levers = lever +: levers
       }
 
@@ -236,15 +206,13 @@ object MapGenerator {
         var bosses = Vector[GameEntity]()
         for ((f, p) <- room.bosses) {
           val boss = f((entrance._1 + p._1, entrance._2 + p._2), board)
-          board.grid(entrance._1 + p._1)(entrance._2 + p._2) = new FloorTile
+          changeTile(p, new FloorTile)
           board.otherEntities += ((entrance._1 + p._1, entrance._2 + p._2) -> boss)
-          modified(entrance._1 + p._1)(entrance._2 + p._2) = true
           bosses = boss +: bosses
         }
         for (p <- room.lockedDoors) {
           val lockedDoor = new TriggerableDoor
-          board.grid(entrance._1 + p._1)(entrance._2 + p._2) = lockedDoor
-          modified(entrance._1 + p._1)(entrance._2 + p._2) = true
+          changeTile(p, lockedDoor)
           board.triggers += new Trigger {
             actions += lockedDoor
             actions += new LogAction("You have defeated the boss ! The door is now unlocked.", board.logger)
@@ -256,8 +224,7 @@ object MapGenerator {
       } else {
         for (p <- room.lockedDoors) {
           val lockedDoor = new TriggerableDoor
-          board.grid(entrance._1 + p._1)(entrance._2 + p._2) = lockedDoor
-          modified(entrance._1 + p._1)(entrance._2 + p._2) = true
+          changeTile(p, lockedDoor)
           if (levers.size > 0) {
             board.triggers += new Trigger {
               actions += lockedDoor
@@ -279,27 +246,22 @@ object MapGenerator {
         }
       }
 
-      for (p <- room.elevators) {
-        board.grid(entrance._1 + p._1)(entrance._2 + p._2) = new DownElevator
-        modified(entrance._1 + p._1)(entrance._2 + p._2) = true
-      }
+      for (p <- room.elevators)
+        changeTile(p, new DownElevator)
 
       for (p <- room.locks) {
-        board.grid(entrance._1 + p._1)(entrance._2 + p._2) = new DownElevator
+        changeTile(p, new DownElevator)
         board.otherEntities += ((entrance._1 + p._1, entrance._2 + p._2) -> new Lock((entrance._1 + p._1, entrance._2 + p._2), board))
-        modified(entrance._1 + p._1)(entrance._2 + p._2) = true
       }
 
       for ((f, p) <- room.entities) {
-        board.grid(entrance._1 + p._1)(entrance._2 + p._2) = new FloorTile
+        changeTile(p, new FloorTile)
         board.otherEntities += ((entrance._1 + p._1, entrance._2 + p._2) -> f((entrance._1 + p._1, entrance._2 + p._2), board))
-        modified(entrance._1 + p._1)(entrance._2 + p._2) = true
       }
 
       for ((item, p) <- room.items) {
-        board.grid(entrance._1 + p._1)(entrance._2 + p._2) = new FloorTile
+        changeTile(p, new FloorTile)
         board.addItem(new ItemEntity((entrance._1 + p._1, entrance._2 + p._2), board, item), (entrance._1 + p._1, entrance._2 + p._2))
-        modified(entrance._1 + p._1)(entrance._2 + p._2) = true
       }
 
       for ((d, p) <- room.possibleExits) {

@@ -7,8 +7,7 @@ import scala.util.Random
 import scala.math.{min, max}
 
 // Base class for game characters
-abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = false)
-    extends GameEntity(init_pos, b, hasLogs) {
+abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = false) extends GameEntity(init_pos, b, hasLogs) {
 
   // Stats (must be positive)
   var baseMaxHP: Int = 10
@@ -84,7 +83,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   // Hand to hand attack based on the character stats
   def attack(c: Character): Boolean = {
     val rnd = new Random
-    val damage = max(0, (getAtt() * (1 + 3 * rnd.nextGaussian())).toInt)
+    val damage = max(0, (getAtt() + (rnd.nextInt(5) - 2)))
     return giveDamage(damage, c)
   }
 

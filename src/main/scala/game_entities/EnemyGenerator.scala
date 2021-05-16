@@ -34,9 +34,9 @@ class EnemyConstructor(enemyType: String, name: String) {
     if (totalEffectWeight > 0)
       effects.foreach(t => baseEnemy.effects += ((t._1, t._2, t._3.toDouble / totalEffectWeight)))
     baseEnemy.reward = max(0, reward + rnd.nextInt(6) - 3)
-    baseEnemy.baseAtt = baseEnemy.baseAtt + bonusAtt
-    baseEnemy.baseDef = baseEnemy.baseDef + bonusDef
-    baseEnemy.baseMaxHP = baseEnemy.baseMaxHP + bonusHealth
+    baseEnemy.baseAtt = max(0, baseEnemy.baseAtt + bonusAtt)
+    baseEnemy.baseDef = max(0, baseEnemy.baseDef + bonusDef)
+    baseEnemy.baseMaxHP = max(0, baseEnemy.baseMaxHP + bonusHealth)
     baseEnemy.currentHP = baseEnemy.baseMaxHP
     if (image != "")
       baseEnemy.image = s"src/main/resources/enemy_sprites/${image}.png"
@@ -89,16 +89,16 @@ class EnemyParser(depth: Int) extends RegexParsers {
     case "nothing" ~ _ ~ weight =>
       weight match {
         case None    => (None: Option[AbstractItem], 1)
-        case Some(w) => (None: Option[AbstractItem], w)
+        case Some(w) => (None: Option[AbstractItem], max(0, w))
       }
     case item ~ levelDifference ~ weight =>
       val level = levelDifference match {
         case None        => depth
-        case Some(value) => depth + value
+        case Some(value) => max(0, depth + value)
       }
       val w = weight match {
         case None        => 1
-        case Some(value) => value
+        case Some(value) => max(0, value)
       }
       val builtItem: AbstractItem = item match {
         case "morphin"       => new Morphin

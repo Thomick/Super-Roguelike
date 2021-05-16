@@ -48,6 +48,7 @@ abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Un
           case "bleeding"     => c.statusList += new BleedingStatus(duration)
           case _              => ()
         }
+        return
       }
     }
   }
