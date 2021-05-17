@@ -7,7 +7,9 @@ import map_objects._
 import items.AbstractItem
 import scala.collection.mutable._
 
-abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Unnamed") extends Character(init_pos, b) with AIControlled {
+abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Unnamed")
+    extends Character(init_pos, b)
+    with AIControlled {
   val name = init_name
   val description: String = ""
 
@@ -30,8 +32,10 @@ abstract class Enemy(init_pos: (Int, Int), b: GameBoard, init_name: String = "Un
     var acc: Double = 0
     for ((item, prob) <- lootableItems) {
       acc += prob
-      if (acc > s)
+      if (acc > s) {
         board.addItem(new ItemEntity(pos, board, item), pos)
+        return
+      }
     }
   }
 
@@ -77,12 +81,15 @@ class RangedEnemy(init_pos: (Int, Int), b: GameBoard, name: String = "Turret") e
   image = "src/main/resources/enemy_sprites/turret.png"
   override def act(visible: Boolean): Unit = {
     updateStatus()
-    if (visible && sqrt(pow(pos._1 - board.playerEntity.pos._1, 2) + pow(pos._2 - board.playerEntity.pos._2, 2)) < range)
+    if (
+      visible && sqrt(pow(pos._1 - board.playerEntity.pos._1, 2) + pow(pos._2 - board.playerEntity.pos._2, 2)) < range
+    )
       attack(board.playerEntity.asInstanceOf[Player])
   }
 }
 
-class MovingRangedEnemy(init_pos: (Int, Int), b: GameBoard, name: String = "Robot") extends RangedEnemy(init_pos, b, name) {
+class MovingRangedEnemy(init_pos: (Int, Int), b: GameBoard, name: String = "Robot")
+    extends RangedEnemy(init_pos, b, name) {
   image = "src/main/resources/enemy_sprites/robot2.png"
   var minRange: Int = 2
   range = 5
