@@ -35,17 +35,21 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
   }
 
   def levelUp(): Unit = {
+    // Stat increase
+    // +1 is used to avoid getting stuck because the base statistics are low
     baseAtt = ((baseAtt) * 1.2).toInt + 1
     baseDef = ((baseDef) * 1.2).toInt + 1
     val hpIncrease = ((baseMaxHP) * 1.2).toInt + 1 - baseMaxHP
     baseMaxHP += hpIncrease
+    // On the newly acquired hp are added
     addToHP(hpIncrease)
     level = level + 1
     xp = 0
-    nextLevelCap = (nextLevelCap * 1.5).toInt
-    writeLog("You just leveled up. You feel stronger and your wounds are healed.")
+    nextLevelCap = (nextLevelCap * 1.3).toInt
+    writeLog("You just leveled up. You feel stronger.")
   }
 
+  // Level up multiple times
   def levelUp(n: Int): Unit = {
     for (i <- 1 to n)
       levelUp()
@@ -53,6 +57,7 @@ abstract class Character(init_pos: (Int, Int), b: GameBoard, hasLogs: Boolean = 
 
   def getXp(n: Int): Unit = {
     var toAdd = n
+    // xp amount can't exceed nextLevelCap, the remaining xp is added is the next iterations
     while (toAdd > 0) {
       val m = min(n, nextLevelCap - xp)
       toAdd = toAdd - m

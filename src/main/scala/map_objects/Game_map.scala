@@ -214,6 +214,7 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
   }
 
   def update(fovmap: FovMap) {
+    // Update entities
     val entities = getEntities()
     for (e <- entities) {
       if (e.isInstanceOf[AIControlled]) {
@@ -225,9 +226,10 @@ class GameBoard(n: Int, m: Int, val logger: Logger) extends Serializable {
         }
       }
     }
+    // Update triggers
     for (t <- triggers)
       t.update()
-    triggers --= triggers.filter(t => t.triggered)
+    triggers --= triggers.filter(t => t.triggered) // Remove triggers that don't need to be updated anymore
     //println("Update all entities")
   }
 
