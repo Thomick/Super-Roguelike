@@ -9,6 +9,7 @@ import map_objects.GameBoard
 import scala.collection.immutable
 import scala.math.max
 
+// Class used to accumulate information about an enemy before instanciating it using [build]
 class EnemyConstructor(enemyType: String, name: String) {
   var reward = 0
   var effects = new ArrayBuffer[(String, Int, Int)]
@@ -22,6 +23,7 @@ class EnemyConstructor(enemyType: String, name: String) {
   var level = 0
   var image = ""
 
+  // Instanciate the enemy described by the attributes of the class
   def build(init_pos: (Int, Int), board: GameBoard): Enemy = {
     val baseEnemy = enemyType match {
       case "ranged"    => new MovingRangedEnemy(init_pos, board, name)
@@ -29,6 +31,7 @@ class EnemyConstructor(enemyType: String, name: String) {
       case "melee"     => new MeleeEnemy(init_pos, board, name)
     }
     baseEnemy.levelUp(max(0, level))
+    // Convert weights to probabilities
     if (totalItemWeight > 0)
       lootableItems.foreach(t => baseEnemy.lootableItems += ((t._1, t._2.toDouble / totalItemWeight)))
     if (totalEffectWeight > 0)
@@ -59,6 +62,7 @@ class EnemyConstructor(enemyType: String, name: String) {
   }
 }
 
+// Parse an enemy description
 class EnemyParser(depth: Int) extends RegexParsers {
 
   val rnd = new Random
@@ -126,6 +130,7 @@ class EnemyParser(depth: Int) extends RegexParsers {
       .|("health" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.bonusHealth += n })
       .|("level" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.level += n })
 
+  // Returns functions which modify an EnemyConstructor
   def modifier: Parser[EnemyConstructor => Any] =
     ("loots" ~> rep1sep(item, "or") ^^ { case items =>
       constructor: EnemyConstructor => items.foreach((a => constructor.addItem(a._1, a._2)))
@@ -137,6 +142,7 @@ class EnemyParser(depth: Int) extends RegexParsers {
       })
       .|("looks like" ~> text ^^ { case s => constructor: EnemyConstructor => constructor.image = s })
 
+  // Returns a function that create the enemy described using the board and its position on the board
   def description: Parser[((Int, Int), GameBoard) => Enemy] =
     text ~ ("of type" ~> enemyType) ~ ("and" ~> repsep(modifier, "and")) ^^ { case name ~ et ~ modifiers =>
       val constructor = new EnemyConstructor(et, name)
@@ -152,24 +158,29 @@ object EnemyGenerator {
     val parser = new EnemyParser(depth - 1)
     var file = Source.fromFile(s"src/main/resources/enemies/${filename}.edf")
     val countIt = file.getLines()
+    // Counts the number of enemies available in the file
     val nbPreset = countIt.count(_ == "$")
     file.close
     file = Source.fromFile(s"src/main/resources/enemies/${filename}.edf")
     val fileIt = file.getLines()
     val rnd = new Random
+    // Randomly chose one enemy from the file
     val selectedPreset = rnd.nextInt(nbPreset) + 1
     var count = 0
+    // Go to the beginning of the selected enemy description
     while (count < selectedPreset) {
       if (fileIt.next() == "$") {
         count = count + 1
       }
     }
+    // Concatenate the lines of the description
     val enemyDescription = new StringBuilder
     var lastStr = fileIt.next()
     while (lastStr != "%") {
       enemyDescription ++= " " + lastStr
       lastStr = fileIt.next()
     }
+    // Parse the description
     val enemy = parser.parse(parser.description, enemyDescription.toString()).get
     file.close
     return enemy

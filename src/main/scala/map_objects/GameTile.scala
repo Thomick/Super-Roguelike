@@ -63,6 +63,7 @@ class Door extends GameTile with InteractableTile {
   var opened: Boolean = false
   var locked: Boolean = false
 
+  // Opens the door, changes its color, and allows to see through
   def open(): Unit = {
     opened = true
     blocking = false
@@ -94,6 +95,7 @@ class Door extends GameTile with InteractableTile {
   def interact(board: GameBoard, c: game_entities.Character): Unit = {
     if (!opened && !locked) {
       open()
+      // An update of the field of view may be needed as the it is now possible to see what is behind the door
       Main.fovmap.update(board.grid)
     }
   }
@@ -101,6 +103,7 @@ class Door extends GameTile with InteractableTile {
 
 class KeyLockedDoor extends Door {
   lock()
+  // Open the door and remove one key from player inventory
   override def interact(board: GameBoard, c: game_entities.Character): Unit = {
     if (locked && c.isInstanceOf[game_entities.Player]) {
       val player = c.asInstanceOf[game_entities.Player]
@@ -113,6 +116,7 @@ class KeyLockedDoor extends Door {
   }
 }
 
+// Door which can be opened using a Trigger
 class TriggerableDoor extends Door with Triggerable {
   lock()
   def executeAction(): Unit = unlock

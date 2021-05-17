@@ -15,19 +15,52 @@
 \begin{document}
 \maketitle
 
-\section{Fonctionnalités ajoutées}
+\section{Nouvelles mécaniques de jeu}
+\subsection{Expérience des personnages et niveaux}
+Nous avons ajouté des attributs et des méthodes à la classe dont héritent les personnage (\texttt{Character}) afin que ceux-ci puissent acquérir de l'expérience en éliminant d'autres personnages. La quantité d'expérience reçue est égale au niveau de l'ennemi éliminé. Le passage à un niveau supérieur améliore toutes les statistiques de base d'un personnage et augmente également la quantité d'expérience nécessaire afin de passer au niveau suivant.\\
+Le niveau des ennemis est basé sur l'étage dans lequel se trouve le joueur mais des variations peuvent-être introduites à l'aide des fichiers parsés par le générateur d'ennemis.\\
+Les méthodes ajoutées sont \texttt{getXp} et \texttt{levelUp} dans la classe \texttt{Character}
 
+\subsection{Portes}
+Nous avons ajouté des portes afin de bloquer la vision entre les salles et de mieux compartimenter la progression en rajoutant des mécanismes pouvant bloquer le joueur. Le joueur a maintenant la possibilité d'interagir avec des objets héritant de la classe \texttt{GameTile} ayant le trait \texttt{InteractableTile}. Les portes sont de tels objets. Celles-ci peuvent être ouvertes, fermées ou verrouillées. Il est possible de voir au travers des portes ouvertes mais pas des portes fermées. Un porte fermée non verrouillée peut être ouverte en se déplaçant vers la case où celle-ci se trouve.\\
+La classe \texttt{Door} possède deux classes filles:
+\begin{itemize}
+	\item La classe \texttt{KeyLockedDoor} est initialement verrouillée et peut être déverrouillée si le joueur possède une clé sur lui lorsqu'il interagit avec la porte. Les clés fonctionnent sur le même principe que l'argent, l'objet \texttt{Key} peut être ramassé, lorsque cela arrive le compteur de clés est incrémenté et l'objet n'apparaît pas dans l'inventaire.
+	\item La classe \texttt{KeyLockedDoor} est initialement verrouillée et peut être déverrouillée lors du déclenchement d'un \texttt{Trigger}.
+\end{itemize}
+
+\subsection{Déclencheurs(Triggers) et évènements}
+Nous avons introduit une classe \texttt{Trigger} permettant de faire le lien entre des évènements et le déclenchement d'action. Cet classe possède deux tableaux mutables, l'un contenant des objets héritant de la classe \texttt{EventWatcher} et l'autre des objets possédant le trait \texttt{Triggerable}. Pour qu'une instance de la classe \texttt{Trigger} soit actif il faut qu'il soit ajouté au tableau \texttt{triggers} d'une instance de \texttt{Gameboard}. Cette dernière met à jour les déclencheurs à la fin de chaque tour de jeu. Pour que le déclencheur soit activé il faut que tous les évènements contenus dans le tableau \texttt{events} se soient produit. Lors de l'activation du déclencheur, la méthode \texttt{executeAction} des objets du tableau \texttt{actions} est appelée. Une fois que les actions ont été exécutées, l'instance de \texttt{Trigger} est désactivée et ne peut plus être utilisée afin d'éviter de répéter les actions qui ont été effectuées.
+
+\subsubsection{Descendants de \texttt{EventWatcher}}
+\begin{itemize}
+	\item \texttt{ActivableWatcher} : Permet de surveiller l'état d'objets possédant le trait \texttt{Activable}. C'est par exemple le cas des leviers (classe \texttt{Lever}) qui est une nouvelle entité avec laquelle on peut interagir en se déplaçant vers la case sur laquelle elle se trouve. L'interaction change l'état du levier grâce à l'attribut \texttt{activated} et cet évènement est détecté par \texttt{ActivableWatcher} à la fin du tour.
+	\item \texttt{DeathWatcher} : Cette classe surveille les points de vie d'un personnage et s'active lorsque ceux-ci atteignent 0 à la fin d'un tour.
+\end{itemize}
+
+\subsubsection{Objets possédant le trait \texttt{Triggerable}}
+\begin{itemize}
+	\item \texttt{LogAction} : Lorsque son action est exécutée, les instances de cette classe affichent un message à l'aide d'une instance de la classe \texttt{Logger}.
+	\item \texttt{TriggerableDoor} : Il s'agit d'une porte initialement verrouillée. Lors de l'appel à \texttt{executeAction}, celle-ci se déverrouille. Des applications simples sont de créer une porte qui se déverrouille lorsqu'un ou plusieurs leviers sont activés ou bien lorsqu'un ennemi puissant est vaincu.
+\end{itemize}
+
+\subsection{Affichage}
+Nous avons fais en sorte que le terrain ne soit affiché qu'en partie. La zone visible est centrée sur le joueur ou bien le curseur lorsque celui-ci est visible. Cela nous a permis d'agrandir la carte tout en gardant un affichage clair des personnages et des objets.\\
+Par ailleurs, afin de faciliter l'exploration, nous avons également décider d'afficher en petit l'intégralité de la carte sur l'interface du joueur.
+
+
+\section{Nouvelle méthode de génération de la carte}
 \subsection{Génération des salles}
 
-Pour générer des salles, on utilise des fichiers d'extension .rdf pour room description file. Les fichiers contiennent des presets de salles qui sont composés de trois parties qui sont chacune séparées par '\%'. La première partie donne des informations sur la taille de la salle ainsi que l'emplacement des sorties de la salle, la seconde décrit la disposition de la salle et la troisième donne des informations sur le contenu de la salle.\\
+Pour générer des salles, nous utilisons des fichiers d'extension .rdf pour room description file. Les fichiers contiennent des presets de salles composés de trois parties séparées par le symbole '\%'. La première partie donne des informations sur la taille de la salle ainsi que l'emplacement des sorties de la salle, la seconde décrit la disposition de la salle et la troisième donne des informations sur le contenu de la salle.\\
 Pour générer une salle, l'objet \texttt{RoomGenerator} sélectionne un des presets du fichier, puis utilise un objet de la classe \texttt{RoomParser} pour lire le preset et créer un objet de la classe \texttt{Room} qui stocke la position de tous les éléments d'une pièce par rapport à l'entrée de la pièce.\\
 Pour donner les informations sur le contenu, nous avons décidé de parser un langage que nous allons décrire à l'aide des outils proposés par Scala. Voici la grammaire utilisée :\\
 \begin{align*}
-	\texttt{program} &\to \texttt{expr}\ |\ \texttt{expr}\ \texttt{conjunction}\ \texttt{program}\\
-	\texttt{expr} &\to \texttt{number}\ \texttt{specialCharacter}\ \texttt{element}\\
-	\texttt{element} &\to \texttt{character}\ |\ \texttt{item}\ |\ \mbox{"wall"}\ |\ \mbox{"lever"}\ |\ \mbox{"lockedDoor"}\ |\ \mbox{"lock"}\ |\ \mbox{"elevator"}\\
-	\texttt{character} &\to \texttt{enemy}\ |\ \mbox{"vending machine"}\ | \mbox{"computer"}\\
-	\texttt{enemy} &\to \mbox{"easy"}\ |\ \mbox{"normal"}\ |\ \mbox{"hard"}\ |\ \mbox{"boss"}\\
+	\texttt{program}   & \to \texttt{expr}\ |\ \texttt{expr}\ \texttt{conjunction}\ \texttt{program}                                                                   \\
+	\texttt{expr}      & \to \texttt{number}\ \texttt{specialCharacter}\ \texttt{element}                                                                              \\
+	\texttt{element}   & \to \texttt{character}\ |\ \texttt{item}\ |\ \mbox{"wall"}\ |\ \mbox{"lever"}\ |\ \mbox{"lockedDoor"}\ |\ \mbox{"lock"}\ |\ \mbox{"elevator"} \\
+	\texttt{character} & \to \texttt{enemy}\ |\ \mbox{"vending machine"}\ | \mbox{"computer"}                                                                          \\
+	\texttt{enemy}     & \to \mbox{"easy"}\ |\ \mbox{"normal"}\ |\ \mbox{"hard"}\ |\ \mbox{"boss"}                                                                     \\
 \end{align*}
 De plus, \texttt{number} contient l'ensemble des nombres entiers strictement positifs et \texttt{specialCharacter} contient toutes les lettres en majuscule et en minuscule.\\
 Chaque expression de la forme $n\ c\ e$ du programme ajoute l'élément $e$ sur $n$ $c$ de la salle. Si il y a plus de $n$ $c$ dans la salle, on en choisit aléatoirement $n$.\\
@@ -39,9 +72,13 @@ Afin de pouvoir incorporer les salles customisées dans les niveaux, nous avons 
 Désormais, nous générons une première salle de départ et nous gardons en mémoire la liste des sorties non utilisées. A chaque étape, on choisit aléatoirement une sortie non utilisée qu'on retire de la liste et on essaye de placer une salle aléatoire à proximité. Si la salle recouvre une case déjà modifiée précédemment, on ne la place pas et on essaie à la place de relier cette sortie à une autre sortie non utilisée à proximité. Lorsqu'on a atteint le nombre de salle demandé ou que toutes les sorties sont utilisées, on s'arrête. Si le nombre de salle demandé n'est pas atteint, on recommence.\\
 De plus, on place parfois des salles spéciales. On peut placer des salles avec des leviers et, si il y a des leviers non utilisés, des salles au trésor qui contiennent une porte qui sera liée à un levier. Enfin, la dernière salle de l'étage contient un ascensceur pour passer à l'étage d'après. Il y a trois types de salles finales : les salles avec un verrou, les salles avec des portes fermées. Les salles avec un verrou fonctionnent de la même manière que dans la partie précédente. Les portes fermées des salles finales peuvent se dévérouiller de trois manières distinctes : soit en tuant un boss se trouvant dans la salle, soit en activant un levier, soit en tuant tous les ennemis de l'étage.\\
 
-\section{Difficultés rencontrées}
+\section{Modification des ennemis}
+\subsection{Effets et objets abandonnés}
+Afin de mieux mettre en valeur le système de statut, les ennemis peuvent désormais appliquer des statuts en attaquant le joueur. La nature des statuts pouvant être appliqués ainsi que leurs probabilités dépendent de l'ennemi et sont décrit dans les fichiers \texttt{.edf}. De plus les ennemis peuvent laisser des objets sur le sol lorsqu'ils sont éliminés. De même que les effets, ces objets peuvent être précisés dans la description de l'ennemi.
 
+\subsection{Classes d'ennemis}
 
+\subsection{Parsing des descriptions des ennemis}
 
 
 

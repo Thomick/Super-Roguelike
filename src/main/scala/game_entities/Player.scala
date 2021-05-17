@@ -15,9 +15,10 @@ class Player(init_pos: (Int, Int), b: GameBoard) extends Character(init_pos, b, 
   var alive: Boolean = true
   baseAtt = 5
   baseDef = 1
+  inventory += new ArmCannon
 
   var money: Int = 0
-  var keyCount: Int = 3
+  var keyCount: Int = 0
 
   // Player action when encountering another character
   override def action(c: GameEntity): Unit = {

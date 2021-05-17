@@ -24,11 +24,13 @@ object BoardRenderer {
     val tileSize = boardSize / (nbTiles + tilePadding)
     //drawnEntities is used to show information about visible entities
     var drawnEntities = new mutable.ArrayBuffer[GameEntity]
+    // Compute the target position for the center of the drawn area wrt the current gamemode
     val center =
       if (!UI.isNormalMode)
         board.cursor.pos
       else
         board.playerEntity.pos
+    // Compute the real position of the tile drawn in the top-left corner
     val baseTile = (
       max(0, min(center._1 - nbTiles / 2, board.size_x - nbTiles)),
       max(0, min(center._2 - nbTiles / 2, board.size_y - nbTiles))
@@ -43,6 +45,7 @@ object BoardRenderer {
       )
     }
 
+    // Compute the relative position of a drawn tile
     def mapPosToScren(pos: (Int, Int)) =
       (pos._1 - baseTile._1, pos._2 - baseTile._2)
 
