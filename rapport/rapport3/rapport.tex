@@ -30,10 +30,14 @@ Pour donner les informations sur le contenu, nous avons décidé de parser un la
 	\texttt{enemy} &\to \mbox{"easy"}\ |\ \mbox{"normal"}\ |\ \mbox{"hard"}\ |\ \mbox{"boss"}\\
 \end{align*}
 De plus, \texttt{number} contient l'ensemble des nombres entiers strictement positifs et \texttt{specialCharacter} contient toutes les lettres en majuscule et en minuscule.\\
-Chaque expression $n c e$ du programme ajoute $n$ 
-
+Chaque expression de la forme $n\ c\ e$ du programme ajoute l'élément $e$ sur $n$ $c$ de la salle. Si il y a plus de $n$ $c$ dans la salle, on en choisit aléatoirement $n$.\\
+Par exemple, dans une salle qui contient $4$ $d$, l'expression \texttt{2 d easy} va choisir 2 $d$ parmi les 4 et placer deux ennemis faciles à ces emplacements.\\
 
 \subsection{Génération des niveaux}
+
+Afin de pouvoir incorporer les salles customisées dans les niveaux, nous avons du recommencer à zéro la génération de niveau. En effet, avec l'ancienne méthode, lorsqu'on plaçait les chemins entre les salles, on ne vérifiait pas que l'on ne recouvrait pas une autre salle.\\
+Désormais, nous générons une première salle de départ et nous gardons en mémoire la liste des sorties non utilisées. A chaque étape, on choisit aléatoirement une sortie non utilisée qu'on retire de la liste et on essaye de placer une salle aléatoire à proximité. Si la salle recouvre une case déjà modifiée précédemment, on ne la place pas et on essaie à la place de relier cette sortie à une autre sortie non utilisée à proximité. Lorsqu'on a atteint le nombre de salle demandé ou que toutes les sorties sont utilisées, on s'arrête. Si le nombre de salle demandé n'est pas atteint, on recommence.\\
+De plus, on place parfois des salles spéciales. On peut placer des salles avec des leviers et, si il y a des leviers non utilisés, des salles au trésor qui contiennent une porte qui sera liée à un levier. Enfin, la dernière salle de l'étage contient un ascensceur pour passer à l'étage d'après. Il y a trois types de salles finales : les salles avec un verrou, les salles avec des portes fermées. Les salles avec un verrou fonctionnent de la même manière que dans la partie précédente. Les portes fermées des salles finales peuvent se dévérouiller de trois manières distinctes : soit en tuant un boss se trouvant dans la salle, soit en activant un levier, soit en tuant tous les ennemis de l'étage.\\
 
 \section{Difficultés rencontrées}
 
