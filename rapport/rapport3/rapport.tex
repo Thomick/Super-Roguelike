@@ -1,0 +1,45 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tcolorbox}
+\usepackage{amsfonts}
+\usepackage{stmaryrd}
+\usepackage{xcolor}
+\title{Projet Programmation 2 : Rapport Partie 3}
+\author{MANGEL Léo et MICHEL Thomas}
+\date{}
+\begin{document}
+\maketitle
+
+\section{Fonctionnalités ajoutées}
+
+\subsection{Génération des salles}
+
+Pour générer des salles, on utilise des fichiers d'extension .rdf pour room description file. Les fichiers contiennent des presets de salles qui sont composés de trois parties qui sont chacune séparées par '\%'. La première partie donne des informations sur la taille de la salle ainsi que l'emplacement des sorties de la salle, la seconde décrit la disposition de la salle et la troisième donne des informations sur le contenu de la salle.\\
+Pour générer une salle, l'objet \texttt{RoomGenerator} sélectionne un des presets du fichier, puis utilise un objet de la classe \texttt{RoomParser} pour lire le preset et créer un objet de la classe \texttt{Room} qui stocke la position de tous les éléments d'une pièce par rapport à l'entrée de la pièce.\\
+Pour donner les informations sur le contenu, nous avons décidé de parser un langage que nous allons décrire à l'aide des outils proposés par Scala. Voici la grammaire utilisée :\\
+\begin{align*}
+	\texttt{program} &\to \texttt{expr}\ |\ \texttt{expr}\ \texttt{conjunction}\ \texttt{program}\\
+	\texttt{expr} &\to \texttt{number}\ \texttt{specialCharacter}\ \texttt{element}\\
+	\texttt{element} &\to \texttt{character}\ |\ \texttt{item}\ |\ \mbox{"wall"}\ |\ \mbox{"lever"}\ |\ \mbox{"lockedDoor"}\ |\ \mbox{"lock"}\ |\ \mbox{"elevator"}\\
+	\texttt{character} &\to \texttt{enemy}\ |\ \mbox{"vending machine"}\ | \mbox{"computer"}\\
+	\texttt{enemy} &\to \mbox{"easy"}\ |\ \mbox{"normal"}\ |\ \mbox{"hard"}\ |\ \mbox{"boss"}\\
+\end{align*}
+De plus, \texttt{number} contient l'ensemble des nombres entiers strictement positifs et \texttt{specialCharacter} contient toutes les lettres en majuscule et en minuscule.\\
+Chaque expression $n c e$ du programme ajoute $n$ 
+
+
+\subsection{Génération des niveaux}
+
+\section{Difficultés rencontrées}
+
+
+
+
+
+\end{document}
+
