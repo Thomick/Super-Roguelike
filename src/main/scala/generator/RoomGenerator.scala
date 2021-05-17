@@ -126,19 +126,15 @@ class RoomParser(depth: Int) extends RegexParsers with Serializable {
     }
   }
 
-  val constant = "[1-9][0-9]*".r
+  val specialCharacter = "[a-z]|[A-Z]".r ^^ { _.apply(0) }
 
-  val specialCharacter = "[a-z]|[A-Z]".r
-
-  def number: Parser[Int] = (constant ^^ { _.toInt }) | ("depth" ^^ { s => depth })
+  def number: Parser[Int] = "[1-9][0-9]*".r ^^ { _.toInt }
 
   def conjunction: Parser[Any] = "and"
 
   def element: Parser[((Int, Int)) => Unit] = character | item | ("wall" ^^ { s => p => room.addWallcell(p) }) | ("lever" ^^ { s => p => room.addLever(p) }) | ("lockedDoor" ^^ { s => p => room.addLockedDoor(p) }) | ("lock" ^^ { s => p => room.addLock(p) }) | ("elevator" ^^ { s => p => room.addElevator(p) })
 
-  def enemyDifficulty: Parser[String] = "easy" | "normal" | "hard" | "boss"
-
-  def enemy: Parser[((Int, Int)) => Unit] = enemyDifficulty ^^ { s => p =>
+  def enemy: Parser[((Int, Int)) => Unit] = ("easy" | "normal" | "hard" | "boss") ^^ { s => p =>
     if (s == "boss") {
       room.addBoss(p, EnemyGenerator.generateEnemy(s, depth))
     } else {
@@ -176,7 +172,7 @@ class RoomParser(depth: Int) extends RegexParsers with Serializable {
 
   def character: Parser[((Int, Int)) => Unit] = enemy | ("vending machine" ^^ { s => p => room.addEntity(p, ((pos, b) => new Shopkeeper(pos, b))) }) | ("computer" ^^ { s => p => room.addEntity(p, (pos, b) => new Computer(pos, b)) })
 
-  def expr: Parser[Any] = number ~ (specialCharacter ^^ { _.apply(0) }) ~ element ^^ { case n ~ c ~ e =>
+  def expr: Parser[Any] = number ~ specialCharacter ~ element ^^ { case n ~ c ~ e =>
     var shuffledVector = rnd.shuffle(speChar(c))
     speChar(c) = shuffledVector.patch(0, Nil, n)
     for (i <- 0 to n - 1) {
