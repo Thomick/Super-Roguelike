@@ -67,13 +67,13 @@ class EnemyParser(depth: Int) extends RegexParsers {
 
   val rnd = new Random
 
+  // signed integer (the + is optional)
   val constant = """(-|\+)?(0|[1-9][0-9]*)""".r
-
-  val char = """"(\w|\d| |\.)*"""".r
 
   def number: Parser[Int] = constant ^^ { _.toInt }
 
-  def text: Parser[String] = ("\"(\\w|\\d| |\\.)*\"".r ^^ { s =>
+  // A sequence of characters delimited by the symbol '"'
+  def text: Parser[String] = (""""(\w|\d| |\.)*"""".r ^^ { s =>
     val str = s.toString()
     str.substring(1, str.length - 1)
   })
@@ -82,6 +82,7 @@ class EnemyParser(depth: Int) extends RegexParsers {
 
   def effectType: Parser[String] = "burning" | "regeneration" | "stunned" | "bleeding" | "nothing"
 
+  // Effect with its duration and weight (defining the frequency of application of an effect)
   def effect: Parser[(String, Int, Int)] =
     effectType ~ opt("for" ~> number <~ "turns") ~ opt("with weight" ~> number) ^^ { case et ~ duration ~ weight =>
       (et, duration.getOrElse(2), weight.getOrElse(1))
@@ -90,6 +91,7 @@ class EnemyParser(depth: Int) extends RegexParsers {
   def itemType: Parser[Any] =
     "morphin" | "ironhelmet" | "laserchainsaw" | "bandage" | "armcannon" | "lasereyes" | "cowboyhat" | "heavyjacket" | "knuckles" | "poweredhammer" | "components" | "hackingtools" | "nothing"
 
+  // An item with its level and probability of loot
   def item: Parser[(Option[AbstractItem], Int)] = itemType ~ opt(number) ~ opt("with weight" ~> number) ^^ {
     case "nothing" ~ _ ~ weight =>
       weight match {
@@ -101,6 +103,7 @@ class EnemyParser(depth: Int) extends RegexParsers {
         case None        => depth
         case Some(value) => max(0, depth + value)
       }
+      // The weight define how often an item should be looted
       val w = weight match {
         case None        => 1
         case Some(value) => max(0, value)
@@ -124,31 +127,38 @@ class EnemyParser(depth: Int) extends RegexParsers {
       (Some(builtItem), w)
   }
 
+  // Change a stat of enemy by comparaison to the other enemies at the same level
   def statModifier: Parser[EnemyConstructor => Unit] =
     ("strength" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.bonusAtt += n })
-      .|("defense" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.bonusDef += n })
+      .|("defence" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.bonusDef += n })
       .|("health" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.bonusHealth += n })
       .|("level" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.level += n })
 
-  // Returns functions which modify an EnemyConstructor
+  // Returns functions that modify an EnemyConstructor
   def modifier: Parser[EnemyConstructor => Any] =
     ("loots" ~> rep1sep(item, "or") ^^ { case items =>
       constructor: EnemyConstructor => items.foreach((a => constructor.addItem(a._1, a._2)))
     })
       .|("reward" ~> number ^^ { case n => constructor: EnemyConstructor => constructor.reward += n })
       .|("with" ~> statModifier ^^ { case s => s })
-      .|("applies" ~> rep1sep(effect, "or") ^^ { case effects =>
-        constructor: EnemyConstructor => effects.foreach((a => constructor.addEffect(a._1, a._2, a._3)))
+      .|("applies" ~> rep1sep(effect, "or") ^^ { // Match one or more effects separated by the keyword "or"
+        case effects => constructor: EnemyConstructor => effects.foreach((a => constructor.addEffect(a._1, a._2, a._3)))
       })
-      .|("looks like" ~> text ^^ { case s => constructor: EnemyConstructor => constructor.image = s })
+      .|("looks like" ~> text ^^ { case s =>
+        constructor: EnemyConstructor => constructor.image = s
+      }) // Modify the image used for this enemy
 
   // Returns a function that create the enemy described using the board and its position on the board
   def description: Parser[((Int, Int), GameBoard) => Enemy] =
-    text ~ ("of type" ~> enemyType) ~ ("and" ~> repsep(modifier, "and")) ^^ { case name ~ et ~ modifiers =>
-      val constructor = new EnemyConstructor(et, name)
-      constructor.level = depth
-      modifiers.foreach(f => f(constructor))
-      constructor.build
+    text ~ ("of type" ~> enemyType) ~ opt("and" ~> rep1sep(modifier, "and")) ^^ { // Match any number of modifiers
+      case name ~ et ~ modifiers =>
+        val constructor = new EnemyConstructor(et, name)
+        constructor.level = depth
+        modifiers match {
+          case None       => ()
+          case Some(mods) => mods.foreach(f => f(constructor)) // Apply the modifiers to the enemy constrctor
+        }
+        constructor.build
     }
 
 }

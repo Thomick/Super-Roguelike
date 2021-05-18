@@ -72,7 +72,7 @@ object SideMenuRenderer {
     menuBuffer ++= "HP : " + player.currentHP.toString + "/" + player.getMaxHP.toString + "\n"
     menuBuffer ++= s"Level : ${player.level}   Xp : ${player.xp}/${player.nextLevelCap}\n"
     menuBuffer ++= "Attack power : " + player.getAtt.toString + "\n"
-    menuBuffer ++= "Defense : " + player.getDef.toString + "\n"
+    menuBuffer ++= "Defence : " + player.getDef.toString + "\n"
     menuBuffer ++= s"Money : ${player.money.toString}    Keys : ${player.keyCount}\n"
     menuBuffer ++= "Status : \n"
     player.statusList.foreach(s => menuBuffer ++= " - " + s.name + " : " + s.remainingTimeString() + "\n")

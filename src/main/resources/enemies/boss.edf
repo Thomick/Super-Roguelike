@@ -4,7 +4,7 @@ $
             or heavyjacket +1 with weight 2
             or hackingtools with weight 1
     and reward 20
-    and with defense +2
+    and with defence +2
     and with strength +2
     and with level +2
     and with health +10
@@ -18,7 +18,7 @@ $
             or poweredhammer +1 with weight 2
             or hackingtools with weight 1
     and reward 20
-    and with defense -5
+    and with defence -5
     and with strength +3
     and with level +2
     and looks like "cerberus"

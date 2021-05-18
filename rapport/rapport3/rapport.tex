@@ -9,6 +9,12 @@
 \usepackage{amsfonts}
 \usepackage{stmaryrd}
 \usepackage{xcolor}
+
+\usepackage{fancyvrb}
+\fvset{%
+fontsize=\small,
+numbers=left
+}
 \title{Projet Programmation 2 : Rapport Partie 3}
 \author{MANGEL Léo et MICHEL Thomas}
 \date{}
@@ -48,11 +54,40 @@ Nous avons introduit une classe \texttt{Trigger} permettant de faire le lien ent
 Nous avons fais en sorte que le terrain ne soit affiché qu'en partie. La zone visible est centrée sur le joueur ou bien le curseur lorsque celui-ci est visible. Cela nous a permis d'agrandir la carte tout en gardant un affichage clair des personnages et des objets.\\
 Par ailleurs, afin de faciliter l'exploration, nous avons également décider d'afficher en petit l'intégralité de la carte sur l'interface du joueur.
 
+\section{Modification des ennemis}
+\subsection{Effets et objets abandonnés}
+Afin de mieux mettre en valeur le système de statut, les ennemis peuvent désormais appliquer des statuts en attaquant le joueur. La nature des statuts pouvant être appliqués ainsi que leurs probabilités dépendent de l'ennemi et sont décrit dans les fichiers \texttt{.edf}. De plus les ennemis peuvent laisser des objets sur le sol lorsqu'ils sont éliminés. De même que les effets, ces objets peuvent être précisés dans la description de l'ennemi.
+
+\subsection{Parseur d'ennemis}
+La classe \texttt{EnemyParser} dérive de la classe \texttt{RegexParsers} fournie dans la bibiothèque standard de Scala. Cette classe permet de d'analyser la description d'un ennemi.\\
+Une description contient nécessairement le nom d'un ennemi ainsi que sont type, elle peut ensuite comporter une séquence de longueur quelconque de modificateurs qui vont faire la particularité d'un ennemi donné par rapport aux autres ennemis du même niveau. Les constantes numériques et les chaînes de caractères sont détectées à l'aide d'expressions régulières et les séquences grâce au combinateur \texttt{rep1sep}. Le code relatif au parseur d'ennemis se trouve dans le fichier \texttt{EnemyGenerator}. Les fichiers lus par le parseur se trouvent dans \texttt{ressources/ennemies} où ils sont classés par difficulté pour vaincre les ennemis décrits.\\
+Voici un exemple de description d'ennemi :
+\begin{Verbatim}
+"Robot" of type melee
+    and loots  laserchainsaw +3 with weight 3
+            or heavyjacket -1 with weight 2
+            or hackingtools with weight 1       
+    and reward 20                            
+    and with defense +2
+    and with strength +2
+    and with level +2
+    and with health +10
+    and looks like "redrobot"
+    and applies burning for 4 turns with weight 1
+        or nothing with weight 4                 
+\end{Verbatim}
+Ligne 1 : Ennemi appelé Robot combattant au corps à corps.\\
+Lignes 2-4 : Objets pouvant être abandonnés. Le premier nombre représente la différence entre le niveau de l'objet et celui de l'étage. Le poids représente la probabilité d'apparition d'un objet par rapport aux autres (l'objet \texttt{heavyjacket} a deux fois plus de chance d'apparaître que l'objet \texttt{hackingtools}).\\
+Ligne 5 : Argent abandonné lors de l'élimination de l'ennemi.
+\\Lignes 6-9 : Modification des statistiques par rapport aux autres ennemis du même niveau.
+\\Ligne 10 : Cet ennemi sera représenté par le sprite redrobot
+\\Lignes 11-12 : Ajout d'effets lors de l'attaque cet ennemi. Un effet de type \texttt{nothing} permet de créer une probabilité qu'aucun effet ne soit appliqué lors d'une attaque.
+
 
 \section{Nouvelle méthode de génération de la carte}
 \subsection{Génération des salles}
 
-Pour générer des salles, nous utilisons des fichiers d'extension .rdf pour room description file. Les fichiers contiennent des presets de salles composés de trois parties séparées par le symbole '\%'. La première partie donne des informations sur la taille de la salle ainsi que l'emplacement des sorties de la salle, la seconde décrit la disposition de la salle et la troisième donne des informations sur le contenu de la salle.\\
+Pour générer des salles, nous utilisons des fichiers d'extension .rdf pour room description file. Les fichiers contiennent des presets de salles composés de trois parties séparées par le symbole '\%'. La première partie donne des informations sur la taille de la salle ainsi que l'emplacement des sorties de la salle, la seconde décrit la disposition de la salle et la troisième donne des informations sur le contenu de la salle. Seule la troisième partie est analysée par le parseur. Celle-ci donne un sens aux symboles utilisés dans la deuxième partie et décrit les objets ou personnages pouvant apparaître, les interactions, ainsi que la répartition de ces objets entre les différentes positions désignées par le même symbole.\\
 Pour générer une salle, l'objet \texttt{RoomGenerator} sélectionne un des presets du fichier, puis utilise un objet de la classe \texttt{RoomParser} pour lire le preset et créer un objet de la classe \texttt{Room} qui stocke la position de tous les éléments d'une pièce par rapport à l'entrée de la pièce.\\
 Pour donner les informations sur le contenu, nous avons décidé de parser un langage que nous allons décrire à l'aide des outils proposés par Scala. Voici la grammaire utilisée :\\
 \begin{align*}
@@ -63,24 +98,18 @@ Pour donner les informations sur le contenu, nous avons décidé de parser un la
 	\texttt{enemy}     & \to \mbox{"easy"}\ |\ \mbox{"normal"}\ |\ \mbox{"hard"}\ |\ \mbox{"boss"}                                                                     \\
 \end{align*}
 De plus, \texttt{number} contient l'ensemble des nombres entiers strictement positifs, \texttt{specialCharacter} contient toutes les lettres en majuscule et en minuscule et \texttt{item} contient l'ensemble des objets, ainsi que "item" qui permet de générer un objet aléatoire.\\
-Chaque expression de la forme $n\ c\ e$ du programme ajoute l'élément $e$ sur $n$ $c$ de la salle. Si il y a plus de $n$ $c$ dans la salle, on en choisit aléatoirement $n$.\\
-Par exemple, dans une salle qui contient $4$ $d$, l'expression \texttt{2 d easy} va choisir 2 $d$ parmi les 4 et placer deux ennemis faciles à ces emplacements.\\
+Chaque expression de la forme $n\ c\ e$ du programme ajoute l'élément $e$ sur $n$ cases parmis celles où le symbole $c$ apparaît dans la description de la salle. S'il y a plus de $n$ positions avec un symbole $c$ dans la salle alors on en choisit aléatoirement $n$ sur lesquels on place l'élément $e$.\\
+Par exemple: Supposons que l'on ait placé 4 fois la lettre d et deux fois la lettre w dans la grille décrivant la disposition de la salle (partie 2 du preset). L'expression \texttt{2 d easy and 1 w wall} indique alors qu'il faut choisir 2 d parmi les 4 disponibles et placer deux ennemis faciles à ces emplacements, puis choisir l'un des deux w et y placer un mur. Ce principe peut être utilisé afin de placer une salle secrète qui n'est révélée qu'avec une certaine probabilité (ici une chance sur deux).\\
+Le même type d'expression permet de placer des porte verrouillée, des objets sur le sol ou encore des leviers.
 
 \subsection{Génération des niveaux}
 
-Afin de pouvoir incorporer les salles customisées dans les niveaux, nous avons du recommencer à zéro la génération de niveau. En effet, avec l'ancienne méthode, lorsqu'on plaçait les chemins entre les salles, on ne vérifiait pas que l'on ne recouvrait pas une autre salle.\\
-Désormais, nous générons une première salle de départ et nous gardons en mémoire la liste des sorties non utilisées. A chaque étape, on choisit aléatoirement une sortie non utilisée qu'on retire de la liste et on essaye de placer une salle aléatoire à proximité. Si la salle recouvre une case déjà modifiée précédemment, on ne la place pas et on essaie à la place de relier cette sortie à une autre sortie non utilisée à proximité. Lorsqu'on a atteint le nombre de salle demandé ou que toutes les sorties sont utilisées, on s'arrête. Si le nombre de salle demandé n'est pas atteint, on recommence.\\
+Afin de pouvoir incorporer les nouvelles salles créées grâce au parser dans les niveaux, nous avons dû recommencer à zéro la génération de niveau. En effet, avec l'ancienne méthode, lorsqu'on plaçait les chemins entre les salles, on ne vérifiait pas que l'on ne recouvrait pas une autre salle.\\
+Désormais, nous générons une première salle de départ et nous gardons en mémoire la liste des sorties non utilisées. A chaque étape, on choisit aléatoirement une sortie non utilisée qu'on retire de la liste et on essaye de placer une salle aléatoire à proximité. Si la salle recouvre une case déjà modifiée précédemment, on ne la place pas et on essaie à la place de relier cette sortie à une autre sortie non utilisée à proximité. Lorsqu'on a atteint le nombre de salles demandé ou que toutes les sorties sont utilisées, on s'arrête. Si le nombre de salles demandé n'est pas atteint, on recommence.\\
 De plus, on place parfois des salles spéciales. On peut placer des salles avec des leviers et, si il y a des leviers non utilisés, des salles au trésor qui contiennent une porte qui sera liée à un levier. Enfin, la dernière salle de l'étage contient un ascensceur pour passer à l'étage d'après. Il y a trois types de salles finales : les salles avec un verrou, les salles avec des portes fermées. Les salles avec un verrou fonctionnent de la même manière que dans la partie précédente. Les portes fermées des salles finales peuvent se dévérouiller de trois manières distinctes : soit en tuant un boss se trouvant dans la salle, soit en activant un levier, soit en tuant tous les ennemis de l'étage.\\
 
-\section{Modification des ennemis}
-\subsection{Effets et objets abandonnés}
-Afin de mieux mettre en valeur le système de statut, les ennemis peuvent désormais appliquer des statuts en attaquant le joueur. La nature des statuts pouvant être appliqués ainsi que leurs probabilités dépendent de l'ennemi et sont décrit dans les fichiers \texttt{.edf}. De plus les ennemis peuvent laisser des objets sur le sol lorsqu'ils sont éliminés. De même que les effets, ces objets peuvent être précisés dans la description de l'ennemi.
-
-\subsection{Classes d'ennemis}
-
-\subsection{Parsing des descriptions des ennemis}
-
-
-
+\section{Difficultés rencontrées}
+Nous n'avons pas rencontré de difficultés importantes durant cette partie. L'attention portée à l'écriture du code lors des deux premières parties nous a permis de l'étendre sans difficulté avec les nouvelles fonctionnalités de cette partie du projet.\\
+Nous avons remarqué que la multiplication des expressions détectées par l'analyseur syntaxique rend plus difficile la recherche d'erreurs. Nous sommes cependant parvenu à corriger ces éventuelles erreurs en nous ramenant à des exemples plus simples afin de tester séparément les différentes fonctionnalités de notre programme.
 \end{document}
 

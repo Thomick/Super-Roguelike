@@ -5,6 +5,5 @@
 .scalafmt.conf
 *.gz
 *.sty
-*.ser
 target/
 project/

@@ -4,7 +4,7 @@ $
             or armcannon +2 with weight 3 
             or lasereyes +1 with weight 5
     and reward 15
-    and with defense -2
+    and with defence -2
     and with level +1
     and applies stunned for 3 turns with weight 1
                 or nothing with weight 5
@@ -27,7 +27,7 @@ $
             or components with weight 1
             or knuckles +3 with weight 3
     and reward 10
-    and with defense +1
+    and with defence +1
     and with strength +1
     and with level +1
     and applies stunned for 3 turns with weight 1

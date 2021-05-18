@@ -3,8 +3,8 @@ $
     and loots  components with weight 1
             or nothing with weight 1
     and reward 2
-    and with defense -2
-    and level -2
+    and with defence -2
+    and with level -2
     and looks like "drone"
 %
 $
@@ -13,8 +13,8 @@ $
             or morphin with weight 2
             or nothing with weight 1
     and reward 2
-    and with defense -2
-    and level -2
+    and with defence -2
+    and with level -2
     and looks like "robot3"
 %
 $
@@ -23,8 +23,8 @@ $
             or cowboyhat with weight 1
             or nothing with weight 3
     and reward 3
-    and with defense -2
-    and level -1
+    and with defence -2
+    and with level -1
     and strength +2
     and looks like "dog1"
 %
@@ -44,7 +44,7 @@ $
     and loots  components with weight 1
             or morphin with weight 2
     and reward 2
-    and with defense -5
+    and with defence -5
     and with strength +1
     and applies regeneration for 2 turns with weight 1
                 or nothing with weight 2
