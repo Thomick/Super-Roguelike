@@ -62,7 +62,7 @@ Pour donner les informations sur le contenu, nous avons décidé de parser un la
 	\texttt{character} & \to \texttt{enemy}\ |\ \mbox{"vending machine"}\ | \mbox{"computer"}                                                                          \\
 	\texttt{enemy}     & \to \mbox{"easy"}\ |\ \mbox{"normal"}\ |\ \mbox{"hard"}\ |\ \mbox{"boss"}                                                                     \\
 \end{align*}
-De plus, \texttt{number} contient l'ensemble des nombres entiers strictement positifs et \texttt{specialCharacter} contient toutes les lettres en majuscule et en minuscule.\\
+De plus, \texttt{number} contient l'ensemble des nombres entiers strictement positifs, \texttt{specialCharacter} contient toutes les lettres en majuscule et en minuscule et \texttt{item} contient l'ensemble des objets, ainsi que "item" qui permet de générer un objet aléatoire.\\
 Chaque expression de la forme $n\ c\ e$ du programme ajoute l'élément $e$ sur $n$ $c$ de la salle. Si il y a plus de $n$ $c$ dans la salle, on en choisit aléatoirement $n$.\\
 Par exemple, dans une salle qui contient $4$ $d$, l'expression \texttt{2 d easy} va choisir 2 $d$ parmi les 4 et placer deux ennemis faciles à ces emplacements.\\
 
