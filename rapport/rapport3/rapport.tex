@@ -23,7 +23,7 @@ numbers=left
 
 \section{Nouvelles mécaniques de jeu}
 \subsection{Expérience des personnages et niveaux}
-Nous avons ajouté des attributs et des méthodes à la classe dont héritent les personnage (\texttt{Character}) afin que ceux-ci puissent acquérir de l'expérience en éliminant d'autres personnages. La quantité d'expérience reçue est égale au niveau de l'ennemi éliminé. Le passage à un niveau supérieur améliore toutes les statistiques de base d'un personnage et augmente également la quantité d'expérience nécessaire afin de passer au niveau suivant.\\
+Nous avons ajouté des attributs et des méthodes à la classe dont héritent les personnages (\texttt{Character}) afin que ceux-ci puissent acquérir de l'expérience en éliminant d'autres personnages. La quantité d'expérience reçue est égale au niveau de l'ennemi éliminé. Le passage à un niveau supérieur améliore toutes les statistiques de base d'un personnage et augmente également la quantité d'expérience nécessaire afin de passer au niveau suivant.\\
 Le niveau des ennemis est basé sur l'étage dans lequel se trouve le joueur mais des variations peuvent-être introduites à l'aide des fichiers parsés par le générateur d'ennemis.\\
 Les méthodes ajoutées sont \texttt{getXp} et \texttt{levelUp} dans la classe \texttt{Character}
 
@@ -36,7 +36,7 @@ La classe \texttt{Door} possède deux classes filles:
 \end{itemize}
 
 \subsection{Déclencheurs(Triggers) et évènements}
-Nous avons introduit une classe \texttt{Trigger} permettant de faire le lien entre des évènements et le déclenchement d'action. Cet classe possède deux tableaux mutables, l'un contenant des objets héritant de la classe \texttt{EventWatcher} et l'autre des objets possédant le trait \texttt{Triggerable}. Pour qu'une instance de la classe \texttt{Trigger} soit actif il faut qu'il soit ajouté au tableau \texttt{triggers} d'une instance de \texttt{Gameboard}. Cette dernière met à jour les déclencheurs à la fin de chaque tour de jeu. Pour que le déclencheur soit activé il faut que tous les évènements contenus dans le tableau \texttt{events} se soient produit. Lors de l'activation du déclencheur, la méthode \texttt{executeAction} des objets du tableau \texttt{actions} est appelée. Une fois que les actions ont été exécutées, l'instance de \texttt{Trigger} est désactivée et ne peut plus être utilisée afin d'éviter de répéter les actions qui ont été effectuées.
+Nous avons introduit une classe \texttt{Trigger} permettant de faire le lien entre des évènements et le déclenchement d'actions. Cette classe possède deux tableaux mutables, l'un contenant des objets héritant de la classe \texttt{EventWatcher} et l'autre des objets possédant le trait \texttt{Triggerable}. Pour qu'une instance de la classe \texttt{Trigger} soit active, il faut qu'elle soit ajouté au tableau \texttt{triggers} d'une instance de \texttt{Gameboard}. Cette dernière met à jour les déclencheurs à la fin de chaque tour de jeu. Pour que le déclencheur s'active, il faut que tous les évènements contenus dans le tableau \texttt{events} se soient produit. Lors de l'activation du déclencheur, la méthode \texttt{executeAction} des objets du tableau \texttt{actions} est appelée. Une fois que les actions ont été exécutées, l'instance de \texttt{Trigger} est désactivée et ne peut plus être utilisée afin d'éviter de répéter les actions qui ont été effectuées.
 
 \subsubsection{Descendants de \texttt{EventWatcher}}
 \begin{itemize}
@@ -46,21 +46,21 @@ Nous avons introduit une classe \texttt{Trigger} permettant de faire le lien ent
 
 \subsubsection{Objets possédant le trait \texttt{Triggerable}}
 \begin{itemize}
-	\item \texttt{LogAction} : Lorsque son action est exécutée, les instances de cette classe affichent un message à l'aide d'une instance de la classe \texttt{Logger}.
+	\item \texttt{LogAction} : Lorsque son action est exécutée, les instances de cette classe affichent un message à l'aide d'un objet de la classe \texttt{Logger}.
 	\item \texttt{TriggerableDoor} : Il s'agit d'une porte initialement verrouillée. Lors de l'appel à \texttt{executeAction}, celle-ci se déverrouille. Des applications simples sont de créer une porte qui se déverrouille lorsqu'un ou plusieurs leviers sont activés ou bien lorsqu'un ennemi puissant est vaincu.
 \end{itemize}
 
 \subsection{Affichage}
 Nous avons fais en sorte que le terrain ne soit affiché qu'en partie. La zone visible est centrée sur le joueur ou bien le curseur lorsque celui-ci est visible. Cela nous a permis d'agrandir la carte tout en gardant un affichage clair des personnages et des objets.\\
-Par ailleurs, afin de faciliter l'exploration, nous avons également décider d'afficher en petit l'intégralité de la carte sur l'interface du joueur.
+Par ailleurs, afin de faciliter l'exploration, nous avons également décidé d'afficher en permanence l'intégralité de la carte sur l'interface du joueur afin d'avoir une vue globale de l'étage dans lequel le joueur se trouve.
 
 \section{Modification des ennemis}
 \subsection{Effets et objets abandonnés}
-Afin de mieux mettre en valeur le système de statut, les ennemis peuvent désormais appliquer des statuts en attaquant le joueur. La nature des statuts pouvant être appliqués ainsi que leurs probabilités dépendent de l'ennemi et sont décrit dans les fichiers \texttt{.edf}. De plus les ennemis peuvent laisser des objets sur le sol lorsqu'ils sont éliminés. De même que les effets, ces objets peuvent être précisés dans la description de l'ennemi.
+Afin de mieux mettre en valeur le système de statuts, les ennemis peuvent désormais appliquer des statuts en attaquant le joueur. La nature des statuts pouvant être appliqués ainsi que leurs probabilités dépendent de l'ennemi et sont décrits dans les fichiers \texttt{.edf}. De plus les ennemis peuvent laisser des objets sur le sol lorsqu'ils sont éliminés. De même que les effets, ces objets peuvent être précisés dans la description de l'ennemi.
 
 \subsection{Parseur d'ennemis}
 La classe \texttt{EnemyParser} dérive de la classe \texttt{RegexParsers} fournie dans la bibiothèque standard de Scala. Cette classe permet de d'analyser la description d'un ennemi.\\
-Une description contient nécessairement le nom d'un ennemi ainsi que sont type, elle peut ensuite comporter une séquence de longueur quelconque de modificateurs qui vont faire la particularité d'un ennemi donné par rapport aux autres ennemis du même niveau. Les constantes numériques et les chaînes de caractères sont détectées à l'aide d'expressions régulières et les séquences grâce au combinateur \texttt{rep1sep}. Le code relatif au parseur d'ennemis se trouve dans le fichier \texttt{EnemyGenerator}. Les fichiers lus par le parseur se trouvent dans \texttt{ressources/ennemies} où ils sont classés par difficulté pour vaincre les ennemis décrits.\\
+Une description contient nécessairement le nom d'un ennemi ainsi que son type, elle peut ensuite comporter une séquence de longueur quelconque de modificateurs qui vont faire la particularité d'un ennemi donné par rapport aux autres ennemis du même niveau. Les constantes numériques et les chaînes de caractères sont détectées à l'aide d'expressions régulières et les séquences grâce au combinateur \texttt{rep1sep}. Le code relatif au parseur d'ennemis se trouve dans le fichier \texttt{EnemyGenerator}. Les fichiers lus par le parseur se trouvent dans \texttt{ressources/ennemies} où ils sont classés par difficulté pour vaincre les ennemis décrits.\\
 Voici un exemple de description d'ennemi :
 \begin{Verbatim}
 "Robot" of type melee
@@ -81,13 +81,13 @@ Lignes 2-4 : Objets pouvant être abandonnés. Le premier nombre représente la 
 Ligne 5 : Argent abandonné lors de l'élimination de l'ennemi.
 \\Lignes 6-9 : Modification des statistiques par rapport aux autres ennemis du même niveau.
 \\Ligne 10 : Cet ennemi sera représenté par le sprite redrobot
-\\Lignes 11-12 : Ajout d'effets lors de l'attaque cet ennemi. Un effet de type \texttt{nothing} permet de créer une probabilité qu'aucun effet ne soit appliqué lors d'une attaque.
+\\Lignes 11-12 : Ajout d'effets lorsque cet ennemi attaque. Un effet de type \texttt{nothing} permet de créer une probabilité qu'aucun effet ne soit appliqué lors d'une attaque.
 
 
 \section{Nouvelle méthode de génération de la carte}
 \subsection{Génération des salles}
 
-Pour générer des salles, nous utilisons des fichiers d'extension .rdf pour room description file. Les fichiers contiennent des presets de salles composés de trois parties séparées par le symbole '\%'. La première partie donne des informations sur la taille de la salle ainsi que l'emplacement des sorties de la salle, la seconde décrit la disposition de la salle et la troisième donne des informations sur le contenu de la salle. Seule la troisième partie est analysée par le parseur. Celle-ci donne un sens aux symboles utilisés dans la deuxième partie et décrit les objets ou personnages pouvant apparaître, les interactions, ainsi que la répartition de ces objets entre les différentes positions désignées par le même symbole.\\
+Pour générer des salles, nous utilisons des fichiers avec l'extension .rdf pour room description file. Les fichiers contiennent des presets de salles composés de trois parties séparées par le symbole '\%'. La première partie donne des informations sur la taille de la salle ainsi que l'emplacement des sorties de la salle, la seconde décrit la disposition de la salle et la troisième donne des informations sur le contenu de la salle. Seule la troisième partie est analysée par le parseur. Celle-ci donne un sens aux symboles utilisés dans la deuxième partie et décrit les objets ou personnages pouvant apparaître, les interactions, ainsi que la répartition de ces objets entre les différentes positions désignées par le même symbole.\\
 Pour générer une salle, l'objet \texttt{RoomGenerator} sélectionne un des presets du fichier, puis utilise un objet de la classe \texttt{RoomParser} pour lire le preset et créer un objet de la classe \texttt{Room} qui stocke la position de tous les éléments d'une pièce par rapport à l'entrée de la pièce.\\
 Pour donner les informations sur le contenu, nous avons décidé de parser un langage que nous allons décrire à l'aide des outils proposés par Scala. Voici la grammaire utilisée :\\
 \begin{align*}
